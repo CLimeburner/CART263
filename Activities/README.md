@@ -1,3 +1,3 @@
-#Activities folder
+# Activities Folder
 
 A folder for activities
