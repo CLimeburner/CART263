@@ -15,6 +15,9 @@ const NUM_ANIMALS = 100; //number of animal objects to create
 let animalImages = []; //array to store animal images
 let animals = []; //array to store animal objects
 
+let sausageDogImage = undefined; //initialize variable to hold the dog image
+let sausageDog = undefined; //initialize the object to hold the dog
+
 // preload()
 // Description of preload
 function preload() {
@@ -23,6 +26,8 @@ function preload() {
     let animalImage = loadImage(`assets/images/animal${i}.png`); //pull next image from assets folder
     animalImages.push(animalImage); //append image to end of our images array
   }
+
+  sausageDogImage = loadImage(`assets/images/sausage-dog.png`); //load the dog image
 }
 
 
@@ -39,6 +44,10 @@ function setup() {
     let animal = new Animal(x, y, animalImage); //construct the animal
     animals.push(animal); //append the animal to our array of animals
   }
+
+  let x = random(0, width); //generate a random x position
+  let y = random(0, height); //generate a random y position
+  sausageDog = new SausageDog(x, y, sausageDogImage); //create the sausage dog
 }
 
 
@@ -51,4 +60,13 @@ function draw() {
   for(let i = 0; i < animals.length; i++) {
     animals[i].update(); //call update() and by extension display() for each animal
   }
+
+  sausageDog.update(); //draw the sausage dog
+}
+
+
+// mousePressed()
+// Description of mousePressed()
+function mousePressed() {
+  sausageDog.mousePressed(); //call sausage dog's click-testing function
 }

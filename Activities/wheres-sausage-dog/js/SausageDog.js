@@ -20,7 +20,7 @@ class SausageDog extends Animal {
     if (mouseX > this.x - this.image.width / 2 &&
         mouseX < this.x + this.image.width / 2 &&
         mouseY > this.y - this.image.height / 2 &&
-        mouseY < this.y + this.image.height2 {
+        mouseY < this.y + this.image.height / 2) {
         this.found = true; //set found to true
     }
   }
