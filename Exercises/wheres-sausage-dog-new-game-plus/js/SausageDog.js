@@ -36,8 +36,8 @@ class SausageDog extends Animal {
   //mousePressed()
   //a method to check if the dog has been clicked and if so, set its found parameter to true
   mousePressed() {
-    //check to see if click is over the sausage dog image
-    if (this.overlap(mouseX, mouseY)) {
+    //check to see if click is over the sausage dog image and the game isn't over
+    if (this.overlap(mouseX, mouseY) && timeRemaining > 0) {
         this.found = true; //set found to true
         isTiming = false; //stop the clock
         window.setTimeout(levelUpdate, 1000); //wait a moment, then move to the next level
