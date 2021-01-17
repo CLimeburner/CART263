@@ -13,10 +13,11 @@ class Animal {
 
   //constructor()
   //creates the animal object with a given position x and y and a given image graphic image
-  constructor(x, y, image) {
+  constructor(x, y, image, orientation) {
     this.x = x;
     this.y = y;
     this.image = image;
+    this.orientation = orientation;
 
     this.angle = 0;
   }
@@ -36,6 +37,9 @@ class Animal {
     imageMode(CENTER);
     translate(this.x, this.y);
     rotate(this.angle);
+    if (this.orientation > 0.5) {
+      scale(-1, 1);
+    }
     image(this.image, 0, 0);
     pop();
   }

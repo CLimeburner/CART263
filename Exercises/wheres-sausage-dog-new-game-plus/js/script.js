@@ -48,7 +48,7 @@ function setup() {
 
   createAnimals(); //create all the generic animals
 
-  createSausageDog(); //create out sausage dog hero
+  createSausageDog(); //create our sausage dog hero
 }
 
 
@@ -86,7 +86,8 @@ function createAnimals() {
     let x = random(0, width); //generate a random x position
     let y = random(0, height); //generate a random y position
     let animalImage = random(animalImages); //pull a random animal image
-    let animal = new Animal(x, y, animalImage); //construct the animal
+    let animalOrientation = random(0, 1); //randomly determine if the animal faces left or right
+    let animal = new Animal(x, y, animalImage, animalOrientation); //construct the animal
     animals.push(animal); //append the animal to our array of animals
   }
 }
@@ -97,7 +98,7 @@ function createAnimals() {
 function createSausageDog() {
   let x = random(0, width); //generate a random x position
   let y = random(80, height); //generate a random y position that isn't under the GUI
-  sausageDog = new SausageDog(x, y, sausageDogImage); //create the sausage dog
+  sausageDog = new SausageDog(x, y, sausageDogImage, 0); //create the sausage dog
 }
 
 
@@ -114,7 +115,6 @@ function timeUpdate() {
     timeRemaining--; //update time remaining to find the dog
   }
 }
-
 
 
 // displayLevel()

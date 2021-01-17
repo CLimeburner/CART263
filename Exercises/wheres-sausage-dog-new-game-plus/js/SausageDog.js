@@ -13,8 +13,8 @@ class SausageDog extends Animal {
 
   //constructor()
   //creates the the sausage dog object with properties of an Animal as well as a found parameter and a rotation speed
-  constructor(x, y, image) {
-    super(x, y, image); //calling Animal.js constructor
+  constructor(x, y, image, orientation) {
+    super(x, y, image, orientation); //calling Animal.js constructor
 
     this.found = false; //variable to track if dog has been clicked
     this.rotationSpeed = 0.25; //variable to provide a speed to rotate once clicked
