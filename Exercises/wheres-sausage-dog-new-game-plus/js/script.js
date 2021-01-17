@@ -21,6 +21,8 @@ let animals = []; //array to store animal objects
 let sausageDogImage = undefined; //initialize variable to hold the dog image
 let sausageDog = undefined; //initialize the object to hold the dog
 
+let level = 1; //initialize a variable to track the level players are on
+let numAnimals = level * 5; //a variable to scale the number of interference animals with each level
 
 // preload()
 // a function to prepare assets before initializing the game
@@ -49,7 +51,7 @@ function setup() {
 // draw()
 // a function to draw our graphics
 function draw() {
-  background(255,255,0); //set background color
+  background(250,195,42); //set background color
 
   //making the animals visible
   for(let i = 0; i < animals.length; i++) {
@@ -57,6 +59,8 @@ function draw() {
   }
 
   sausageDog.update(); //draw the sausage dog
+
+  displayLevel();
 }
 
 
@@ -71,7 +75,7 @@ function mousePressed() {
 // a function that initializes all our generic animals
 function createAnimals() {
   // Create the animals
-  for(let i = 0; i < NUM_ANIMALS; i++) {
+  for(let i = 0; i < numAnimals; i++) {
     let x = random(0, width); //generate a random x position
     let y = random(0, height); //generate a random y position
     let animalImage = random(animalImages); //pull a random animal image
@@ -87,4 +91,28 @@ function createSausageDog() {
   let x = random(0, width); //generate a random x position
   let y = random(0, height); //generate a random y position
   sausageDog = new SausageDog(x, y, sausageDogImage); //create the sausage dog
+}
+
+
+// displayLevel()
+// a function that displays the current level in the upper-right-hand corner
+function displayLevel() {
+  push();
+  textSize(128); //make the numeral big
+  fill(255, 255, 255); //make it white
+  strokeWeight(20);
+  stroke(0); // stroke around outside of numeral for easier visibility
+  textFont('Courier'); //set font to Courier
+  textAlign(RIGHT); //align right so as digits increase it doesn't run off the screen
+  text(level, width - 50, 120); //position it in the upper right-hand corner
+  pop();
+}
+
+
+// levelUpdate()
+// a function that sets a timer when Sausage Dog is found and updates the screen to the next level when the timer runs out
+function levelUpdate() {
+  level++; //increment the level
+  numAnimals = level * 5; //increase the number of animals to increase the difficulty
+  setup(); //reset the screen
 }

@@ -39,6 +39,7 @@ class SausageDog extends Animal {
     //check to see if click is over the sausage dog image
     if (this.overlap(mouseX, mouseY)) {
         this.found = true; //set found to true
+        window.setTimeout(levelUpdate, 1000); //wait a moment, then move to the next level
     }
   }
 
