@@ -146,6 +146,8 @@ const ANIMALS = [
       "zebra"
     ];
 
+let currentAnimal = ``; //a variable to hold the current animal to be guessed
+
 
 // setup()
 // Description of setup
@@ -158,4 +160,27 @@ function setup() {
 // Description of draw()
 function draw() {
 
+}
+
+
+// mousePressed()
+// a function that triggers on a mouse click
+function mousePressed() {
+  currentAnimal = random(ANIMALS); //pull a random animal
+  let reverseAnimal = reverseString(currentAnimal); //reverse the current animal
+  responsiveVoice.speak(reverseAnimal); //say the reversed animal with responsive voice
+}
+
+
+// reverseString(string)
+// a function that takes a string "string" and reverses it
+function reverseString(string) {
+  // Split the string into an array of characters
+  let characters = string.split('');
+  // Reverse the array of characters
+  let reverseCharacters = characters.reverse();
+  // Join the array of characters back into a string
+  let result = reverseCharacters.join('');
+  // Return the result
+  return result;
 }
