@@ -159,6 +159,9 @@ let wrongCounter = 0; //tracker for the number of wrong answers
 let isTiming = 0; //variable to track start and stop of timer
 let time = TIMER; //variable to track time remaining
 
+let rightTone; //a ding to play when players get the answer right
+let wrongTone; //a buzzer to play when players get the answer wrong
+
 
 // setup()
 // Description of setup
@@ -169,6 +172,14 @@ function setup() {
   textSize(32);
   textStyle(BOLD);
   fill(255, 255, 255);
+
+  //define the ding for when players get it right
+  rightTone = new p5.Oscillator('sine'); //set ding to sine wave pattern
+  rightTone.freq(300); //start it at a moderate pitch
+
+  //define the buzzer for when players get it wrong
+  wrongTone = new p5.Oscillator('sawtooth'); //set the buzzer to a sawtooth wave pattern
+  wrongTone.freq(100); //make the tone low-pitched
 
   displayScore(); //create initial graphics
 
@@ -215,6 +226,7 @@ function mousePressed() {
 // guessAnimal(animal)
 // a function that determines if a guessed "animal" is correct
 function guessAnimal(animal) {
+  isTiming = 0; //stop the clock
   answerChecked = 0; //signify the current answer hasn't been checked yet
   currentAnswer = animal.toLowerCase(); //store input
 
@@ -228,7 +240,7 @@ function guessAnimal(animal) {
 // a function that will take an "animal" input and say it backwards
 function sayBackwards() {
   let reverseAnimal = reverseString(currentAnimal); //reverse the current animal
-  responsiveVoice.speak(reverseAnimal); //say the reversed animal with responsive voice
+  responsiveVoice.speak(reverseAnimal, "US English Female"); //say the reversed animal with responsive voice
 }
 
 
@@ -285,16 +297,16 @@ function displayClock() {
 // checkCorrect()
 // a function to carry out the neccesary steps based on if an answer is correct or not
 function checkCorrect() {
-  isTiming = 0; //stop the clock
-
   //check to see if the answer was correct
   if (currentAnswer === currentAnimal) {
     fill(0, 255, 0); //if correct, make the text green
     correctCounter++; //increment the number of correct guesses
+    playRightTone();
   }
   else {
     fill(255, 0, 0); //if wrong, make the text red
     wrongCounter++; //increment the number of wrong guesses
+    playWrongTone();
   }
 }
 
@@ -310,4 +322,25 @@ function reverseString(string) {
   let result = reverseCharacters.join('');
   // Return the result
   return result;
+}
+
+
+// playRightTone()
+// a function that plays the rightTone
+function playRightTone() {
+  //play the correct tone
+  rightTone.start();
+  rightTone.freq(100,0.05);
+  rightTone.freq(700,0.2);
+  rightTone.stop(0.25);
+  rightTone.freq(300);
+}
+
+
+// playWrongTone()
+// a function that plays the wrongTone
+function playWrongTone() {
+  //play the buzzer
+  wrongTone.start();
+  wrongTone.stop(0.25);
 }
