@@ -146,7 +146,7 @@ const ANIMALS = [
       "zebra"
     ];
 
-const TIMER = 1000; //amount of time players will have on each word
+const TIMER = 2000; //amount of time players will have on each word
 
 let currentAnimal = ``; //a variable to hold the current animal to be guessed
 let currentAnswer = ``; //stores the last thing the player guessed
@@ -274,8 +274,11 @@ function displayScore() {
 // a function that colors text and then displays it as feedback for the player
 function displayAnswer() {
   //set some rules for the text we'll use as game feedback
+  push();
+  textSize(128);
   textAlign(CENTER, CENTER);
   text(currentAnswer, width/2, height/2); //display the guessed answer with appropriate color
+  pop();
 
   answerChecked = 1; //signify that the answer has been process already
 }
