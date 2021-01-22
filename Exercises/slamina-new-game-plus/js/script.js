@@ -146,6 +146,8 @@ const ANIMALS = [
       "zebra"
     ];
 
+const TIMER = 1000; //amount of time players will have on each word
+
 let currentAnimal = ``; //a variable to hold the current animal to be guessed
 let currentAnswer = ``; //stores the last thing the player guessed
 
@@ -153,6 +155,9 @@ let answerChecked = 1; //a variable to track if the answer has been checked
 
 let correctCounter = 0; //tracker for the number of correct answers
 let wrongCounter = 0; //tracker for the number of wrong answers
+
+let isTiming = 0;
+let time = TIMER;
 
 
 // setup()
@@ -181,7 +186,25 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  if (isTiming == 1) {
+    time--;
+  }
 
+  push();
+  //rotate(PI);
+  //noStroke();
+  translate(50, 45);
+  rotate(-0.5*PI);
+  scale(1, -1);
+  arc(0, 0, 75, 75, 0, 2*PI*time/TIMER, PIE);
+  pop();
+
+
+  if (time == 0) {
+    isTiming = 0;
+    time = 1;
+    guessAnimal('');
+  }
 }
 
 
@@ -219,6 +242,9 @@ function nextQuestion() {
   sayBackwards(); //say the currentAnimal backwards
 
   displayScore(); //clear the screen and update the score
+
+  time = TIMER;
+  isTiming = 1;
 }
 
 
@@ -230,8 +256,8 @@ function displayScore() {
 
   //draw the score in the upper left corner
   textAlign(LEFT, TOP);
-  text(`Correct Guesses: ${correctCounter}`, 10, 10);
-  text(`Wrong Guesses: ${wrongCounter}`, 10, 50);
+  text(`Correct Guesses: ${correctCounter}`, 100, 10);
+  text(`Wrong Guesses: ${wrongCounter}`, 100, 50);
 }
 
 
@@ -249,6 +275,8 @@ function displayAnswer() {
 // checkCorrect()
 // a function to carry out the neccesary steps based on if an answer is correct or not
 function checkCorrect() {
+  isTiming = 0;
+
   //check to see if the answer was correct
   if (currentAnswer === currentAnimal) {
     fill(0, 255, 0); //if correct, make the text green
