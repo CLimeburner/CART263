@@ -149,11 +149,23 @@ const ANIMALS = [
 let currentAnimal = ``; //a variable to hold the current animal to be guessed
 let currentAnswer = ``; //stores the last thing the player guessed
 
+let answerChecked = 1; //a variable to track if the answer has been checked
+
+let correctCounter = 0; //tracker for the number of correct answers
+let wrongCounter = 0; //tracker for the number of wrong answers
+
 
 // setup()
 // Description of setup
 function setup() {
   createCanvas(windowWidth, windowHeight); //create the canvas
+
+  //set general font style for the game
+  textSize(32);
+  textStyle(BOLD);
+  fill(255, 255, 255);
+
+  displayScore(); //create initial graphics
 
   //implement annyang
   if (annyang) {
@@ -162,11 +174,6 @@ function setup() {
     };
     annyang.addCommands(commands); //add the command we just defined
     annyang.start(); //start annyang running
-
-    //set some rules for the text we'll use as game feedback
-    textSize(32);
-    textStyle(BOLD);
-    textAlign(CENTER, CENTER);
   }
 }
 
@@ -174,9 +181,7 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
-  background(0); //set background to black
 
-  displayAnswer(); //display the answer
 }
 
 
@@ -190,7 +195,12 @@ function mousePressed() {
 // guessAnimal(animal)
 // a function that determines if a guessed "animal" is correct
 function guessAnimal(animal) {
+  answerChecked = 0; //signify the current answer hasn't been checked yet
   currentAnswer = animal.toLowerCase(); //store input
+
+  checkCorrect(); //update score and feedback color
+  displayScore(); //update score graphic
+  displayAnswer(); //show feedback answer on screen
 }
 
 
@@ -207,20 +217,47 @@ function sayBackwards() {
 function nextQuestion() {
   currentAnimal = random(ANIMALS); //pull a random animal
   sayBackwards(); //say the currentAnimal backwards
+
+  displayScore(); //clear the screen and update the score
+}
+
+
+// displayScore()
+// a function that draws the score on screen
+function displayScore() {
+  clear(); //clear screen
+  background(0); // black background
+
+  //draw the score in the upper left corner
+  textAlign(LEFT, TOP);
+  text(`Correct Guesses: ${correctCounter}`, 10, 10);
+  text(`Wrong Guesses: ${wrongCounter}`, 10, 50);
 }
 
 
 // displayAnswer()
 // a function that colors text and then displays it as feedback for the player
 function displayAnswer() {
+  //set some rules for the text we'll use as game feedback
+  textAlign(CENTER, CENTER);
+  text(currentAnswer, width/2, height/2); //display the guessed answer with appropriate color
+
+  answerChecked = 1; //signify that the answer has been process already
+}
+
+
+// checkCorrect()
+// a function to carry out the neccesary steps based on if an answer is correct or not
+function checkCorrect() {
   //check to see if the answer was correct
   if (currentAnswer === currentAnimal) {
     fill(0, 255, 0); //if correct, make the text green
+    correctCounter++; //increment the number of correct guesses
   }
   else {
     fill(255, 0, 0); //if wrong, make the text red
+    wrongCounter++; //increment the number of wrong guesses
   }
-  text(currentAnswer, width/2, height/2); //display the guessed answer with appropriate color
 }
 
 
