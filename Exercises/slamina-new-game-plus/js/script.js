@@ -156,8 +156,8 @@ let answerChecked = 1; //a variable to track if the answer has been checked
 let correctCounter = 0; //tracker for the number of correct answers
 let wrongCounter = 0; //tracker for the number of wrong answers
 
-let isTiming = 0;
-let time = TIMER;
+let isTiming = 0; //variable to track start and stop of timer
+let time = TIMER; //variable to track time remaining
 
 
 // setup()
@@ -186,24 +186,18 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  //if the clock is running, decrement the timer
   if (isTiming == 1) {
     time--;
   }
 
-  push();
-  //rotate(PI);
-  //noStroke();
-  translate(50, 45);
-  rotate(-0.5*PI);
-  scale(1, -1);
-  arc(0, 0, 75, 75, 0, 2*PI*time/TIMER, PIE);
-  pop();
+  displayClock(); //draw the clock
 
-
+  //if time has run out, mark it as an automatic wrong answer
   if (time == 0) {
-    isTiming = 0;
-    time = 1;
-    guessAnimal('');
+    isTiming = 0; //stop the clock
+    time = 1; //freeze clock at eleventh hour to prevent endless time == 0 triggering
+    guessAnimal(''); //pass an obviously wrong answer to trigger a wrong guess to the score
   }
 }
 
@@ -211,7 +205,10 @@ function draw() {
 // mousePressed()
 // a function that triggers on a mouse click
 function mousePressed() {
-  nextQuestion(); //advance to the next question
+  //only advance the level if the players don't already have a word active
+  if (isTiming == 0) {
+    nextQuestion(); //advance to the next question
+  }
 }
 
 
@@ -243,8 +240,8 @@ function nextQuestion() {
 
   displayScore(); //clear the screen and update the score
 
-  time = TIMER;
-  isTiming = 1;
+  time = TIMER; //reset the time
+  isTiming = 1; //start the clock
 }
 
 
@@ -271,11 +268,24 @@ function displayAnswer() {
   answerChecked = 1; //signify that the answer has been process already
 }
 
+// displayClock()
+// a function to draw the clock timer
+function displayClock() {
+  //draw the timer
+  push();
+  translate(50, 45); //set origin
+  //make it turn clockwise and from the top
+  rotate(-0.5*PI);
+  scale(1, -1);
+  arc(0, 0, 75, 75, 0, 2*PI*time/TIMER, PIE);
+  pop();
+}
+
 
 // checkCorrect()
 // a function to carry out the neccesary steps based on if an answer is correct or not
 function checkCorrect() {
-  isTiming = 0;
+  isTiming = 0; //stop the clock
 
   //check to see if the answer was correct
   if (currentAnswer === currentAnimal) {
