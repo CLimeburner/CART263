@@ -7,6 +7,11 @@ Tutorial by: Pippin Barr
 Coded by: Chip Limeburner
 
 A "Where's Wally" style game where you look for sausage dog!
+The game generates increasing numbers of animals as levels increment, with a countdown timer
+and a "hint" functionality that drains the timer faster as long as players keep it active.
+The game will continue forever, simply increasing the number of animals, but if time runs out
+before the player finds the sausage dog, they are served a "game over" screen and invited to 
+play again.
 
 ******************/
 
@@ -62,9 +67,6 @@ function setup() {
   //randomize the offset of the hint frame at the start of the level
   hintOffsetX = random(-HINT_OFFSET_MARGIN, HINT_OFFSET_MARGIN);
   hintOffsetY = random(-HINT_OFFSET_MARGIN, HINT_OFFSET_MARGIN);
-
-
-
 }
 
 
