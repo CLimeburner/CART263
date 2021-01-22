@@ -153,6 +153,8 @@ let currentAnswer = ``; //stores the last thing the player guessed
 // setup()
 // Description of setup
 function setup() {
+  createCanvas(windowWidth, windowHeight); //create the canvas
+
   //implement annyang
   if (annyang) {
     let commands = {
@@ -172,7 +174,16 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  background(0); //set background to black
 
+  //check to see if the answer was correct
+  if (currentAnswer === currentAnimal) {
+    fill(0, 255, 0); //if correct, make the text green
+  }
+  else {
+    fill(255, 0, 0); //if wrong, make the text red
+  }
+  text(currentAnswer, width/2, height/2); //display the guessed answer with appropriate color
 }
 
 
@@ -188,8 +199,7 @@ function mousePressed() {
 // guessAnimal(animal)
 // a function that determines if a guessed "animal" is correct
 function guessAnimal(animal) {
-  currentAnswer = animal; //store input
-  console.log(currentAnswer); //print input to console.log
+  currentAnswer = animal.toLowerCase(); //store input
 }
 
 
