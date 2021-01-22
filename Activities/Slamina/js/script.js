@@ -176,6 +176,43 @@ function setup() {
 function draw() {
   background(0); //set background to black
 
+  displayAnswer(); //display the answer
+}
+
+
+// mousePressed()
+// a function that triggers on a mouse click
+function mousePressed() {
+  nextQuestion(); //advance to the next question
+}
+
+
+// guessAnimal(animal)
+// a function that determines if a guessed "animal" is correct
+function guessAnimal(animal) {
+  currentAnswer = animal.toLowerCase(); //store input
+}
+
+
+// sayBackwards(animal)
+// a function that will take an "animal" input and say it backwards
+function sayBackwards() {
+  let reverseAnimal = reverseString(currentAnimal); //reverse the current animal
+  responsiveVoice.speak(reverseAnimal); //say the reversed animal with responsive voice
+}
+
+
+// nextQuestion()
+// a function that advances to the next question
+function nextQuestion() {
+  currentAnimal = random(ANIMALS); //pull a random animal
+  sayBackwards(); //say the currentAnimal backwards
+}
+
+
+// displayAnswer()
+// a function that colors text and then displays it as feedback for the player
+function displayAnswer() {
   //check to see if the answer was correct
   if (currentAnswer === currentAnimal) {
     fill(0, 255, 0); //if correct, make the text green
@@ -184,22 +221,6 @@ function draw() {
     fill(255, 0, 0); //if wrong, make the text red
   }
   text(currentAnswer, width/2, height/2); //display the guessed answer with appropriate color
-}
-
-
-// mousePressed()
-// a function that triggers on a mouse click
-function mousePressed() {
-  currentAnimal = random(ANIMALS); //pull a random animal
-  let reverseAnimal = reverseString(currentAnimal); //reverse the current animal
-  responsiveVoice.speak(reverseAnimal); //say the reversed animal with responsive voice
-}
-
-
-// guessAnimal(animal)
-// a function that determines if a guessed "animal" is correct
-function guessAnimal(animal) {
-  currentAnswer = animal.toLowerCase(); //store input
 }
 
 
