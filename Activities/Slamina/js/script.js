@@ -147,12 +147,25 @@ const ANIMALS = [
     ];
 
 let currentAnimal = ``; //a variable to hold the current animal to be guessed
+let currentAnswer = ``; //stores the last thing the player guessed
 
 
 // setup()
 // Description of setup
 function setup() {
+  //implement annyang
+  if (annyang) {
+    let commands = {
+      'I think it is *animal': guessAnimal
+    };
+    annyang.addCommands(commands); //add the command we just defined
+    annyang.start(); //start annyang running
 
+    //set some rules for the text we'll use as game feedback
+    textSize(32);
+    textStyle(BOLD);
+    textAlign(CENTER, CENTER);
+  }
 }
 
 
@@ -169,6 +182,14 @@ function mousePressed() {
   currentAnimal = random(ANIMALS); //pull a random animal
   let reverseAnimal = reverseString(currentAnimal); //reverse the current animal
   responsiveVoice.speak(reverseAnimal); //say the reversed animal with responsive voice
+}
+
+
+// guessAnimal(animal)
+// a function that determines if a guessed "animal" is correct
+function guessAnimal(animal) {
+  currentAnswer = animal; //store input
+  console.log(currentAnswer); //print input to console.log
 }
 
 
