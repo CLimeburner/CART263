@@ -9,6 +9,13 @@ Description
 
 ******************/
 
+
+//varible for incoming serial port
+let serial;
+
+//variable for incoming serial data
+let data;
+
 //arrays to track window information
 let windowPositions;
 let windowLights;
@@ -39,6 +46,10 @@ function preload() {
 // setup()
 // Description of setup
 function setup() {
+  serial = new p5.SerialPort(); //create serial port object
+
+  serial.open("/dev/tty.usbserial-DA00WTHG"); //open the appropriate serial port
+
   createCanvas(windowWidth, windowHeight); //create the canvas
 
   //set the size of the building
@@ -97,6 +108,13 @@ function draw() {
   //when zoomed in, use a "barrel" effect to restrict peripheral vision
   if (keyIsDown(SHIFT)) {
     displayCameraBarrel();
+  }
+
+  //demonstrating the serial comms work
+  if (serial.available() > 0) {
+    data = 10*serial.last();
+    ellipse(250,250,data,data);
+    console.log(data);
   }
 
 }

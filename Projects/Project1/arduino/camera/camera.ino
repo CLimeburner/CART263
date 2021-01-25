@@ -62,7 +62,7 @@ void loop() {
 
   serialOutputByte = (1*up) + (2*down) + (4*left) + (8*right) + (16*sensorHigh) + (32*snap); //convert all our binary values to a passable byte
 
-  Serial.println(serialOutputByte); //output byte
+  Serial.write(serialOutputByte); //output byte
   
   delay(10); //wait a bit
 }
