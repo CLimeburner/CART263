@@ -12,11 +12,13 @@ const int upPin = 2;
 const int downPin = 3;
 const int leftPin = 4;
 const int rightPin = 5;
+const int snapPin = 6;
 
 int up = 0; //binary indicator of up button being pressed
 int down = 0; //binary indicator of down button being pressed
 int left = 0; //binary indicator of left button being pressed
 int right = 0; //binary indicator of right button being pressed
+int snap = 0; //binary indicator of snap button being pressed
 
 int sensorValue; //the raw analog value from the photoresistor
 
@@ -35,6 +37,7 @@ void setup() {
   pinMode(downPin, INPUT);
   pinMode(leftPin, INPUT);
   pinMode(rightPin, INPUT);
+  pinMode(snapPin, INPUT);
 }
 
 
@@ -46,6 +49,7 @@ void loop() {
   down = !digitalRead(downPin);
   left = !digitalRead(leftPin);
   right = !digitalRead(rightPin);
+  snap = !digitalRead(snapPin);
 
   sensorValue = analogRead(A0); //read the analog value from the photoresistor
 
@@ -56,7 +60,7 @@ void loop() {
     sensorHigh = 0;
   }
 
-  serialOutputByte = (1*up) + (2*down) + (4*left) + (8*right) + (16*sensorHigh); //convert all our binary values to a passable byte
+  serialOutputByte = (1*up) + (2*down) + (4*left) + (8*right) + (16*sensorHigh) + (32*snap); //convert all our binary values to a passable byte
 
   Serial.println(serialOutputByte); //output byte
   
