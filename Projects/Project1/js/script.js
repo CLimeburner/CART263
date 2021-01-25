@@ -120,6 +120,8 @@ function draw() {
 }
 
 
+// keyPressed()
+// a function that listens for key presses and responds accordingly
 function keyPressed() {
   if (keyCode === LEFT_ARROW && focusX > 0) {
     focusX--;
@@ -133,6 +135,8 @@ function keyPressed() {
 }
 
 
+// zoomIn()
+// a function that "zooms in", scaling graphics accordingly and centering them on screen based on your "focus"
 function zoomIn() {
   viewScale = 6;
   scale(viewScale);
@@ -140,6 +144,8 @@ function zoomIn() {
 }
 
 
+// displayHouse()
+// a function that draws the house and its details
 function displayHouse() {
   //draw the building
   fill(30, 0, 0);
@@ -161,6 +167,8 @@ function displayHouse() {
 }
 
 
+// displayFocus
+// a function that draws the dashed box to indicate on which window you're "focused"
 function displayFocus() {
   //draw a dashed outline
   push();
@@ -184,6 +192,8 @@ function displayFocus() {
 }
 
 
+// displayCameraBarrel()
+// a function that draws the masking simulating the field of view of a camera barrel
 function displayCameraBarrel() {
   push();
   noFill();
