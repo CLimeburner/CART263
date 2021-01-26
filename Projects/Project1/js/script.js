@@ -51,6 +51,15 @@ let originY;
 //a variable to store the scale of objects being viewed
 let viewScale = 1;
 
+//variable to provide the strength of glare when a photo is taken
+let glare = 0;
+
+//an array to hold the photos taken
+let photo = [];
+
+//a variable to track remaining film
+let filmRemaining = 24;
+
 
 // preload()
 // Description of preload
@@ -115,7 +124,7 @@ function draw() {
   viewScale = 1; //default graphics to zoomed out view
 
   //zoom in when the SHIFT key is pressed
-  if (keyIsDown(SHIFT) || !lightSensor) {
+  if (keyIsDown(SHIFT) /*|| !lightSensor*/) {
     zoomIn();
   }
 
@@ -133,8 +142,23 @@ function draw() {
   displayFocus();
 
   //when zoomed in, use a "barrel" effect to restrict peripheral vision
-  if (keyIsDown(SHIFT) || !lightSensor) {
+  if (keyIsDown(SHIFT) /*|| !lightSensor*/) {
     displayCameraBarrel();
+  }
+
+  push();
+  textSize(100);
+  fill(255);
+  text(filmRemaining, 50, 100);
+  pop();
+
+  //fade the flash from taking a photo
+  if (glare > 0) {
+    glare--;
+    push();
+    fill(`rgba(255,255,255,${glare/50})`);
+    rect(width/2,height/2,width,height);
+    pop();
   }
 }
 
@@ -142,14 +166,18 @@ function draw() {
 // keyPressed()
 // a function that listens for key presses and responds accordingly
 function keyPressed() {
-  if (keyCode === LEFT_ARROW && focusX > 0) {
+  if (keyCode === 65 && focusX > 0) {
     focusX--;
-  } else if (keyCode === RIGHT_ARROW && focusX < 5) {
+  } else if (keyCode === 68 && focusX < 5) {
     focusX++;
-  } else if (keyCode === UP_ARROW && focusY > 0) {
+  } else if (keyCode === 87 && focusY > 0) {
     focusY--;
-  } else if (keyCode === DOWN_ARROW && focusY < 3) {
+  } else if (keyCode === 83 && focusY < 3) {
     focusY++;
+  } else if (keyCode === 32 && filmRemaining > 0) {
+    filmRemaining--; //reduce film left
+    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
+    glare = 50; //create the flashbulb effect
   }
 }
 
@@ -165,6 +193,10 @@ function peripheralKeyPressed() {
     focusX--;
   } else if (downButton > prevDownButton && focusY < 3) {
     focusY++;
+  } else if (snapButton > prevSnapButton && filmRemaining > 0) {
+    filmRemaining--; //reduce film left
+    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
+    glare = 50; //create the flashbulb effect
   }
 }
 
