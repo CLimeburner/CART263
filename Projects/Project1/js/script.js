@@ -14,7 +14,23 @@ Description
 let serial;
 
 //variable for incoming serial data
-let data;
+let data = 0;
+
+//arrays to store translated data from the serial input
+let upButton = 0;
+let downButton = 0;
+let leftButton = 0;
+let rightButton = 0;
+let lightSensor = 0;
+let snapButton = 0;
+
+//arrays to store previous value for translated data from the serial input
+let prevUpButton = 0;
+let prevDownButton = 0;
+let prevLeftButton = 0;
+let prevRightButton = 0;
+let prevLightSensor = 0;
+let prevSnapButton = 0;
 
 //arrays to track window information
 let windowPositions;
@@ -85,10 +101,21 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  //pull the serial comms data
+  if (serial.available() > 0) {
+    data = serial.last();
+  }
+
+  storePreviousData(); //store last serial data states for signal edge detection
+
+  parseData(); //breakdown serial data into usable variables
+
+  peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
+
   viewScale = 1; //default graphics to zoomed out view
 
   //zoom in when the SHIFT key is pressed
-  if (keyIsDown(SHIFT)) {
+  if (keyIsDown(SHIFT) || !lightSensor) {
     zoomIn();
   }
 
@@ -106,17 +133,9 @@ function draw() {
   displayFocus();
 
   //when zoomed in, use a "barrel" effect to restrict peripheral vision
-  if (keyIsDown(SHIFT)) {
+  if (keyIsDown(SHIFT) || !lightSensor) {
     displayCameraBarrel();
   }
-
-  //demonstrating the serial comms work
-  if (serial.available() > 0) {
-    data = 10*serial.last();
-    ellipse(250,250,data,data);
-    console.log(data);
-  }
-
 }
 
 
@@ -132,6 +151,44 @@ function keyPressed() {
   } else if (keyCode === DOWN_ARROW && focusY < 3) {
     focusY++;
   }
+}
+
+
+// peripheralKeyPressed()
+// a function that basically does the same as keyPressed but with the input from serial data
+function peripheralKeyPressed() {
+  if (upButton > prevUpButton && focusY > 0) {
+    focusY--;
+  } else if (rightButton > prevRightButton && focusX < 5) {
+    focusX++;
+  } else if (leftButton > prevLeftButton && focusX > 0) {
+    focusX--;
+  } else if (downButton > prevDownButton && focusY < 3) {
+    focusY++;
+  }
+}
+
+// storePreviousData
+// a function to store last states for signal edge detection
+function storePreviousData() {
+  prevUpButton = upButton;
+  prevDownButton = downButton;
+  prevLeftButton = leftButton;
+  prevRightButton = rightButton;
+  prevLightSensor = lightSensor;
+  prevSnapButton = snapButton;
+}
+
+
+// parseData()
+// a function that translates incoming serial data to a format we need it in
+function parseData() {
+  snapButton = Math.floor(data/32);
+  lightSensor = Math.floor((data % 32)/16);
+  downButton = Math.floor((data % 16)/8);
+  leftButton = Math.floor((data % 8)/4);
+  rightButton = Math.floor((data % 4)/2);
+  upButton = Math.floor((data % 2));
 }
 
 
