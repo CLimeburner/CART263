@@ -8,8 +8,11 @@ Coded: Chip Limeburner
 
 ******************/
 
+
+const TIMER = 2000; //amount of time players will have on each word
+
 // list of animals imported from Darius Kazemi https://github.com/dariusk/corpora/blob/master/data/animals/common.json
-const ANIMALS = [
+let animals = [
       "aardvark",
       "alligator",
       "alpaca",
@@ -146,8 +149,6 @@ const ANIMALS = [
       "zebra"
     ];
 
-const TIMER = 2000; //amount of time players will have on each word
-
 let currentAnimal = ``; //a variable to hold the current animal to be guessed
 let currentAnswer = ``; //stores the last thing the player guessed
 
@@ -161,6 +162,8 @@ let time = TIMER; //variable to track time remaining
 
 let rightTone; //a ding to play when players get the answer right
 let wrongTone; //a buzzer to play when players get the answer wrong
+
+let animalsRemaining = animals.length; //a variable to track the number of animals left to guess
 
 
 // setup()
@@ -197,6 +200,8 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  animalsRemaining = animals.length; //update number of animals remaining
+
   //if the clock is running, decrement the timer
   if (isTiming == 1) {
     time--;
@@ -247,7 +252,9 @@ function sayBackwards() {
 // nextQuestion()
 // a function that advances to the next question
 function nextQuestion() {
-  currentAnimal = random(ANIMALS); //pull a random animal
+  let popIndex = Math.floor(random(0,animalsRemaining)); //determine a random animal index to pull
+  currentAnimal = animals[popIndex]; //pull the animal
+  animals.splice(popIndex, 1); //remove the animal from the array
   sayBackwards(); //say the currentAnimal backwards
 
   displayScore(); //clear the screen and update the score
@@ -265,8 +272,9 @@ function displayScore() {
 
   //draw the score in the upper left corner
   textAlign(LEFT, TOP);
-  text(`Correct Guesses: ${correctCounter}`, 100, 10);
-  text(`Wrong Guesses: ${wrongCounter}`, 100, 50);
+  text(`Correct Guesses: ${correctCounter}`, 150, 10);
+  text(`Wrong Guesses: ${wrongCounter}`, 150, 50);
+  text(`Animals remaining: ${animalsRemaining}`, 150, 90);
 }
 
 
@@ -288,11 +296,11 @@ function displayAnswer() {
 function displayClock() {
   //draw the timer
   push();
-  translate(50, 45); //set origin
+  translate(70, 65); //set origin
   //make it turn clockwise and from the top
   rotate(-0.5*PI);
   scale(1, -1);
-  arc(0, 0, 75, 75, 0, 2*PI*time/TIMER, PIE);
+  arc(0, 0, 115, 115, 0, 2*PI*time/TIMER, PIE);
   pop();
 }
 
