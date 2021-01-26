@@ -6,6 +6,10 @@ Slamina-new-game-plus
 Tutorial: Pippin Barr
 Coded: Chip Limeburner
 
+This is a game using Annyang and responsiveVoice libraries in which you have to guess animals based on their
+names said backwards. Correct guesses will score you point, while incorrect guesses or running out of time will
+score failures, until all animals have been guessed. 
+
 ******************/
 
 
@@ -165,6 +169,7 @@ let wrongTone; //a buzzer to play when players get the answer wrong
 
 let animalsRemaining = animals.length; //a variable to track the number of animals left to guess
 
+let isGameOver = 0; //a variable to track game state and say something when all the animals are guessed
 
 // setup()
 // Description of setup
@@ -200,7 +205,10 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
-  animalsRemaining = animals.length; //update number of animals remaining
+  if (animalsRemaining == 0 && isGameOver == 0) {
+    responsiveVoice.speak("The question is, how many more animals can there be? And the answer is none. None more animals.", "US English Female");
+    isGameOver = 1;
+  }
 
   //if the clock is running, decrement the timer
   if (isTiming == 1) {
@@ -234,6 +242,8 @@ function guessAnimal(animal) {
   isTiming = 0; //stop the clock
   answerChecked = 0; //signify the current answer hasn't been checked yet
   currentAnswer = animal.toLowerCase(); //store input
+
+  animalsRemaining = animals.length; //update number of animals remaining
 
   checkCorrect(); //update score and feedback color
   displayScore(); //update score graphic
@@ -312,11 +322,15 @@ function checkCorrect() {
   if (currentAnswer === currentAnimal) {
     fill(0, 255, 0); //if correct, make the text green
     correctCounter++; //increment the number of correct guesses
+    //audio feedback for correct answers
+    responsiveVoice.speak("Correct", "US English Female");
     playRightTone();
   }
   else {
     fill(255, 0, 0); //if wrong, make the text red
     wrongCounter++; //increment the number of wrong guesses
+    //audio feedback for wrong answers
+    responsiveVoice.speak("Incorrect", "US English Female");
     playWrongTone();
   }
 }
