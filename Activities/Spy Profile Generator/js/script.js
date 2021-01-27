@@ -40,10 +40,15 @@ function setup() {
   let data = JSON.parse(localStorage.getItem(`spy-profile-data`));
 
   if (data) {
-    spyProfile.name = data.name;
-    spyProfile.alias = data.alias;
-    spyProfile.secretWeapon = data.secretWeapon;
-    spyProfile.password = data.password;
+    let password = prompt(`Agent! What is your password?`);
+
+    if (password === data.password) {
+      spyProfile.name = data.name;
+      spyProfile.alias = data.alias;
+      spyProfile.secretWeapon = data.secretWeapon;
+      spyProfile.password = data.password;
+    }
+
   } else {
     generateSpyProfile();
   }
