@@ -18,10 +18,17 @@ let spyProfile = {
   password: `**REDACTED**`
 };
 
+let instrumentData = undefined;
+let objectData = undefined;
+let tarotData = undefined;
+
+
 // preload()
 // Description of preload
 function preload() {
-
+  instrumentData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/music/instruments.json`);
+  objectData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/objects/objects.json`);
+  tarotData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/divination/tarot_interpretations.json`);
 }
 
 
@@ -30,7 +37,17 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
+  generateSpyProfile();
+}
+
+
+function generateSpyProfile() {
   spyProfile.name = prompt(`Agent! What is your name?`);
+  let instrument = random(instrumentData.instruments);
+  spyProfile.alias = `The ${instrument}`;
+  spyProfile.secretWeapon = random(objectData.objects);
+  let card = random(tarotData.tarot_interpretations);
+  spyProfile.password = random(card.keywords);
 }
 
 
