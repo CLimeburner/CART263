@@ -22,6 +22,8 @@ let instrumentData = undefined;
 let objectData = undefined;
 let tarotData = undefined;
 
+let data;
+
 
 // preload()
 // Description of preload
@@ -37,21 +39,25 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  let data = JSON.parse(localStorage.getItem(`spy-profile-data`));
+  data = JSON.parse(localStorage.getItem(`spy-profile-data`));
 
   if (data) {
     let password = prompt(`Agent! What is your password?`);
 
     if (password === data.password) {
-      spyProfile.name = data.name;
-      spyProfile.alias = data.alias;
-      spyProfile.secretWeapon = data.secretWeapon;
-      spyProfile.password = data.password;
+      setSpyData();
     }
-
   } else {
     generateSpyProfile();
   }
+}
+
+
+function setSpyData() {
+  spyProfile.name = data.name;
+  spyProfile.alias = data.alias;
+  spyProfile.secretWeapon = data.secretWeapon;
+  spyProfile.password = data.password;
 }
 
 
