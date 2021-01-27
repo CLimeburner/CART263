@@ -22,7 +22,9 @@ let instrumentData = undefined;
 let objectData = undefined;
 let tarotData = undefined;
 
-let data;
+let data; //a buffer variable to store profile data pulled from local storage
+
+let texture; //a variable to hold our aged paper texture
 
 
 // preload()
@@ -31,28 +33,33 @@ function preload() {
   instrumentData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/music/instruments.json`);
   objectData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/objects/objects.json`);
   tarotData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/divination/tarot_interpretations.json`);
+
+  texture = loadImage(`assets/images/texture.png`);
 }
 
 
 // setup()
 // Description of setup
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight); //initialize canvas
 
-  data = JSON.parse(localStorage.getItem(`spy-profile-data`));
+  data = JSON.parse(localStorage.getItem(`spy-profile-data`)); //pull any relevant locally stored data
 
   if (data) {
-    let password = prompt(`Agent! What is your password?`);
+    let password = prompt(`Agent! What is your password?`); //prompt user for their password
 
+    //compare input password
     if (password === data.password) {
-      setSpyData();
+      setSpyData(); //if it's a match, import the appropriate data
     }
   } else {
-    generateSpyProfile();
+    generateSpyProfile(); //if there is no existing profile to import, create one
   }
 }
 
 
+// setSpyData()
+// a function that imports spy profile data from local storage
 function setSpyData() {
   spyProfile.name = data.name;
   spyProfile.alias = data.alias;
@@ -61,23 +68,26 @@ function setSpyData() {
 }
 
 
+// generateSpyProfile()
+// a function that uses JSON data to create a new spy profile
 function generateSpyProfile() {
-  spyProfile.name = prompt(`Agent! What is your name?`);
-  let instrument = random(instrumentData.instruments);
+  spyProfile.name = prompt(`Agent! What is your name?`); //prompt user for their name
+  let instrument = random(instrumentData.instruments); //generate an alias
   spyProfile.alias = `The ${instrument}`;
-  spyProfile.secretWeapon = random(objectData.objects);
-  let card = random(tarotData.tarot_interpretations);
+  spyProfile.secretWeapon = random(objectData.objects); //generate a weapon
+  let card = random(tarotData.tarot_interpretations); //generate a password
   spyProfile.password = random(card.keywords);
 
-  localStorage.setItem(`spy-profile-data`, JSON.stringify(spyProfile));
+  localStorage.setItem(`spy-profile-data`, JSON.stringify(spyProfile)); //save profile to local storage after generation
 }
 
 
 // draw()
 // Description of draw()
 function draw() {
-  background(255);
+  displayPaper(); //draw the paper background
 
+  //initialize a form string
   let profile = `** FOR YOUR EYES ONLY **
 
   Name: ${spyProfile.name}
@@ -86,11 +96,55 @@ function draw() {
   Password: ${spyProfile.password}`
   ;
 
+  //draw the profile text
   push();
   textFont(`Courrier, monospace`);
   textSize(24);
   textAlign(TOP, LEFT);
   fill(0);
   text(profile, 100, 100);
+  pop();
+}
+
+
+// displayPaper()
+// a function that makes the background look like aged and creased paper
+function displayPaper() {
+  background(`rgba(245, 230, 190, 1)`); //slightly off-white yellow
+
+  //draw low alpha stain texture on "page"
+  push();
+  tint(255, 45);
+  image(texture, 0,0, width, height);
+  pop();
+
+  //draw the horizontal rules
+  push();
+  stroke(`rgba(50, 0, 200, 0.5)`); //light blue
+  strokeWeight(2);
+  for (let i = 105; i < height; i = i + 30) {
+    line(0, i, width, i);
+  }
+  pop();
+
+  //draw the vertical margin rule
+  push();
+  stroke(`rgba(150, 0, 100, 0.5)`); //light red
+  strokeWeight(5);
+  line(85, 0, 85, height);
+  pop();
+
+  //draw page crease
+  push();
+  //draw gradient of shadow in the crease
+  for(let i = 0; i < 30; i++) {
+    stroke(lerpColor(color(`rgba(0,0,0,0.25)`),color(`rgba(150,150,150,0)`),i/30));
+    line(0,(height/2)-(i),width,(height/2)-(i));
+    line(0,(height/2)+30-(30-i),width,(height/2)+30-(30-i));
+  }
+  //draw the crease line itself
+  stroke(`rgba(0,0,0,0.1)`);
+  strokeWeight(3);
+  line(0,height/2,width,height/2);
   pop();
 }
