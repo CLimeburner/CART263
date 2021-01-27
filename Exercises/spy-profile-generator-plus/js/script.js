@@ -22,15 +22,15 @@ let spyProfile = {
 
 //array of tasks
 let tasks = [
-  `Stop`,
-  `Prevent`,
-  `Instigate`,
-  `Initiate`,
-  `Assist`,
-  `Aid`,
-  `Delay`,
-  `Observe`,
-  `Document`
+  `stop`,
+  `prevent`,
+  `instigate`,
+  `initiate`,
+  `assist`,
+  `aid`,
+  `delay`,
+  `observe`,
+  `document`
 ];
 
 //array of titles
@@ -52,7 +52,14 @@ let names = [
   `Voldosknaya`,
   `De La Battrie`,
   `Krausmann`,
-  `Stevens`
+  `Stevens`,
+  `Noh`,
+  `Garry`,
+  `Kleinberg`,
+  `Elroy`,
+  `McBartles`,
+  `Jones`,
+  `Johnson`
 ];
 
 //array of actions
@@ -66,7 +73,8 @@ let actions = [
   `damaging`,
   `hiding`,
   `relocating`,
-  `counterfeiting`
+  `counterfeiting`,
+  `infiltraing`
 ];
 
 //array of targets
@@ -78,7 +86,14 @@ let targets = [
   `the Smithsonian Museum`,
   `all the squirrels of Malta`,
   `15 tons of spanish gold`,
-  `the Declaration of Independance`
+  `the Declaration of Independance`,
+  `the stock market`,
+  `important archaeological ruins`,
+  `the Vatican archives`,
+  `the last breeding pair of pandas`,
+  `government secrets`,
+  `nuclear weapons`,
+  `hyperdrive technology`
 ];
 
 let instrumentData = undefined;
