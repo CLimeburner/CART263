@@ -105,6 +105,8 @@ let data; //a buffer variable to store profile data pulled from local storage
 
 let texture; //a variable to hold our aged paper texture
 
+let userInput = ``;
+
 
 // preload()
 // Description of preload
@@ -159,7 +161,7 @@ function generateSpyProfile() {
   spyProfile.alias = `The ${instrument}`;
   spyProfile.secretWeapon = random(objectData.objects); //generate a weapon
   spyProfile.posting = random(countryData.countries); //generate a Posting
-  spyProfile.mission = `To ${random(tasks)} ${random(titles)} ${random(names)} ${random(actions)} ${random(targets)}`;
+  spyProfile.mission = `To ${random(tasks)} ${random(titles)} ${random(names)} ${random(actions)} ${random(targets)}`; //generate mission
   let card = random(tarotData.tarot_interpretations); //generate a password
   spyProfile.password = random(card.keywords);
 
@@ -172,25 +174,37 @@ function generateSpyProfile() {
 function draw() {
   displayPaper(); //draw the paper background
 
-  //initialize a form string
-  let profile = `** FOR YOUR EYES ONLY **
+  displayText(); //draw the text on the paper
+}
 
-  Name: ${spyProfile.name}
-  Alias: ${spyProfile.alias}
-  Posting: ${spyProfile.posting}
-  Mission: ${spyProfile.mission}
-  Assigned Gadgets: ${spyProfile.secretWeapon}
-  Password: ${spyProfile.password}`
-  ;
 
-  //draw the profile text
-  push();
-  textFont(`Courrier, monospace`);
-  textSize(24);
-  textAlign(TOP, LEFT);
-  fill(0);
-  text(profile, 100, 100);
-  pop();
+// keyPressed()
+// a function that listens for specific key strokes
+function keyPressed() {
+  //make backspace work when typing
+  if (keyCode === BACKSPACE) {
+    userInput = userInput.substring(0,userInput.length-1);
+  } else if (keyCode === ENTER) {
+    //if user inputs "reassign", give them a new mission and gadget
+    if (userInput === `reassign`) {
+      spyProfile.secretWeapon = random(objectData.objects); //generate a weapon
+      spyProfile.posting = random(countryData.countries); //generate a Posting
+      spyProfile.mission = `To ${random(tasks)} ${random(titles)} ${random(names)} ${random(actions)} ${random(targets)}`; //generate mission
+
+      localStorage.setItem(`spy-profile-data`, JSON.stringify(spyProfile)); //save profile to local storage after generation
+    }
+    userInput = ``;
+  }
+}
+
+
+// keyPressed()
+// a function that takes typing info
+function keyTyped() {
+  if (key === `Enter`) {
+    return;
+  }
+  userInput = userInput.concat(key); //add typed keys to the end of the input
 }
 
 
@@ -233,5 +247,35 @@ function displayPaper() {
   stroke(`rgba(0,0,0,0.1)`);
   strokeWeight(3);
   line(0,height/2,width,height/2);
+  pop();
+}
+
+
+// displayText()
+// a function to draw our text
+function displayText() {
+  //initialize a form string
+  let profile = `** FOR YOUR EYES ONLY **
+
+  Name: ${spyProfile.name}
+  Alias: ${spyProfile.alias}
+  Posting: ${spyProfile.posting}
+  Mission: ${spyProfile.mission}
+  Assigned Gadget: ${spyProfile.secretWeapon}
+  Password: ${spyProfile.password}`
+  ;
+
+  //draw the profile text
+  push();
+  textFont(`Courrier, monospace`);
+  textSize(24);
+  textAlign(TOP, LEFT);
+  fill(0);
+  text(profile, 100, 100);
+
+  text(`  Type "reassign", then enter, to get a new mission:`, 100, 370); //display the instructions
+
+  text(`  >> ${userInput}`, 100, 430); //display the user input line
+
   pop();
 }
