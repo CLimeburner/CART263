@@ -15,12 +15,76 @@ let spyProfile = {
   name: `**REDACTED**`,
   alias: `**REDACTED**`,
   secretWeapon: `**REDACTED**`,
+  posting:  `**REDACTED**`,
+  mission: `**REDACTED**`,
   password: `**REDACTED**`
 };
+
+//array of tasks
+let tasks = [
+  `Stop`,
+  `Prevent`,
+  `Instigate`,
+  `Initiate`,
+  `Assist`,
+  `Aid`,
+  `Delay`,
+  `Observe`,
+  `Document`
+];
+
+//array of titles
+let titles = [
+  `Dr.`,
+  `Mr.`,
+  `Mrs.`,
+  `Miss`,
+  `Agent`,
+  `Operative`,
+  `The Great`,
+  `Fr.`,
+  `Chairman`
+];
+
+//array names
+let names = [
+  `Scoopini`,
+  `Voldosknaya`,
+  `De La Battrie`,
+  `Krausmann`,
+  `Stevens`
+];
+
+//array of actions
+let actions = [
+  `blowing up`,
+  `invading`,
+  `incapacitating`,
+  `stealing`,
+  `sabotaging`,
+  `targeting`,
+  `damaging`,
+  `hiding`,
+  `relocating`,
+  `counterfeiting`
+];
+
+//array of targets
+let targets = [
+  `the moldavian embassy`,
+  `the moon`,
+  `the hope diamond`,
+  `the queen of England`,
+  `the Smithsonian Museum`,
+  `all the squirrels of Malta`,
+  `15 tons of spanish gold`,
+  `the Declaration of Independance`
+];
 
 let instrumentData = undefined;
 let objectData = undefined;
 let tarotData = undefined;
+let countryData = undefined;
 
 let data; //a buffer variable to store profile data pulled from local storage
 
@@ -30,9 +94,11 @@ let texture; //a variable to hold our aged paper texture
 // preload()
 // Description of preload
 function preload() {
+  //JSON files taken from dariusk https://github.com/dariusk/corpora/tree/master/data
   instrumentData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/music/instruments.json`);
   objectData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/objects/objects.json`);
   tarotData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/divination/tarot_interpretations.json`);
+  countryData = loadJSON(`https://raw.githubusercontent.com/dariusk/corpora/master/data/geography/countries.json`);
 
   texture = loadImage(`assets/images/texture.png`);
 }
@@ -64,6 +130,8 @@ function setSpyData() {
   spyProfile.name = data.name;
   spyProfile.alias = data.alias;
   spyProfile.secretWeapon = data.secretWeapon;
+  spyProfile.posting = data.posting;
+  spyProfile.mission = data.mission;
   spyProfile.password = data.password;
 }
 
@@ -75,6 +143,8 @@ function generateSpyProfile() {
   let instrument = random(instrumentData.instruments); //generate an alias
   spyProfile.alias = `The ${instrument}`;
   spyProfile.secretWeapon = random(objectData.objects); //generate a weapon
+  spyProfile.posting = random(countryData.countries); //generate a Posting
+  spyProfile.mission = `To ${random(tasks)} ${random(titles)} ${random(names)} ${random(actions)} ${random(targets)}`;
   let card = random(tarotData.tarot_interpretations); //generate a password
   spyProfile.password = random(card.keywords);
 
@@ -92,7 +162,9 @@ function draw() {
 
   Name: ${spyProfile.name}
   Alias: ${spyProfile.alias}
-  Secret Weapon: ${spyProfile.secretWeapon}
+  Posting: ${spyProfile.posting}
+  Mission: ${spyProfile.mission}
+  Assigned Gadgets: ${spyProfile.secretWeapon}
   Password: ${spyProfile.password}`
   ;
 
