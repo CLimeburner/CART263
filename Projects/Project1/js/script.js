@@ -130,10 +130,12 @@ function draw() {
 
   //update "origin" used for focus and zooming in
   originX = width*0.2 + windowPositions[focusY][focusX][0];
-  originY = height*0.3 + windowPositions[focusY][focusX][1];
+  originY = height*0.25 + windowPositions[focusY][focusX][1];
 
-  background('rgba(0, 150, 200, 1)'); //make the background sky blue
   noStroke(); //set shapes to not have an outline by default
+
+  //draw the background
+  displayBackground();
 
   //draw the building
   displayHouse();
@@ -233,6 +235,52 @@ function zoomIn() {
 }
 
 
+// displayBackground()
+// a function that draws the background and trees
+function displayBackground() {
+  background(0,20,60);
+
+  //moon
+  fill(250, 250, 200);
+  circle(6*width/7, height/7, width/16);
+
+  //back row
+  fill(0, 10, 0);
+  triangle (width/20 - width/40, width/12, width/10 - width/40, height, 0 - width/40, height);
+  triangle (width/20 + width/24, width/12, width/10 + width/24, height, 0 + width/24, height);
+  triangle (width/20 + width/14, width/12, width/10 + width/14, height, 0 + width/14, height);
+  triangle (width/20 + width/7, width/12, width/10 + width/7, height, 0 + width/7, height);
+  triangle (width/20 + width/3, width/12, width/10 + width/3, height, 0 + width/3, height);
+  triangle (width/20 + width/2, width/12, width/10 + width/2, height, 0 + width/2, height);
+  triangle (width/20 + width/1.65, width/12, width/10 + width/1.65, height, 0 + width/1.65, height);
+  triangle (width/20 + width/1.55, width/12, width/10 + width/1.55, height, 0 + width/1.55, height);
+  triangle (width/20 + width/1.5, width/12, width/10 + width/1.5, height, 0 + width/1.5, height);
+  triangle (width/20 + width/1.25, width/12, width/10 + width/1.25, height, 0 + width/1.25, height);
+  triangle (width/20 + width/1.2, width/12, width/10 + width/1.2, height, 0 + width/1.2, height);
+  triangle (width/20 + width/1.1, width/12, width/10 + width/1.1, height, 0 + width/1.1, height);
+  triangle (width/20 + width/1.075, width/12, width/10 + width/1.075, height, 0 + width/1.075, height);
+
+  //middle row
+  fill(0, 20, 0);
+  triangle (width/14, width/8, width/7, height, 0, height);
+  triangle (width/14 + width/1.15, width/8, width/7 + width/1.15, height, 0 + width/1.15, height);
+  triangle (width/14 + width/1.35, width/8, width/7 + width/1.35, height, 0 + width/1.35, height);
+
+  //front row
+  fill(0, 30, 0);
+  triangle (width/14 - width/15, width/7, width/7 - width/15, height, 0 - width/15, height);
+  triangle (width/14 - width/35, width/7, width/7 - width/35, height, 0 - width/35, height);
+  triangle (width/14 + width/35, width/7, width/7 + width/35, height, 0 + width/35, height);
+  triangle (width/14 + width/12, width/7, width/7 + width/12, height, 0 + width/12, height);
+  triangle (width/14 + width/10, width/7, width/7 + width/10, height, 0 + width/10, height);
+  triangle (width/14 + width/1.45, width/7, width/7 + width/1.45, height, 0 + width/1.45, height);
+  triangle (width/14 + width/1.32, width/7, width/7 + width/1.32, height, 0 + width/1.32, height);
+  triangle (width/14 + width/1.28, width/7, width/7 + width/1.28, height, 0 + width/1.28, height);
+  triangle (width/14 + width/1.18, width/7, width/7 + width/1.18, height, 0 + width/1.18, height);
+  triangle (width/14 + width/1.12, width/7, width/7 + width/1.12, height, 0 + width/1.12, height);
+}
+
+
 // displayHouse()
 // a function that draws the house and its details
 function displayHouse() {
@@ -241,16 +289,24 @@ function displayHouse() {
   rectMode(CENTER);
   rect(width/2, height*0.15 + height/2, houseWidth, houseHeight);
 
+  //draw the roof
+  fill(60, 80, 60);
+  quad(width/2 - houseWidth/2, height/4.5, width/2 + houseWidth/2, height/4.5, width/2 + houseWidth/2 + width/48, height/4.5 + houseHeight/3.5, width/2 - houseWidth/2  - width/48, height/4.5 + houseHeight/3.5);
+
   //draw the windows
   rectMode(CENTER);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
+      fill(250, 250, 180);
+      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/10, houseHeight/5.25)
       if (windowLights[i][j] == 0) {
         fill(0, 0, 20);
       } else {
         fill(200, 200, 0);
       }
-      rect(width*0.2 + windowPositions[i][j][0], height*0.3 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+      fill(80, 80, 100);
+      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1] + height*0.06, houseWidth/9, houseHeight/32);
     }
   }
 }
