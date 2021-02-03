@@ -91,10 +91,10 @@ function setup() {
 
   //array to track in which windows the lights are on
   windowLights = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 1, 1],
+    [1, 1, 1, 1, 1, 1]
   ];
 
   //grid coordinateds for the window the players are focused on
@@ -302,7 +302,7 @@ function displayHouse() {
       if (windowLights[i][j] == 0) {
         fill(0, 0, 20);
       } else {
-        fill(200, 200, 0);
+        fill(200, 200, 80);
       }
       rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
       fill(80, 80, 100);
