@@ -6,7 +6,7 @@ Bubble Popper++
 Tutorial: Pippin Barr
 Coded: Chip Limeburner
 
-An exercise extending the bubble popper activity. 
+An exercise extending the bubble popper activity.
 
 ******************/
 
@@ -48,7 +48,7 @@ function setup() {
 
   //listen for predictions
   handpose.on(`predict`, function(results) {
-    console.log(results);
+    //console.log(results);
     predictions = results;
   });
 
@@ -66,7 +66,7 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
-  background(0); //make the background black
+  background(120, 180, 255); //make the background light blue
 
   if (predictions.length > 0) {
     parseData(); //divide up incoming prediction data
@@ -114,7 +114,7 @@ function drawPin() {
   //draw the pin shaft
   push();
   noFill();
-  stroke(255);
+  stroke(225);
   strokeWeight(2);
   line(baseX, baseY, tipX, tipY);
   pop();
@@ -124,6 +124,18 @@ function drawPin() {
   noStroke();
   fill(255, 0, 0);
   ellipse(baseX, baseY, 20);
+  //shading on pin ball
+  for (let i = 0; i < 10; i++) {
+    noFill();
+    stroke(`rgba(0, 0, 0, ${i/40})`);
+    ellipse(baseX, baseY, 10+i);
+  }
+  //highlight on pin ball
+  for (let i = 0; i < 10; i++) {
+    noFill();
+    stroke(`rgba(255, 255, 255, ${0.5*(1-(i/10))})`);
+    ellipse(baseX+2, baseY-3, i+1);
+  }
   pop();
 }
 
@@ -133,9 +145,19 @@ function drawPin() {
 function drawBubble() {
   //draw the bubble
   push();
-  fill(0, 100, 200);
-  noStroke();
-  ellipse(bubble.x, bubble.y, bubble.size);
+  noFill();
+
+  //draw the edge of the bubble
+  for (let i = 0; i <= bubble.size; i++) {
+    stroke(`rgba(255, 255, 255, ${(i/bubble.size)/12})`);
+    ellipse(bubble.x, bubble.y, bubble.size*(i/bubble.size));
+  }
+
+  //draw the specular reflection
+  for (let i = 0; i <= bubble.size; i++) {
+    stroke(`rgba(255, 255, 255, ${(i/bubble.size)/6})`);
+    ellipse(bubble.x+10, bubble.y-10, (bubble.size-(bubble.size*(i/bubble.size)))/1.5);
+  }
   pop();
 }
 
