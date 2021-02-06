@@ -83,6 +83,13 @@ function draw() {
     fill(255, 0, 0);
     ellipse(baseX, baseY, 20);
     pop();
+
+    //check bubble popping
+    let d = dist(tipX, tipY, bubble.x, bubble.y);
+    if (d < bubble.size/2) {
+      bubble.x = random(width);
+      bubble.y = height;
+    }
   }
 
   //move the bubble
