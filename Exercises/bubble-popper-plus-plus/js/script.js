@@ -11,6 +11,8 @@ An exercise extending the bubble popper activity.
 ******************/
 
 
+let popFX = undefined; //a variable for our pop sound fx
+
 let video = undefined; //a variable to store the user's webcam
 
 let handpose = undefined; //a vairable to store the hand pose model
@@ -30,8 +32,16 @@ let baseY;
 let bubble = undefined; //a variable to store our bubble
 
 
+// preload()
+// Preload loads up our sound effect for the bubble
+function preload() {
+  soundFormats('mp3', 'ogg'); //set file formats for audio
+  popFX = loadSound('assets/sounds/pop.mp3'); //popping sound
+}
+
+
 // setup()
-// Description of setup
+// Setup loads our machine learning hand model for use in the draw loop
 function setup() {
   createCanvas(640, 480); //create the canvas
 
@@ -41,14 +51,13 @@ function setup() {
 
   //load the handpose model
   handpose = ml5.handpose(video, {
-    flipHorizontal: true
+    flipHorizontal: true //flipping input so it's more intuitive
   }, function() {
     console.log(`Model loaded.`);
   });
 
   //listen for predictions
   handpose.on(`predict`, function(results) {
-    //console.log(results);
     predictions = results;
   });
 
@@ -64,19 +73,20 @@ function setup() {
 
 
 // draw()
-// Description of draw()
+// Updates our game every frame
 function draw() {
   background(120, 180, 255); //make the background light blue
 
   if (predictions.length > 0) {
     parseData(); //divide up incoming prediction data
 
-    drawPin();
+    drawPin(); //draw the pin
 
     //check bubble popping
     let d = dist(tipX, tipY, bubble.x, bubble.y);
     if (d < bubble.size/2) {
-      resetBubble();
+      resetBubble(); //reset bubble to the bottom of the screen
+      popFX.play(); //play the bubble popping sound effect
     }
   }
 
