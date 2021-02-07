@@ -35,6 +35,8 @@ let bubble = undefined; //a variable to store our bubble
 
 let score = 0; //a variable tracking how many bubbles we've popped
 
+let d = undefined; //a variable for tracking distance between pin tip and bubble
+
 
 // preload()
 // Preload loads up our sound effect for the bubble
@@ -69,7 +71,9 @@ function setup() {
 
   //defining Bubble
   bubble = {
-    x: random(width),
+    center: random(width),
+    period: 0,
+    x: 0,
     y: height,
     size: 100,
     vx: 0,
@@ -90,25 +94,16 @@ function draw() {
 
     drawPin(); //draw the pin
 
-    //check bubble popping
-    let d = dist(tipX, tipY, bubble.x, bubble.y);
-    if (d < bubble.size/2) {
-      resetBubble(); //reset bubble to the bottom of the screen
-      score++;
-      popFX.play(); //play the bubble popping sound effect
-    }
+    d = dist(tipX, tipY, bubble.x, bubble.y); //calculate the distance between pin and bubble for various mechanics
+
+    bubblePop(); //pops the bubble
+
+    bubbleShy(); //nudge bubble if pin is too close
   }
 
-  //move the bubble
-  bubble.x += bubble.vx;
-  bubble.y += bubble.vy;
+  bubbleUpdate(); //updates all the bubble parameters
 
-  //reset bubble position
-  if (bubble.y < 0) {
-    resetBubble();
-  }
-
-  drawBubble();
+  drawBubble(); //draw the bubble at it's new position
 }
 
 
@@ -151,28 +146,23 @@ function drawPin() {
   line(baseX, baseY, tipX, tipY); //draw the line from base to tip of our finger
   pop();
 
-
   push();
-
   //draw the pin ball
   noStroke();
   fill(255, 0, 0); //make the ball red
   ellipse(baseX, baseY, 20);
-
   //shading on pin ball using gradient
   for (let i = 0; i < 10; i++) {
     noFill();
     stroke(`rgba(0, 0, 0, ${i/40})`);
     ellipse(baseX, baseY, 10+i);
   }
-
   //highlight on pin ball using gradient
   for (let i = 0; i < 10; i++) {
     noFill();
     stroke(`rgba(255, 255, 255, ${0.5*(1-(i/10))})`);
     ellipse(baseX+2, baseY-3, i+1);
   }
-
   pop();
 }
 
@@ -199,9 +189,61 @@ function drawBubble() {
 }
 
 
+// bubblePop()
+// a function to handle the bubble popping
+function bubblePop() {
+  if (d < bubble.size/2) {
+    resetBubble(); //reset bubble to the bottom of the screen
+    score++; //increase score
+    popFX.play(); //play the bubble popping sound effect
+  }
+}
+
+
+// bubbleShy()
+// a function that updates the bubble to shy away from the needle
+function bubbleShy() {
+  //if the pin comes with 30px of the bubble
+  if (d < (bubble.size/2) + 30) {
+    if (tipX > bubble.x) {
+      bubble.vx = -10; //if the tip is to the right, nudge the bubble left
+      bubble.period = Math.PI/2; //start drift to the right
+    } else {
+      bubble.vx = 10; //if the tip is to the left, nudge the bubble right
+      bubble.period = 0; //start drift to the right
+    }
+  } else {
+    bubble.vx = 0; //otherwise just leave the bubble be
+  }
+}
+
+
+// bubbleUpdate()
+// a function that updates all the bubble parameters each frame
+function bubbleUpdate() {
+  //move the bubble
+  bubble.center += bubble.vx; //nudge the center if the pin is close
+  bubble.period += Math.PI/32; //update the dither of the bubble
+  bubble.x = bubble.center + (40 * Math.sin(bubble.period)); //dither the bubble along it's vertical axis based on it's period
+  bubble.y += bubble.vy; //move the bubble up
+
+  //lock the bubble within the horizontal bounds of the screen
+  if (bubble.center < 0) {
+    bubble.center = 0;
+  } else if (bubble.center > width) {
+    bubble.center = width;
+  }
+
+  //reset bubble position if it goes too high
+  if (bubble.y < 0) {
+    resetBubble();
+  }
+}
+
+
 // resetBubble()
 // a function that resets the bubble to the bottom of the screen
 function resetBubble() {
-  bubble.x = random(width);
+  bubble.center = random(width);
   bubble.y = height;
 }
