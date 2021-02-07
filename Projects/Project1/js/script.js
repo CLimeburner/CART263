@@ -124,7 +124,7 @@ function draw() {
   viewScale = 1; //default graphics to zoomed out view
 
   //zoom in when the SHIFT key is pressed
-  if (keyIsDown(SHIFT) /*|| !lightSensor*/) {
+  if (checkZoom()) {
     zoomIn();
   }
 
@@ -134,25 +134,14 @@ function draw() {
 
   noStroke(); //set shapes to not have an outline by default
 
-  //draw the background
-  displayBackground();
-
-  //draw the building
-  displayHouse();
-
-  //show which window the camera is focused on
-  displayFocus();
-
-  //when zoomed in, use a "barrel" effect to restrict peripheral vision
-  if (keyIsDown(SHIFT) /*|| !lightSensor*/) {
-    displayCameraBarrel();
+  //draw the graphics
+  displayBackground(); //draw the background
+  displayHouse(); //draw the building
+  displayFocus(); //show which window the camera is focused on
+  if (checkZoom()) {
+    displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
   }
-
-  push();
-  textSize(100);
-  fill(255);
-  text(filmRemaining, 50, 100);
-  pop();
+  displayFilmRemaining(); //show the number of photos you have left to take
 
   //fade the flash from taking a photo
   if (glare > 0) {
@@ -215,7 +204,7 @@ function storePreviousData() {
 
 
 // parseData()
-// a function that translates incoming serial data to a format we need it in
+// a function that translates incoming serial data to a format we need it in, uses modulo to break up the incoming byte
 function parseData() {
   snapButton = Math.floor(data/32);
   lightSensor = Math.floor((data % 32)/16);
@@ -238,10 +227,10 @@ function zoomIn() {
 // displayBackground()
 // a function that draws the background and trees
 function displayBackground() {
-  background(0,20,60);
+  background(0,20,60); //dark blue sky
 
   //moon
-  fill(250, 250, 200);
+  fill(250, 250, 200); //pale yellow moon
   circle(6*width/7, height/7, width/16);
 
   //back row
@@ -337,6 +326,17 @@ function displayFocus() {
 }
 
 
+// displayFilmRemaining()
+// a function that draws the number of photos you have left to take
+function displayFilmRemaining() {
+  push();
+  textSize(100);
+  fill(255);
+  text(filmRemaining, 50, 100);
+  pop();
+}
+
+
 // displayCameraBarrel()
 // a function that draws the masking simulating the field of view of a camera barrel
 function displayCameraBarrel() {
@@ -346,4 +346,17 @@ function displayCameraBarrel() {
   stroke(0);
   circle(originX, originY, width*0.2);
   pop();
+}
+
+
+// checkZoom()
+// a function that conviently checks for a zoomed state from either the keyboard or the camera controller
+function checkZoom() {
+  if (keyIsDown(SHIFT)) {
+    return true; //if shift is pressed, zoom
+  } else if (serial.available() > 0 && !lightSensor) {
+    return true; //if the camera is sending data and the lightsensor is blocked, zoom
+  } else {
+    return false; //otherwise do nothing
+  }
 }
