@@ -13,6 +13,8 @@ An exercise extending the bubble popper activity.
 
 let popFX = undefined; //a variable for our pop sound fx
 
+let scoreFont = undefined; //a variable to store a bubbly font
+
 let video = undefined; //a variable to store the user's webcam
 
 let handpose = undefined; //a vairable to store the hand pose model
@@ -31,12 +33,16 @@ let baseY;
 
 let bubble = undefined; //a variable to store our bubble
 
+let score = 0; //a variable tracking how many bubbles we've popped
+
 
 // preload()
 // Preload loads up our sound effect for the bubble
 function preload() {
   soundFormats('mp3', 'ogg'); //set file formats for audio
-  popFX = loadSound('assets/sounds/pop.mp3'); //popping sound
+  popFX = loadSound('assets/sounds/pop.mp3'); //popping sound, taken from the BBC: https://sound-effects.bbcrewind.co.uk/search?q=07042178
+
+  scoreFont = loadFont('assets/fonts/bubble.ttf');//bubble font, downloaded from: https://www.1001freefonts.com/bubble---soap.font
 }
 
 
@@ -77,6 +83,8 @@ function setup() {
 function draw() {
   background(120, 180, 255); //make the background light blue
 
+  drawScore(); //update the score on screen
+
   if (predictions.length > 0) {
     parseData(); //divide up incoming prediction data
 
@@ -86,6 +94,7 @@ function draw() {
     let d = dist(tipX, tipY, bubble.x, bubble.y);
     if (d < bubble.size/2) {
       resetBubble(); //reset bubble to the bottom of the screen
+      score++;
       popFX.play(); //play the bubble popping sound effect
     }
   }
@@ -118,34 +127,52 @@ function parseData() {
 }
 
 
+// drawScore()
+// a function that draws the score
+function drawScore() {
+  push();
+  fill(255); //white text
+  textSize(72); //good size
+  textAlign(RIGHT, TOP); //upper-left corner
+  textFont(scoreFont); //use the bubble font we imported
+  text(score, width - 30, 20);
+  pop();
+}
+
+
 // drawPin()
 // a function that draws our pin
 function drawPin() {
   //draw the pin shaft
   push();
   noFill();
-  stroke(225);
-  strokeWeight(2);
-  line(baseX, baseY, tipX, tipY);
+  stroke(225); //make it a very light grey
+  strokeWeight(2); //a little thick
+  line(baseX, baseY, tipX, tipY); //draw the line from base to tip of our finger
   pop();
 
-  //draw the pin ball
+
   push();
+
+  //draw the pin ball
   noStroke();
-  fill(255, 0, 0);
+  fill(255, 0, 0); //make the ball red
   ellipse(baseX, baseY, 20);
-  //shading on pin ball
+
+  //shading on pin ball using gradient
   for (let i = 0; i < 10; i++) {
     noFill();
     stroke(`rgba(0, 0, 0, ${i/40})`);
     ellipse(baseX, baseY, 10+i);
   }
-  //highlight on pin ball
+
+  //highlight on pin ball using gradient
   for (let i = 0; i < 10; i++) {
     noFill();
     stroke(`rgba(255, 255, 255, ${0.5*(1-(i/10))})`);
     ellipse(baseX+2, baseY-3, i+1);
   }
+
   pop();
 }
 
@@ -157,13 +184,13 @@ function drawBubble() {
   push();
   noFill();
 
-  //draw the edge of the bubble
+  //draw the edge of the bubble with a gradient
   for (let i = 0; i <= bubble.size; i++) {
     stroke(`rgba(255, 255, 255, ${(i/bubble.size)/12})`);
     ellipse(bubble.x, bubble.y, bubble.size*(i/bubble.size));
   }
 
-  //draw the specular reflection
+  //draw the specular reflection with a gradient
   for (let i = 0; i <= bubble.size; i++) {
     stroke(`rgba(255, 255, 255, ${(i/bubble.size)/6})`);
     ellipse(bubble.x+10, bubble.y-10, (bubble.size-(bubble.size*(i/bubble.size)))/1.5);
