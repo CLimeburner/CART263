@@ -35,6 +35,7 @@ let prevSnapButton = 0;
 //arrays to track window information
 let windowPositions;
 let windowLights;
+let windowSprites = [[,,,,,],[,,,,,],[,,,,,],[,,,,,]];
 
 //size of the building
 let houseWidth;
@@ -104,6 +105,15 @@ function setup() {
   //pixel coordinates for the window the players are focused on
   originX = width*0.2 + windowPositions[focusY][focusX][0];
   originY = height*0.3 + windowPositions[focusY][focusX][1];
+
+
+  //initialize all the window sprites
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 6; j++) {
+      windowSprites[i][j] = createSprite(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+      windowSprites[i][j].visible = false;
+    }
+  }
 }
 
 
@@ -151,6 +161,8 @@ function draw() {
     rect(width/2,height/2,width,height);
     pop();
   }
+
+  drawSprites(); //draw sprites for window animations
 }
 
 
