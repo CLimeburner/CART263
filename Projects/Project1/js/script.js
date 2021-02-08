@@ -242,8 +242,12 @@ function displayBackground() {
   background(0,20,60); //dark blue sky
 
   //moon
+  for (let i = 0; i < 40; i++) {
+    fill(`rgba(250,250,200,${(1-(i/40))/2})`);
+    circle(6*width/7, height/7, (i/25)*width/16); //draw the paraselene
+  }
   fill(250, 250, 200); //pale yellow moon
-  circle(6*width/7, height/7, width/16);
+  circle(6*width/7, height/7, width/16); //draw the moon itself
 
   //back row
   fill(0, 10, 0);
@@ -279,6 +283,15 @@ function displayBackground() {
   triangle (width/14 + width/1.28, width/7, width/7 + width/1.28, height, 0 + width/1.28, height);
   triangle (width/14 + width/1.18, width/7, width/7 + width/1.18, height, 0 + width/1.18, height);
   triangle (width/14 + width/1.12, width/7, width/7 + width/1.12, height, 0 + width/1.12, height);
+
+  //gradient from the ground up
+  for (let i = 0; i < 40; i++) {
+    push();
+    fill(`rgba(0,0,0,${1-(i/40)})`);
+    rectMode(LEFT, TOP);
+    rect(0, height - (i * 10), width, 10);
+    pop();
+  }
 }
 
 
