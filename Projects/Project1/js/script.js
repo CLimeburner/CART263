@@ -52,6 +52,9 @@ let originY;
 //a variable to store the scale of objects being viewed
 let viewScale = 1;
 
+//variable that allows us to listen for "photo taking" whenever but avoid photographing non-digetic graphics
+let snapshotBuffer = false;
+
 //variable to provide the strength of glare when a photo is taken
 let glare = 0;
 
@@ -62,10 +65,13 @@ let photo = [];
 let filmRemaining = 24;
 
 
+let testSprite;
+
+
 // preload()
 // Description of preload
 function preload() {
-
+  testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
 }
 
 
@@ -114,6 +120,15 @@ function setup() {
       windowSprites[i][j].visible = false;
     }
   }
+
+  windowSprites[0][0].visible = true;
+  //iterate over each animation frame and resize correctly
+  for (let i = 0; i < testSprite.images.length; i++) {
+    testSprite.images[i].resize(houseWidth/12, houseHeight/6);
+  }
+  windowSprites[0][0].addAnimation(`bubble`,testSprite);
+  windowSprites[0][0].changeAnimation(`bubble`);
+
 }
 
 
@@ -151,7 +166,7 @@ function draw() {
   if (checkZoom()) {
     displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
   }
-  displayFilmRemaining(); //show the number of photos you have left to take
+
 
   //fade the flash from taking a photo
   if (glare > 0) {
@@ -163,6 +178,19 @@ function draw() {
   }
 
   drawSprites(); //draw sprites for window animations
+
+  if (snapshotBuffer) {
+    snapshotBuffer = false;
+    filmRemaining--; //reduce film left
+    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
+    glare = 50; //create the flashbulb effect
+  }
+
+  for (let i = 0; i < photo.length; i++) {
+    image(photo[i], 250 + (i * 200), 30, 160, 90);
+  }
+
+  displayFilmRemaining(); //show the number of photos you have left to take
 }
 
 
@@ -178,9 +206,7 @@ function keyPressed() {
   } else if (keyCode === 83 && focusY < 3) {
     focusY++;
   } else if (keyCode === 32 && filmRemaining > 0) {
-    filmRemaining--; //reduce film left
-    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
-    glare = 50; //create the flashbulb effect
+    snapshotBuffer = true;
   }
 }
 
@@ -197,9 +223,7 @@ function peripheralKeyPressed() {
   } else if (downButton > prevDownButton && focusY < 3) {
     focusY++;
   } else if (snapButton > prevSnapButton && filmRemaining > 0) {
-    filmRemaining--; //reduce film left
-    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
-    glare = 50; //create the flashbulb effect
+    snapshotBuffer = true;
   }
 }
 
@@ -311,16 +335,21 @@ function displayHouse() {
   rectMode(CENTER);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
+      //window frame
       fill(250, 250, 180);
       rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/10, houseHeight/5.25)
+
+      //window openings
       if (windowLights[i][j] == 0) {
-        fill(0, 0, 20);
+        fill(0, 0, 20); //dark
       } else {
-        fill(200, 200, 80);
+        fill(200, 200, 80); //light
       }
       rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+
+      //window sills
       fill(80, 80, 100);
-      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1] + height*0.06, houseWidth/9, houseHeight/32);
+      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1] + height*0.0685, houseWidth/9, houseHeight/32);
     }
   }
 }
