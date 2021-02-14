@@ -13,6 +13,9 @@ Description
 //varible for incoming serial port
 let serial;
 
+//variable to track if a peripheral is connected
+let peripheralConnected = 0;
+
 //variable for incoming serial data
 let data = 0;
 
@@ -126,6 +129,11 @@ function setup() {
   serial = new p5.SerialPort(); //create serial port object
 
   serial.open("/dev/tty.usbserial-DA00WTHG"); //open the appropriate serial port
+
+  //check to see if a peripheral "camera" was succesfully opened at the above serial port. If so, mark peripheralConnected as true.
+  serial.on('open', function () {
+    peripheralConnected = 1;
+  });
 
   createCanvas(windowWidth, windowHeight); //create the canvas
 
@@ -526,7 +534,7 @@ function displayGlare() {
 function checkZoom() {
   if (keyIsDown(SHIFT)) {
     return true; //if shift is pressed, zoom
-  } else if (serial.available() > 0 && !lightSensor) {
+  } else if (peripheralConnected && !lightSensor) {
     return true; //if the camera is sending data and the lightsensor is blocked, zoom
   } else {
     return false; //otherwise do nothing
