@@ -93,6 +93,9 @@ let photo = [];
 //a variable to track remaining film
 let filmRemaining = 24;
 
+//for storing the imported font
+let gameFont;
+
 
 
 ////////////////////////////////////////////////////
@@ -111,6 +114,9 @@ let testSprite;
 // Description of preload
 function preload() {
   testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
+
+  //load the Mystery Forest font by Xerographer fonts (https://www.1001freefonts.com/mystery-forest.font)
+  gameFont = loadFont('assets/fonts/mystery-forest/MysteryForest.ttf');
 }
 
 
@@ -164,10 +170,10 @@ function setup() {
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
       windowSprites[i][j] = createSprite(
-              houseXOffset + windowPositions[i][j][0],
-              houseYOffset + windowPositions[i][j][1],
-              archWindowWidth,
-              archWindowHeight);
+              houseXOffset + windowPositions[i][j][0],   //X coordinate
+              houseYOffset + windowPositions[i][j][1],   //Y coordinate
+              archWindowWidth,                           //width
+              archWindowHeight);                         //height
       windowSprites[i][j].visible = false;
     }
   }
@@ -472,9 +478,11 @@ function displayFocus() {
 // a function that draws the number of photos you have left to take
 function displayFilmRemaining() {
   push();
-  textSize(100);
+  textFont(gameFont);
+  textAlign(CENTER);
+  textSize(120);
   fill(255);
-  text(filmRemaining, 50, 100);
+  text(filmRemaining, 120, 100);
   pop();
 }
 
