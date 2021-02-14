@@ -186,63 +186,44 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
-  //pull the serial comms data
+
+  //pull the serial comms data and parse it appropriately. Send "key" commands if neccesary.
   if (serial.available() > 0) {
     data = serial.last();
   }
-
   storePreviousData(); //store last serial data states for signal edge detection
-
   parseData(); //breakdown serial data into usable variables
-
   peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
 
-  viewScale = 1; //default graphics to zoomed out view
 
+  //handling zooming effects and scaling on the back end
+  viewScale = 1; //default graphics to zoomed out view
   //zoom in when the SHIFT key is pressed
   if (checkZoom()) {
     zoomIn();
   }
-
   //update "origin" used for focus and zooming in
   originX = houseXOffset + windowPositions[focusY][focusX][0];
   originY = houseYOffset + windowPositions[focusY][focusX][1];
 
-  noStroke(); //set shapes to not have an outline by default
 
-  //draw the graphics
+  //draw the actual graphics
+  noStroke(); //set shapes to not have an outline by default
   displayBackground(); //draw the background
   displayHouse(); //draw the building
   displayFocus(); //show which window the camera is focused on
+  drawSprites(); //draw sprites for window animations
   if (checkZoom()) {
     displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
   }
+  displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
+  displayFilmRemaining(); //show the number of photos you have left to take
 
-
-  //fade the flash from taking a photo
-  if (glare > 0) {
-    glare--;
-    push();
-    fill(`rgba(255,255,255,${glare/50})`); //slowly fade the glare with alpha value
-    rect(width/2, height/2, width, height); //draw the white glare overlay the size of the screen and centered
-    pop();
-  }
-
-  drawSprites(); //draw sprites for window animations
-
-  if (snapshotBuffer) {
-    snapshotBuffer = false;
-    filmRemaining--; //reduce film left
-    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
-    glare = 50; //create the flashbulb effect
-  }
 
   //draws photos taken on screen
   /*for (let i = 0; i < photo.length; i++) {
     image(photo[i], 250 + (i * 200), 30, 160, 90);
   }*/
-
-  displayFilmRemaining(); //show the number of photos you have left to take
 }
 
 
@@ -293,8 +274,9 @@ function storePreviousData() {
 
 // parseData()
 // a function that translates incoming serial data to a format we need it in, uses modulo to break up the incoming byte
-// Incoming byte (0-0-0-0-0-0-0-0) digits formated as:
+// Metaphorically speaking, incoming byte (0-0-0-0-0-0-0-0) digits formated as:
 // null - null - snapButton - lightButton - downButton - leftButton - rightButton - upButton
+// but actual incoming number is a 0-to-255 situation, hence the base 2 division and modulo
 function parseData() {
   snapButton = Math.floor(data/32);
   lightSensor = Math.floor((data % 32)/16);
@@ -506,6 +488,28 @@ function displayCameraBarrel() {
   stroke(0);
   circle(originX, originY, width*0.2);
   pop();
+}
+
+
+// displayGlare()
+// a function that draws the glare and fades it when you take a pictues
+function displayGlare() {
+  //fade the flash from taking a photo
+  if (glare > 0) {
+    glare--;
+    push();
+    fill(`rgba(255,255,255,${glare/50})`); //slowly fade the glare with alpha value
+    rect(width/2, height/2, width, height); //draw the white glare overlay the size of the screen and centered
+    pop();
+  }
+
+  //if a photo has been taken, create a new flash effects
+  if (snapshotBuffer) {
+    snapshotBuffer = false;
+    filmRemaining--; //reduce film left
+    photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
+    glare = 50; //create the flashbulb effect
+  }
 }
 
 
