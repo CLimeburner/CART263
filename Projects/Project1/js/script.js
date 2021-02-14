@@ -32,16 +32,45 @@ let prevRightButton = 0;
 let prevLightSensor = 0;
 let prevSnapButton = 0;
 
-//arrays to track window information
-let windowPositions;
-let windowLights;
-let windowSprites = [[,,,,,],[,,,,,],[,,,,,],[,,,,,]];
+/* Arrays to track window information
+Arrays are fully spelled out but blank, in part to aid initialization, but also
+to sketch out their structure and kinds of data they will hold. Each represents
+the 6x4 grid of windows as they appear on the house in the game, with
+windowPositions holding coordinate pairs for each window. */
+let windowPositions = [
+  [ [ , ], [ , ], [ , ], [ , ], [ , ], [ , ] ],
+  [ [ , ], [ , ], [ , ], [ , ], [ , ], [ , ] ],
+  [ [ , ], [ , ], [ , ], [ , ], [ , ], [ , ] ],
+  [ [ , ], [ , ], [ , ], [ , ], [ , ], [ , ] ]
+];
+
+let windowLights = [
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ]
+];
+
+let windowSprites = [
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ]
+];
 
 //size of the building
 let houseWidth;
 let houseHeight;
 
-//grid coordinateds for the window the players are focused on
+//offset values that create a "new origin" at the upper-left corner of the house.
+let houseXOffset;
+let houseYOffset;
+
+//variables to size the windows
+let archWindowWidth;
+let archWindowHeight;
+
+//grid coordinates for the window the players are focused on
 let focusX;
 let focusY;
 
@@ -65,7 +94,17 @@ let photo = [];
 let filmRemaining = 24;
 
 
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+
 let testSprite;
+
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+
 
 
 // preload()
@@ -88,13 +127,21 @@ function setup() {
   houseWidth = width*0.6;
   houseHeight = height*0.7;
 
+  //set the house's offset and the operational origin for game mechanics using the front fo the house
+  houseXOffset = width*0.2;
+  houseYOffset = height*0.25;
+
+  //set the size of the windows
+  archWindowWidth = houseWidth/12;
+  archWindowHeight = houseHeight/6;
+
   //array to store all the window center points
-  windowPositions = [
-    [ [houseWidth*1/12, houseHeight*1/8], [houseWidth*3/12, houseHeight*1/8], [houseWidth*5/12, houseHeight*1/8], [houseWidth*7/12, houseHeight*1/8], [houseWidth*9/12, houseHeight*1/8], [houseWidth*11/12, houseHeight*1/8] ],
-    [ [houseWidth*1/12, houseHeight*3/8], [houseWidth*3/12, houseHeight*3/8], [houseWidth*5/12, houseHeight*3/8], [houseWidth*7/12, houseHeight*3/8], [houseWidth*9/12, houseHeight*3/8], [houseWidth*11/12, houseHeight*3/8] ],
-    [ [houseWidth*1/12, houseHeight*5/8], [houseWidth*3/12, houseHeight*5/8], [houseWidth*5/12, houseHeight*5/8], [houseWidth*7/12, houseHeight*5/8], [houseWidth*9/12, houseHeight*5/8], [houseWidth*11/12, houseHeight*5/8] ],
-    [ [houseWidth*1/12, houseHeight*7/8], [houseWidth*3/12, houseHeight*7/8], [houseWidth*5/12, houseHeight*7/8], [houseWidth*7/12, houseHeight*7/8], [houseWidth*9/12, houseHeight*7/8], [houseWidth*11/12, houseHeight*7/8] ]
-  ];
+  for (let i = 0; i < 4; i++) { //for each row
+    for (let j = 0; j < 6; j++) { //for each column
+      windowPositions[i][j][0] = houseWidth * ((1+(2*j))/12); //iterate X coordinates as ratio of houseWidth
+      windowPositions[i][j][1] = houseHeight * ((1+(2*i))/8); //iterate Y coordinates as ratio of houseHeight
+    }
+  }
 
   //array to track in which windows the lights are on
   windowLights = [
@@ -109,14 +156,18 @@ function setup() {
   focusY = 0;
 
   //pixel coordinates for the window the players are focused on
-  originX = width*0.2 + windowPositions[focusY][focusX][0];
-  originY = height*0.3 + windowPositions[focusY][focusX][1];
+  originX = houseXOffset + windowPositions[focusY][focusX][0];
+  originY = houseYOffset + windowPositions[focusY][focusX][1];
 
 
   //initialize all the window sprites
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
-      windowSprites[i][j] = createSprite(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+      windowSprites[i][j] = createSprite(
+              houseXOffset + windowPositions[i][j][0],
+              houseYOffset + windowPositions[i][j][1],
+              archWindowWidth,
+              archWindowHeight);
       windowSprites[i][j].visible = false;
     }
   }
@@ -124,7 +175,7 @@ function setup() {
   windowSprites[0][0].visible = true;
   //iterate over each animation frame and resize correctly
   for (let i = 0; i < testSprite.images.length; i++) {
-    testSprite.images[i].resize(houseWidth/12, houseHeight/6);
+    testSprite.images[i].resize(archWindowWidth, archWindowHeight);
   }
   windowSprites[0][0].addAnimation(`bubble`,testSprite);
   windowSprites[0][0].changeAnimation(`bubble`);
@@ -154,8 +205,8 @@ function draw() {
   }
 
   //update "origin" used for focus and zooming in
-  originX = width*0.2 + windowPositions[focusY][focusX][0];
-  originY = height*0.25 + windowPositions[focusY][focusX][1];
+  originX = houseXOffset + windowPositions[focusY][focusX][0];
+  originY = houseYOffset + windowPositions[focusY][focusX][1];
 
   noStroke(); //set shapes to not have an outline by default
 
@@ -172,8 +223,8 @@ function draw() {
   if (glare > 0) {
     glare--;
     push();
-    fill(`rgba(255,255,255,${glare/50})`);
-    rect(width/2,height/2,width,height);
+    fill(`rgba(255,255,255,${glare/50})`); //slowly fade the glare with alpha value
+    rect(width/2, height/2, width, height); //draw the white glare overlay the size of the screen and centered
     pop();
   }
 
@@ -186,9 +237,10 @@ function draw() {
     glare = 50; //create the flashbulb effect
   }
 
-  for (let i = 0; i < photo.length; i++) {
+  //draws photos taken on screen
+  /*for (let i = 0; i < photo.length; i++) {
     image(photo[i], 250 + (i * 200), 30, 160, 90);
-  }
+  }*/
 
   displayFilmRemaining(); //show the number of photos you have left to take
 }
@@ -197,15 +249,15 @@ function draw() {
 // keyPressed()
 // a function that listens for key presses and responds accordingly
 function keyPressed() {
-  if (keyCode === 65 && focusX > 0) {
+  if (keyCode === 65 && focusX > 0) { //A to move left
     focusX--;
-  } else if (keyCode === 68 && focusX < 5) {
+  } else if (keyCode === 68 && focusX < 5) { //D to move right
     focusX++;
-  } else if (keyCode === 87 && focusY > 0) {
+  } else if (keyCode === 87 && focusY > 0) { //W to move up
     focusY--;
-  } else if (keyCode === 83 && focusY < 3) {
+  } else if (keyCode === 83 && focusY < 3) { //S to move down
     focusY++;
-  } else if (keyCode === 32 && filmRemaining > 0) {
+  } else if (keyCode === 32 && filmRemaining > 0) { //spacebar to take a picture
     snapshotBuffer = true;
   }
 }
@@ -214,15 +266,15 @@ function keyPressed() {
 // peripheralKeyPressed()
 // a function that basically does the same as keyPressed but with the input from serial data
 function peripheralKeyPressed() {
-  if (upButton > prevUpButton && focusY > 0) {
+  if (upButton > prevUpButton && focusY > 0) { //up to move up
     focusY--;
-  } else if (rightButton > prevRightButton && focusX < 5) {
+  } else if (rightButton > prevRightButton && focusX < 5) { //right to move right
     focusX++;
-  } else if (leftButton > prevLeftButton && focusX > 0) {
+  } else if (leftButton > prevLeftButton && focusX > 0) { //left to move left
     focusX--;
-  } else if (downButton > prevDownButton && focusY < 3) {
+  } else if (downButton > prevDownButton && focusY < 3) { //down to move down
     focusY++;
-  } else if (snapButton > prevSnapButton && filmRemaining > 0) {
+  } else if (snapButton > prevSnapButton && filmRemaining > 0) { //snap to take a picture
     snapshotBuffer = true;
   }
 }
@@ -241,6 +293,8 @@ function storePreviousData() {
 
 // parseData()
 // a function that translates incoming serial data to a format we need it in, uses modulo to break up the incoming byte
+// Incoming byte (0-0-0-0-0-0-0-0) digits formated as:
+// null - null - snapButton - lightButton - downButton - leftButton - rightButton - upButton
 function parseData() {
   snapButton = Math.floor(data/32);
   lightSensor = Math.floor((data % 32)/16);
@@ -256,7 +310,9 @@ function parseData() {
 function zoomIn() {
   viewScale = 6;
   scale(viewScale);
-  translate(-originX + width/(2*viewScale), -originY + height/(2*viewScale));
+  translate(
+        -originX + width/(2*viewScale),
+        -originY + height/(2*viewScale));
 }
 
 
@@ -268,13 +324,24 @@ function displayBackground() {
   //moon
   for (let i = 0; i < 40; i++) {
     fill(`rgba(250,250,200,${(1-(i/40))/2})`);
-    circle(6*width/7, height/7, (i/25)*width/16); //draw the paraselene
+    circle( //draw the paraselene
+        6*width/7,          //X coordinate
+        height/7,           //Y coordinate
+        (i/25)*width/16);   //size
   }
   fill(250, 250, 200); //pale yellow moon
-  circle(6*width/7, height/7, width/16); //draw the moon itself
+  circle(  //draw the moon itself
+        6*width/7,          //X coordinate
+        height/7,           //Y coordinate
+        width/16);          //size
 
-  //back row
-  fill(0, 10, 0);
+  //////////////////// BEGINNING OF A BUNCH OF ARBIRARILY PLACED TREES ///////////////////////////////////
+
+  //Broadly speaking these trees are drawn in rows from left of screen to right.
+  //They were positioned to taste rather than through any pattern.
+
+  //back row of trees
+  fill(0, 10, 0); //very dark green
   triangle (width/20 - width/40, width/12, width/10 - width/40, height, 0 - width/40, height);
   triangle (width/20 + width/24, width/12, width/10 + width/24, height, 0 + width/24, height);
   triangle (width/20 + width/14, width/12, width/10 + width/14, height, 0 + width/14, height);
@@ -289,14 +356,14 @@ function displayBackground() {
   triangle (width/20 + width/1.1, width/12, width/10 + width/1.1, height, 0 + width/1.1, height);
   triangle (width/20 + width/1.075, width/12, width/10 + width/1.075, height, 0 + width/1.075, height);
 
-  //middle row
-  fill(0, 20, 0);
+  //middle row of trees
+  fill(0, 20, 0); //lighter green
   triangle (width/14, width/8, width/7, height, 0, height);
   triangle (width/14 + width/1.15, width/8, width/7 + width/1.15, height, 0 + width/1.15, height);
   triangle (width/14 + width/1.35, width/8, width/7 + width/1.35, height, 0 + width/1.35, height);
 
-  //front row
-  fill(0, 30, 0);
+  //front row of trees
+  fill(0, 30, 0); //lightest green
   triangle (width/14 - width/15, width/7, width/7 - width/15, height, 0 - width/15, height);
   triangle (width/14 - width/35, width/7, width/7 - width/35, height, 0 - width/35, height);
   triangle (width/14 + width/35, width/7, width/7 + width/35, height, 0 + width/35, height);
@@ -308,7 +375,9 @@ function displayBackground() {
   triangle (width/14 + width/1.18, width/7, width/7 + width/1.18, height, 0 + width/1.18, height);
   triangle (width/14 + width/1.12, width/7, width/7 + width/1.12, height, 0 + width/1.12, height);
 
-  //gradient from the ground up
+  //////////////////// END OF A BUNCH OF ARBIRARILY PLACED TREES ////////////////////////////////////////
+
+  //gradient from the ground up, just to set some ambience and mood
   for (let i = 0; i < 40; i++) {
     push();
     fill(`rgba(0,0,0,${1-(i/40)})`);
@@ -325,19 +394,31 @@ function displayHouse() {
   //draw the building
   fill(30, 0, 0);
   rectMode(CENTER);
-  rect(width/2, height*0.15 + height/2, houseWidth, houseHeight);
+  rect(
+      width/2,                  //X Coordinate
+      height*0.15 + height/2,   //Y Coordinate
+      houseWidth,               //width
+      houseHeight);             //height
 
   //draw the roof
   fill(60, 80, 60);
-  quad(width/2 - houseWidth/2, height/4.5, width/2 + houseWidth/2, height/4.5, width/2 + houseWidth/2 + width/48, height/4.5 + houseHeight/3.5, width/2 - houseWidth/2  - width/48, height/4.5 + houseHeight/3.5);
+  quad(  //draw the parallelogram that is the roof
+      width/2 - houseWidth/2, height/4.5,                                 //upper left corner X and Y coordinates
+      width/2 + houseWidth/2, height/4.5,                                 //upper right corner X and Y coordinates
+      width/2 + houseWidth/2 + width/48, height/4.5 + houseHeight/3.5,    //lower right corner X and Y coordinates
+      width/2 - houseWidth/2  - width/48, height/4.5 + houseHeight/3.5);  //lower left corner X and Y coordinates
 
   //draw the windows
   rectMode(CENTER);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
-      //window frame
+      //window frame slightly bigger than window opening
       fill(250, 250, 180);
-      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/10, houseHeight/5.25)
+      rect(
+          houseXOffset + windowPositions[i][j][0],  //X position
+          houseYOffset + windowPositions[i][j][1],  //Y position
+          houseWidth/10,                            //width
+          houseHeight/5.25);                        //height
 
       //window openings
       if (windowLights[i][j] == 0) {
@@ -345,11 +426,20 @@ function displayHouse() {
       } else {
         fill(200, 200, 80); //light
       }
-      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1], houseWidth/12, houseHeight/6);
+      rect(
+          houseXOffset + windowPositions[i][j][0],  //X position
+          houseYOffset + windowPositions[i][j][1],  //Y position
+          archWindowWidth,                          //width
+          archWindowHeight);                        //height
 
       //window sills
       fill(80, 80, 100);
-      rect(width*0.2 + windowPositions[i][j][0], height*0.25 + windowPositions[i][j][1] + height*0.0685, houseWidth/9, houseHeight/32);
+      let windowSillOffset = height*0.0685; //offset to bottom edge of window
+      rect(
+          houseXOffset + windowPositions[i][j][0],                      //X position
+          houseYOffset + windowPositions[i][j][1] + windowSillOffset,   //Y position
+          houseWidth/9,                                                 //width
+          houseHeight/32);                                              //height
     }
   }
 }
@@ -363,18 +453,34 @@ function displayFocus() {
   stroke(200);
   //top
   for (let i = 0; i < 20; i = i + 2) {
-    line(originX - houseWidth/12 + houseWidth*(i)/114, originY - houseHeight/8, originX - houseWidth/12 + houseWidth*(i+1)/114, originY - houseHeight/8);
+    line(
+        originX - houseWidth/12 + houseWidth*(i)/114,    //Point A X coordinate
+        originY - houseHeight/8,                         //Point A Y coordinate
+        originX - houseWidth/12 + houseWidth*(i+1)/114,  //Point B X coordinate
+        originY - houseHeight/8);                        //Point B Y coordinate
   }
   //left
   for (let i = 0; i < 20; i = i + 2) {
-    line(originX - houseWidth/12, originY - houseHeight/8 + houseHeight*(i)/76, originX - houseWidth/12, originY - houseHeight/8 + houseHeight*(i+1)/76);
+    line(
+        originX - houseWidth/12,                         //Point A X coordinate
+        originY - houseHeight/8 + houseHeight*(i)/76,    //Point A Y coordinate
+        originX - houseWidth/12,                         //Point B X coordinate
+        originY - houseHeight/8 + houseHeight*(i+1)/76); //Point B Y coordinate
   }
   for (let i = 0; i < 20; i = i + 2) {
-    line(originX + houseWidth/12, originY - houseHeight/8 + houseHeight*(i)/76, originX + houseWidth/12, originY - houseHeight/8 + houseHeight*(i+1)/76);
+    line(
+        originX + houseWidth/12,                         //Point A X coordinate
+        originY - houseHeight/8 + houseHeight*(i)/76,    //Point A Y coordinate
+        originX + houseWidth/12,                         //Point B X coordinate
+        originY - houseHeight/8 + houseHeight*(i+1)/76); //Point B Y coordinate
   }
   //bottom
   for (let i = 0; i < 20; i = i + 2) {
-    line(originX - houseWidth/12 + houseWidth*(i)/114, originY + houseHeight/8, originX - houseWidth/12 + houseWidth*(i+1)/114, originY + houseHeight/8);
+    line(
+        originX - houseWidth/12 + houseWidth*(i)/114,    //Point A X coordinate
+        originY + houseHeight/8,                         //Point A Y coordinate
+        originX - houseWidth/12 + houseWidth*(i+1)/114,  //Point B X coordinate
+        originY + houseHeight/8);                        //Point B Y coordinate
   }
   pop();
 }
