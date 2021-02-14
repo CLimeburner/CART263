@@ -99,6 +99,10 @@ let filmRemaining = 24;
 //for storing the imported font
 let gameFont;
 
+//variable to store our sound effects
+let flashbulb;
+let gunshot;
+
 
 
 ////////////////////////////////////////////////////
@@ -120,6 +124,11 @@ function preload() {
 
   //load the Mystery Forest font by Xerographer fonts (https://www.1001freefonts.com/mystery-forest.font)
   gameFont = loadFont('assets/fonts/mystery-forest/MysteryForest.ttf');
+
+  //load our sound fx
+  soundFormats('mp3');
+  gunshot = loadSound('assets/sounds/gunshot.mp3'); //a single shot in the distance. Source: BBC, (raw audio: https://sound-effects.bbcrewind.co.uk/search?q=07010122)
+  flashbulb = loadSound('assets/sounds/flashbulb.mp3'); //vintage flashbulb sound. Source: Instant Media Musics (https://www.youtube.com/watch?v=YDdYUN83aYc&ab_channel=InstantMediaMusics)
 }
 
 
@@ -189,10 +198,19 @@ function setup() {
   windowSprites[0][0].visible = true;
   //iterate over each animation frame and resize correctly
   for (let i = 0; i < testSprite.images.length; i++) {
-    testSprite.images[i].resize(archWindowWidth, archWindowHeight);
+    testSprite.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
   }
+
+
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   windowSprites[0][0].addAnimation(`bubble`,testSprite);
   windowSprites[0][0].changeAnimation(`bubble`);
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+
 
 }
 
@@ -525,6 +543,7 @@ function displayGlare() {
     filmRemaining--; //reduce film left
     photo.push(get(0, 0, width, height)); //save the snapshot to the photo array
     glare = 50; //create the flashbulb effect
+    flashbulb.play(); //flash sound effect
   }
 }
 
