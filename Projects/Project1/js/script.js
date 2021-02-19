@@ -1,5 +1,8 @@
 "use strict";
-
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 /*****************
 
 Rear Window
@@ -8,7 +11,18 @@ Chip Limeburner
 Description
 
 ******************/
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/******************
 
+FUNCTIONS FOUND IN THIS DOCUMENT:
+
+
+******************/
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 //varible for incoming serial port
 let serial;
@@ -48,6 +62,13 @@ let windowPositions = [
 ];
 
 let windowLights = [
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ],
+  [ , , , , , ]
+];
+
+let furnitureSprites = [
   [ , , , , , ],
   [ , , , , , ],
   [ , , , , , ],
@@ -103,11 +124,17 @@ let gameFont;
 let flashbulb;
 let gunshot;
 
-
-//variables for images
+//variable for film roll UI graphic
 let filmRoll;
 
-
+//variables for furniture silhouette sprites
+let staircase;
+let nightstand;
+let diningtable;
+let kitchen;
+let chair;
+let lamp;
+let parlor;
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -124,10 +151,8 @@ let testSprite;
 // preload()
 // Description of preload
 function preload() {
-  testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
-
-  filmRoll = loadImage(`assets/images/film_roll.png`); //load the film roll image
-
+  //load the images for sprites
+  loadGraphics();
 
   //load the Mystery Forest font by Xerographer fonts (https://www.1001freefonts.com/mystery-forest.font)
   gameFont = loadFont('assets/fonts/mystery-forest/MysteryForest.ttf');
@@ -142,15 +167,10 @@ function preload() {
 // setup()
 // Description of setup
 function setup() {
+  //serial connection from camera peripheral setup
   serial = new p5.SerialPort(); //create serial port object
-
   serial.open("/dev/tty.usbserial-DA00WTHG"); //open the appropriate serial port
-
-  //check to see if a peripheral "camera" was succesfully opened at the above serial port.
-  //If so, mark peripheralConnected as true.
-  //This is important because of the binary logic the analog light sensor uses and the way it's parsed later in the program.
-  //Basically if I don't do this, a total absence of sensor reads the same as a covered sensor so it's always zoomed in.
-  serial.on('open', function () {
+  serial.on('open', function () { //check to see if a peripheral "camera" was succesfully opened at the above serial port. If so, mark peripheralConnected as true.
     peripheralConnected = 1;
   });
 
@@ -159,15 +179,12 @@ function setup() {
   //set the size of the building
   houseWidth = width*0.6;
   houseHeight = height*0.7;
-
   //set the house's offset and the operational origin for game mechanics using the front of the house
   houseXOffset = width*0.2;
   houseYOffset = height*0.25;
-
   //set the size of the windows
   archWindowWidth = houseWidth/12;
   archWindowHeight = houseHeight/6;
-
   //array to store all the window center points
   for (let i = 0; i < 4; i++) { //for each row
     for (let j = 0; j < 6; j++) { //for each column
@@ -178,50 +195,23 @@ function setup() {
 
   //array to track in which windows the lights are on
   windowLights = [
-    [0, 0, 0, 0, 1, 0],
-    [0, 0, 1, 0, 0, 0],
-    [0, 0, 1, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0],
+    [1, 1, 1, 1, 0, 0],
     [1, 1, 1, 1, 1, 1]
   ];
 
   //grid coordinateds for the window the players are focused on
   focusX = 0;
   focusY = 0;
-
   //pixel coordinates for the window the players are focused on
   originX = houseXOffset + windowPositions[focusY][focusX][0];
   originY = houseYOffset + windowPositions[focusY][focusX][1];
 
-
-  //initialize all the window sprites
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 6; j++) {
-      windowSprites[i][j] = createSprite(
-              houseXOffset + windowPositions[i][j][0],   //X coordinate
-              houseYOffset + windowPositions[i][j][1],   //Y coordinate
-              archWindowWidth,                           //width
-              archWindowHeight);                         //height
-      windowSprites[i][j].visible = false;
-    }
-  }
-
-  windowSprites[0][0].visible = true;
-  //iterate over each animation frame and resize correctly
-  for (let i = 0; i < testSprite.images.length; i++) {
-    testSprite.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////
-  windowSprites[0][0].addAnimation(`bubble`,testSprite);
-  windowSprites[0][0].changeAnimation(`bubble`);
-  ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////
-
-
+  //graphics setup
+  resizeGraphics(); //make sure all our images are the same size as the windows they appear in
+  initializeSprites(); //create all our empty sprites
+  assignGraphics(); //assign images to sprites
 }
 
 
@@ -260,12 +250,112 @@ function draw() {
   }
   displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
   displayFilmRemaining(); //show the number of photos you have left to take
+}
 
 
-  //draws photos taken on screen
-  /*for (let i = 0; i < photo.length; i++) {
-    image(photo[i], 250 + (i * 200), 30, 160, 90);
-  }*/
+// loadGraphics()
+// a function that holds all our loadImage and loadAnimation calls
+function loadGraphics() {
+  //GUI images
+  filmRoll = loadImage(`assets/images/film_roll.png`); //load the film roll image
+
+  //funriture images
+  staircase = loadImage(`assets/images/staircase.png`); //load the staircase silhouette image
+  nightstand = loadImage(`assets/images/nightstand.png`); //load the bed & nightstand silhouette image
+  diningtable = loadImage(`assets/images/diningtable.png`); //load the dining table silhouette image
+  chair = loadImage(`assets/images/chair.png`); //load the chair silhouette image
+  lamp = loadImage(`assets/images/lamp.png`); //load the lamp silhouette image
+  parlor = loadImage(`assets/images/chairlamp.png`); //load the chair & lamp silhouette image
+  kitchen = loadImage(`assets/images/kitchen.png`); //load the kitchen silhouette image
+
+  //animations
+  testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
+}
+
+
+// resizeGraphics()
+// a function that makes all our images the same size as our windows
+function resizeGraphics() {
+  //iterate over each animation frame and resize correctly
+  for (let i = 0; i < testSprite.images.length; i++) {
+    testSprite.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
+  }
+  staircase.resize(archWindowWidth, archWindowHeight);
+  nightstand.resize(archWindowWidth, archWindowHeight);
+  diningtable.resize(archWindowWidth, archWindowHeight);
+  chair.resize(archWindowWidth, archWindowHeight);
+  lamp.resize(archWindowWidth, archWindowHeight);
+  parlor.resize(archWindowWidth, archWindowHeight);
+  kitchen.resize(archWindowWidth, archWindowHeight);
+}
+
+
+// initializeSprites()
+// a function that procedural creates all our background and animation sprites
+function initializeSprites() {
+  //initialize all the furniture silhouette sprites
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 6; j++) {
+      furnitureSprites[i][j] = createSprite(
+              houseXOffset + windowPositions[i][j][0],   //X coordinate
+              houseYOffset + windowPositions[i][j][1],   //Y coordinate
+              archWindowWidth,                           //width
+              archWindowHeight);                         //height
+      furnitureSprites[i][j].visible = true;
+    }
+  }
+  //making certain sprites invisible because they don't actually have any content for this house layout
+  for (let i = 0; i < 6; i++) {
+    furnitureSprites[0][i].visible = false;
+  }
+  furnitureSprites[1][3].visible = false;
+  furnitureSprites[2][3].visible = false;
+
+  //initialize all the window sprites (these are the animation that move around on top of the furniture)
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 6; j++) {
+      windowSprites[i][j] = createSprite(
+              houseXOffset + windowPositions[i][j][0],   //X coordinate
+              houseYOffset + windowPositions[i][j][1],   //Y coordinate
+              archWindowWidth,                           //width
+              archWindowHeight);                         //height
+      windowSprites[i][j].visible = false;
+    }
+  }
+}
+
+
+// assignGraphics()
+// a function that connects images to the appropriate sprites
+function assignGraphics() {
+  //update the staircase silhouettes
+  for (let i = 1; i < 4; i++) {
+    furnitureSprites[i][2].addImage(`stairs`,staircase);
+  }
+  furnitureSprites[2][2].mirrorX(-1);
+  //update the bedroom silhouettes
+  for (let i = 0; i < 6; i = i+5) {
+    for (let j = 1; j < 3; j++) {
+      furnitureSprites[j][i].addImage(`nightstand`,nightstand);
+      if (i > 3) {
+        furnitureSprites[j][i].mirrorX(-1);
+      }
+    }
+  }
+  furnitureSprites[1][1].addImage(`chair`,chair);
+  furnitureSprites[2][1].addImage(`lamp`,lamp);
+  furnitureSprites[1][4].addImage(`lamp`,lamp);
+  furnitureSprites[2][4].addImage(`chair`,chair);
+  //update the dining room silhouettes
+  furnitureSprites[3][3].addImage(`table`,diningtable);
+  furnitureSprites[3][4].addImage(`table`,diningtable);
+  furnitureSprites[3][3].mirrorX(-1);
+  //update the parlor silhouettes
+  furnitureSprites[3][0].addImage(`parlor`,parlor);
+  furnitureSprites[3][1].addImage(`chair`,chair);
+  furnitureSprites[3][1].mirrorX(-1);
+  //update the kitchen silhouettes
+  furnitureSprites[3][5].addImage(`kitchen`,kitchen);
 }
 
 
@@ -454,9 +544,9 @@ function displayHouse() {
 
       //window openings
       if (windowLights[i][j] == 0) {
-        fill(0, 0, 20); //dark
+        fill(0, 0, 30); //dark
       } else {
-        fill(200, 200, 80); //light
+        fill(200, 200, 100); //light
       }
       rect(
           houseXOffset + windowPositions[i][j][0],  //X position
