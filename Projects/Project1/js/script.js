@@ -104,6 +104,10 @@ let flashbulb;
 let gunshot;
 
 
+//variables for images
+let filmRoll;
+
+
 
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -122,6 +126,9 @@ let testSprite;
 function preload() {
   testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
 
+  filmRoll = loadImage(`assets/images/film_roll.png`); //load the film roll image
+
+
   //load the Mystery Forest font by Xerographer fonts (https://www.1001freefonts.com/mystery-forest.font)
   gameFont = loadFont('assets/fonts/mystery-forest/MysteryForest.ttf');
 
@@ -139,7 +146,10 @@ function setup() {
 
   serial.open("/dev/tty.usbserial-DA00WTHG"); //open the appropriate serial port
 
-  //check to see if a peripheral "camera" was succesfully opened at the above serial port. If so, mark peripheralConnected as true.
+  //check to see if a peripheral "camera" was succesfully opened at the above serial port.
+  //If so, mark peripheralConnected as true.
+  //This is important because of the binary logic the analog light sensor uses and the way it's parsed later in the program.
+  //Basically if I don't do this, a total absence of sensor reads the same as a covered sensor so it's always zoomed in.
   serial.on('open', function () {
     peripheralConnected = 1;
   });
@@ -150,7 +160,7 @@ function setup() {
   houseWidth = width*0.6;
   houseHeight = height*0.7;
 
-  //set the house's offset and the operational origin for game mechanics using the front fo the house
+  //set the house's offset and the operational origin for game mechanics using the front of the house
   houseXOffset = width*0.2;
   houseYOffset = height*0.25;
 
@@ -349,10 +359,15 @@ function displayBackground() {
         height/7,           //Y coordinate
         width/16);          //size
 
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////// BEGINNING OF A BUNCH OF ARBIRARILY PLACED TREES ///////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //Broadly speaking these trees are drawn in rows from left of screen to right.
   //They were positioned to taste rather than through any pattern.
+  //I know this looks like garbage but I honestly think this is better than breaking their parameters up line-by-line.
+  //Just, uh, y'know, don't miss the forest for the trees...
 
   //back row of trees
   fill(0, 10, 0); //very dark green
@@ -389,7 +404,10 @@ function displayBackground() {
   triangle (width/14 + width/1.18, width/7, width/7 + width/1.18, height, 0 + width/1.18, height);
   triangle (width/14 + width/1.12, width/7, width/7 + width/1.12, height, 0 + width/1.12, height);
 
-  //////////////////// END OF A BUNCH OF ARBIRARILY PLACED TREES ////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////// END OF A BUNCH OF ARBIRARILY PLACED TREES /////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   //gradient from the ground up, just to set some ambience and mood
   for (let i = 0; i < 40; i++) {
@@ -503,12 +521,13 @@ function displayFocus() {
 // displayFilmRemaining()
 // a function that draws the number of photos you have left to take
 function displayFilmRemaining() {
+  image(filmRoll, 0, 0, width/6, height/5.5); //display the film roll image as a background for the number
   push();
   textFont(gameFont);
   textAlign(CENTER);
-  textSize(120);
+  textSize(width/10);
   fill(255);
-  text(filmRemaining, 120, 100);
+  text(filmRemaining, width/12, height/7); //display film remaining in the upper left corner
   pop();
 }
 
