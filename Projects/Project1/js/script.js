@@ -75,13 +75,6 @@ let furnitureSprites = [
   [ , , , , , ]
 ];
 
-let windowSprites = [
-  [ , , , , , ],
-  [ , , , , , ],
-  [ , , , , , ],
-  [ , , , , , ]
-];
-
 //size of the building
 let houseWidth;
 let houseHeight;
@@ -244,7 +237,6 @@ function draw() {
   displayBackground(); //draw the background
   displayHouse(); //draw the building
   displayFocus(); //show which window the camera is focused on
-  drawSprites(); //draw sprites for window animations
   if (checkZoom()) {
     displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
   }
@@ -310,18 +302,6 @@ function initializeSprites() {
   }
   furnitureSprites[1][3].visible = false;
   furnitureSprites[2][3].visible = false;
-
-  //initialize all the window sprites (these are the animation that move around on top of the furniture)
-  for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 6; j++) {
-      windowSprites[i][j] = createSprite(
-              houseXOffset + windowPositions[i][j][0],   //X coordinate
-              houseYOffset + windowPositions[i][j][1],   //Y coordinate
-              archWindowWidth,                           //width
-              archWindowHeight);                         //height
-      windowSprites[i][j].visible = false;
-    }
-  }
 }
 
 
@@ -356,6 +336,11 @@ function assignGraphics() {
   furnitureSprites[3][1].mirrorX(-1);
   //update the kitchen silhouettes
   furnitureSprites[3][5].addImage(`kitchen`,kitchen);
+
+
+  //testSprite.frameDelay = 6;
+  //windowSprites[0][0].addAnimation(`corn`,testSprite);
+  //windowSprites[0][0].changeAnimation(`corn`);
 }
 
 
@@ -522,26 +507,10 @@ function displayHouse() {
       houseWidth,               //width
       houseHeight);             //height
 
-  //draw the roof
-  fill(60, 80, 60);
-  quad(  //draw the parallelogram that is the roof
-      width/2 - houseWidth/2, height/4.5,                                 //upper left corner X and Y coordinates
-      width/2 + houseWidth/2, height/4.5,                                 //upper right corner X and Y coordinates
-      width/2 + houseWidth/2 + width/48, height/4.5 + houseHeight/3.5,    //lower right corner X and Y coordinates
-      width/2 - houseWidth/2  - width/48, height/4.5 + houseHeight/3.5);  //lower left corner X and Y coordinates
-
   //draw the windows
   rectMode(CENTER);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 6; j++) {
-      //window frame slightly bigger than window opening
-      fill(250, 250, 180);
-      rect(
-          houseXOffset + windowPositions[i][j][0],  //X position
-          houseYOffset + windowPositions[i][j][1],  //Y position
-          houseWidth/10,                            //width
-          houseHeight/5.25);                        //height
-
       //window openings
       if (windowLights[i][j] == 0) {
         fill(0, 0, 30); //dark
@@ -553,6 +522,90 @@ function displayHouse() {
           houseYOffset + windowPositions[i][j][1],  //Y position
           archWindowWidth,                          //width
           archWindowHeight);                        //height
+    }
+  }
+
+  drawSprites(); //draw sprites
+
+  //drawing the house facade grid that masks the space between windows
+  fill(30, 0, 0);
+  //vertical bars
+  for (let i = 0; i < 5; i++) {
+    rect(
+        houseXOffset + windowPositions[3][0][0]*2*(i+1),     //X position
+        houseYOffset + houseHeight /1.5,                     //Y position
+        archWindowWidth,                                     //width
+        houseHeight);                                        //height
+  }
+  for (let i = 0; i < 2; i++) {
+    rect(
+        houseXOffset + houseWidth/48 + i*(houseWidth*46/48), //X position
+        houseYOffset + houseHeight /1.5,                     //Y position
+        archWindowWidth/2,                                   //width
+        houseHeight);                                        //height
+  }
+  //horizontal bars
+  for (let i = 0; i < 3; i++) {
+    rect(
+        houseXOffset + houseWidth/2,                          //X position
+        houseYOffset + houseHeight/3.75 + (i)*houseHeight/4,  //Y position
+        houseWidth,                                           //width
+        houseHeight/18);                                      //height
+  }
+
+  //draw the roof
+  fill(60, 80, 60);
+  quad(  //draw the parallelogram that is the roof
+      width/2 - houseWidth/2, height/4.5,                                 //upper left corner X and Y coordinates
+      width/2 + houseWidth/2, height/4.5,                                 //upper right corner X and Y coordinates
+      width/2 + houseWidth/2 + width/48, height/4.5 + houseHeight/3.5,    //lower right corner X and Y coordinates
+      width/2 - houseWidth/2  - width/48, height/4.5 + houseHeight/3.5);  //lower left corner X and Y coordinates
+
+  //draw the false roof windows
+  for (let j = 0; j < 6; j++) {
+    //window frame slightly bigger than window opening
+    fill(250, 250, 180);
+    rect(
+        houseXOffset + windowPositions[0][j][0],  //X position
+        houseYOffset + windowPositions[0][j][1],  //Y position
+        houseWidth/10,                            //width
+        houseHeight/5.25);                        //height
+
+    //window openings
+    if (windowLights[0][j] == 0) {
+      fill(0, 0, 30); //dark
+    } else {
+      fill(200, 200, 100); //light
+    }
+      rect(
+        houseXOffset + windowPositions[0][j][0],  //X position
+        houseYOffset + windowPositions[0][j][1],  //Y position
+        archWindowWidth,                          //width
+        archWindowHeight);                        //height
+  }
+
+  for (let i = 1; i < 4; i++) {
+    for (let j = 0; j < 6; j++) {
+      //window frame slightly bigger than window opening
+      fill(250, 250, 180);
+      //left
+      rect(
+          houseXOffset + windowPositions[i][j][0] - archWindowWidth/1.85,  //X position
+          houseYOffset + windowPositions[i][j][1],                         //Y position
+          (houseWidth/10-archWindowWidth)/2,                               //width
+          houseHeight/5.25);                                               //height
+      //right
+      rect(
+          houseXOffset + windowPositions[i][j][0] + archWindowWidth/1.85,  //X position
+          houseYOffset + windowPositions[i][j][1],                         //Y position
+          (houseWidth/10-archWindowWidth)/2,                               //width
+          houseHeight/5.25);                                               //height
+      //top
+      rect(
+          houseXOffset + windowPositions[i][j][0],                         //X position
+          houseYOffset + windowPositions[i][j][1] - archWindowHeight/1.9,  //Y position
+          houseWidth/10.5,                                                 //width
+          (houseHeight/5.25-archWindowHeight)/1.6);                        //height
 
       //window sills
       fill(80, 80, 100);
