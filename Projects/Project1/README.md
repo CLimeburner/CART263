@@ -1,6 +1,6 @@
-#Stakeout
+# Stakeout
 
-##Chip Limeburner
+## Chip Limeburner
 
 **Artist's Statement**
 
