@@ -24,6 +24,9 @@ FUNCTIONS FOUND IN THIS DOCUMENT:
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+//variable to track game state (1 = start screen, 2 = game, 3 = darkroom)
+let gameState = 1;
+
 //varible for incoming serial port
 let serial;
 
@@ -117,6 +120,10 @@ let gameFont;
 let flashbulb;
 let gunshot;
 
+//variable to hold the start screen graphic
+let blurredShot;
+let instructions;
+
 //variable for film roll UI graphic
 let filmRoll;
 
@@ -133,13 +140,17 @@ let doorOpened;
 let doorClosing;
 let doorOpening;
 
-
-
-
+//variables to track frames and time to choreograph the "show"
+let minutes = 0;
+let seconds = 0;
+let frames = 0;
 
 // preload()
 // Description of preload
 function preload() {
+  blurredShot = loadImage(`assets/images/blurredshot.png`);
+  instructions = loadImage(`assets/images/controls.png`);
+
   //load the images for sprites
   loadGraphics();
 
@@ -185,8 +196,8 @@ function setup() {
   //array to track in which windows the lights are on
   windowLights = [
     [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 0],
-    [1, 1, 1, 1, 1, 0],
+    [0, 0, 1, 1, 0, 0],
+    [1, 1, 1, 1, 0, 0],
     [1, 1, 1, 1, 1, 1]
   ];
 
@@ -207,37 +218,92 @@ function setup() {
 // draw()
 // Description of draw()
 function draw() {
+  if (gameState == 1) { //start screen
+    ///////////////////////////////////////////////////////////////////////////
+    ////////////////////////////// START SCREEN ///////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-  //pull the serial comms data and parse it appropriately. Send "key" commands if neccesary.
-  if (serial.available() > 0) {
-    data = serial.last();
+    push();
+    background(0); //set background to black
+    //blurry background graphic
+    imageMode(CENTER);
+    tint(255,100);
+    image(blurredShot, width/2, height/2, height*1.15, height);
+
+    //start screen text and controls
+    fill(255,255,255);
+    textSize(230);
+    textFont(`Courier`);
+    textAlign(CENTER);
+    text(`STAKEOUT`, width/2, height/3.25);
+    tint(255,255);
+    image(instructions, width/2, height/1.75, width/2, height/2);
+    textSize(55);
+    text(`Press 'spacebar' to start`, width/2, 2.75*height/3.25);
+    pop();
+
+  } else if (gameState == 2) {
+    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// MAIN GAME ////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+    //update timer
+    frames++;
+    if (frames == 60) {
+      frames = 0;
+      seconds++;
+    }
+    if (seconds == 60) {
+      seconds = 0;
+      minutes++;
+    }
+
+    //pull the serial comms data and parse it appropriately. Send "key" commands if neccesary.
+    if (serial.available() > 0) {
+      data = serial.last();
+    }
+    storePreviousData(); //store last serial data states for signal edge detection
+    parseData(); //breakdown serial data into usable variables
+    peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
+
+
+    //handling zooming effects and scaling on the back end
+    viewScale = 1; //default graphics to zoomed out view
+    //zoom in when the SHIFT key is pressed
+    if (checkZoom()) {
+      zoomIn();
+    }
+    //update "origin" used for focus and zooming in
+    originX = houseXOffset + windowPositions[focusY][focusX][0];
+    originY = houseYOffset + windowPositions[focusY][focusX][1];
+
+
+    //draw the actual graphics
+    noStroke(); //set shapes to not have an outline by default
+    displayBackground(); //draw the background
+    displayHouse(); //draw the building
+    displayFocus(); //show which window the camera is focused on
+    if (checkZoom()) {
+      displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
+    }
+    displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
+    displayFilmRemaining(); //show the number of photos you have left to take
+
+    //draw timer so I can see what I'm doing
+    push();
+    fill(255,255,255);
+    textSize(32);
+    text(minutes + `:` + seconds + `:` + frames, 40, 300);
+    pop();
+  } else if (gameState == 3) {
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////// DARKROOM ////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+
+
+
   }
-  storePreviousData(); //store last serial data states for signal edge detection
-  parseData(); //breakdown serial data into usable variables
-  peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
-
-
-  //handling zooming effects and scaling on the back end
-  viewScale = 1; //default graphics to zoomed out view
-  //zoom in when the SHIFT key is pressed
-  if (checkZoom()) {
-    zoomIn();
-  }
-  //update "origin" used for focus and zooming in
-  originX = houseXOffset + windowPositions[focusY][focusX][0];
-  originY = houseYOffset + windowPositions[focusY][focusX][1];
-
-
-  //draw the actual graphics
-  noStroke(); //set shapes to not have an outline by default
-  displayBackground(); //draw the background
-  displayHouse(); //draw the building
-  displayFocus(); //show which window the camera is focused on
-  if (checkZoom()) {
-    displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
-  }
-  displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
-  displayFilmRemaining(); //show the number of photos you have left to take
 }
 
 
@@ -371,7 +437,10 @@ function assignGraphics() {
 // keyPressed()
 // a function that listens for key presses and responds accordingly
 function keyPressed() {
-  if (keyCode === 65 && focusX > 0) { //A to move left
+  if (keyCode === 32 && gameState === 1) { //if you're on the start screen, press space to start
+    gameState++;
+    return;
+  } else if (keyCode === 65 && focusX > 0) { //A to move left
     focusX--;
   } else if (keyCode === 68 && focusX < 5) { //D to move right
     focusX++;
@@ -400,6 +469,7 @@ function peripheralKeyPressed() {
     snapshotBuffer = true;
   }
 }
+
 
 // storePreviousData
 // a function to store last states for signal edge detection
