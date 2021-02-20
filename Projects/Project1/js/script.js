@@ -128,16 +128,12 @@ let kitchen;
 let chair;
 let lamp;
 let parlor;
+let doorClosed;
+let doorOpened;
+let doorClosing;
+let doorOpening;
 
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
 
-let testSprite;
-
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
 
 
 
@@ -189,8 +185,8 @@ function setup() {
   //array to track in which windows the lights are on
   windowLights = [
     [0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 0, 0],
-    [1, 1, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 0],
     [1, 1, 1, 1, 1, 1]
   ];
 
@@ -260,8 +256,27 @@ function loadGraphics() {
   parlor = loadImage(`assets/images/chairlamp.png`); //load the chair & lamp silhouette image
   kitchen = loadImage(`assets/images/kitchen.png`); //load the kitchen silhouette image
 
-  //animations
-  testSprite = loadAnimation(`assets/images/bubbly0001.png`,`assets/images/bubbly0004.png`);
+  //door states
+  doorClosed = loadImage(`assets/images/door_0001.png`);
+  doorOpened = loadImage(`assets/images/door_0008.png`);
+  doorClosing = loadAnimation(
+      `assets/images/door_0008.png`,
+      `assets/images/door_0007.png`,
+      `assets/images/door_0006.png`,
+      `assets/images/door_0005.png`,
+      `assets/images/door_0004.png`,
+      `assets/images/door_0003.png`,
+      `assets/images/door_0002.png`,
+      `assets/images/door_0001.png`);
+  doorOpening = loadAnimation(
+      `assets/images/door_0001.png`,
+      `assets/images/door_0002.png`,
+      `assets/images/door_0003.png`,
+      `assets/images/door_0004.png`,
+      `assets/images/door_0005.png`,
+      `assets/images/door_0006.png`,
+      `assets/images/door_0007.png`,
+      `assets/images/door_0008.png`);
 }
 
 
@@ -269,9 +284,6 @@ function loadGraphics() {
 // a function that makes all our images the same size as our windows
 function resizeGraphics() {
   //iterate over each animation frame and resize correctly
-  for (let i = 0; i < testSprite.images.length; i++) {
-    testSprite.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
-  }
   staircase.resize(archWindowWidth, archWindowHeight);
   nightstand.resize(archWindowWidth, archWindowHeight);
   diningtable.resize(archWindowWidth, archWindowHeight);
@@ -279,6 +291,14 @@ function resizeGraphics() {
   lamp.resize(archWindowWidth, archWindowHeight);
   parlor.resize(archWindowWidth, archWindowHeight);
   kitchen.resize(archWindowWidth, archWindowHeight);
+  for (let i = 0; i < doorClosing.images.length; i++) {
+    doorClosing.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
+  }
+  for (let i = 0; i < doorOpening.images.length; i++) {
+    doorOpening.images[i].resize(archWindowWidth, archWindowHeight); //makes sprites fit in the windows
+  }
+  doorClosed.resize(archWindowWidth, archWindowHeight);
+  doorOpened.resize(archWindowWidth, archWindowHeight);
 }
 
 
@@ -322,10 +342,6 @@ function assignGraphics() {
       }
     }
   }
-  furnitureSprites[1][1].addImage(`chair`,chair);
-  furnitureSprites[2][1].addImage(`lamp`,lamp);
-  furnitureSprites[1][4].addImage(`lamp`,lamp);
-  furnitureSprites[2][4].addImage(`chair`,chair);
   //update the dining room silhouettes
   furnitureSprites[3][3].addImage(`table`,diningtable);
   furnitureSprites[3][4].addImage(`table`,diningtable);
@@ -336,11 +352,19 @@ function assignGraphics() {
   furnitureSprites[3][1].mirrorX(-1);
   //update the kitchen silhouettes
   furnitureSprites[3][5].addImage(`kitchen`,kitchen);
-
-
-  //testSprite.frameDelay = 6;
-  //windowSprites[0][0].addAnimation(`corn`,testSprite);
-  //windowSprites[0][0].changeAnimation(`corn`);
+  //update the bedroom doors
+  for (let i = 1; i < 3; i++) {
+    for (let j = 1; j < 5; j += 3) {
+      furnitureSprites[i][j].addImage(`closed`,doorClosed);
+      furnitureSprites[i][j].addImage(`open`,doorOpened);
+      furnitureSprites[i][j].addAnimation(`closing`,doorClosing);
+      furnitureSprites[i][j].addAnimation(`opening`,doorOpening);
+      furnitureSprites[i][j].changeAnimation(`closed`);
+      if (j == 4) {
+        furnitureSprites[i][j].mirrorX(-1);
+      }
+    }
+  }
 }
 
 
