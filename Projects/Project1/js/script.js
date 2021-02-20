@@ -145,6 +145,23 @@ let minutes = 0;
 let seconds = 0;
 let frames = 0;
 
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+
+let profPuce;
+
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+
+
+
 // preload()
 // Description of preload
 function preload() {
@@ -195,9 +212,9 @@ function setup() {
 
   //array to track in which windows the lights are on
   windowLights = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 0, 0],
-    [1, 1, 1, 1, 0, 0],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1, 1]
   ];
 
@@ -212,6 +229,14 @@ function setup() {
   resizeGraphics(); //make sure all our images are the same size as the windows they appear in
   initializeSprites(); //create all our empty sprites
   assignGraphics(); //assign images to sprites
+
+
+
+
+
+
+
+  profPuce = new Character(windowPositions[2][1][0]+houseXOffset, windowPositions[2][1][1]+houseYOffset, 0, 0, lamp);
 }
 
 
@@ -621,6 +646,12 @@ function displayHouse() {
 
   drawSprites(); //draw sprites
 
+
+  profPuce.update();
+
+
+  moveCue(0, 5, 0, profPuce, windowPositions[2][4][0] + houseXOffset, windowPositions[2][4][1] + houseYOffset, 3, 0);
+
   //drawing the house facade grid that masks the space between windows
   fill(30, 0, 0);
   //vertical bars
@@ -813,5 +844,18 @@ function checkZoom() {
     return true; //if the camera is sending data and the lightsensor is blocked, zoom
   } else {
     return false; //otherwise do nothing
+  }
+}
+
+
+// moveCue()
+//
+function moveCue(minute, second, frame, character, posX, posY, velX, velY) {
+  if (minutes == minute && seconds == second && frames == frame) {
+    character.targetX = posX;
+    character.targetY = posY;
+    character.dx = velX;
+    character.dy = velY;
+    character.moving = 1;
   }
 }
