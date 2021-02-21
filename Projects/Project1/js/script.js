@@ -145,29 +145,26 @@ let minutes = 0;
 let seconds = 0;
 let frames = 0;
 
-
-
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-
+//variabels to store our cast of character
 let profPuce;
+let ladyLilac;
+let sirCyan;
+let mrsMaroon;
+let drDrab;
+let cptCobalt;
 
-
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-
+//variables for our character images
+let puce;
+let lilac;
+let cyan;
+let maroon;
+let drab;
+let cobalt;
 
 
 // preload()
 // Description of preload
 function preload() {
-  blurredShot = loadImage(`assets/images/blurredshot.png`);
-  instructions = loadImage(`assets/images/controls.png`);
-
   //load the images for sprites
   loadGraphics();
 
@@ -212,9 +209,9 @@ function setup() {
 
   //array to track in which windows the lights are on
   windowLights = [
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0],
+    [1, 1, 1, 1, 0, 0],
     [1, 1, 1, 1, 1, 1]
   ];
 
@@ -230,13 +227,16 @@ function setup() {
   initializeSprites(); //create all our empty sprites
   assignGraphics(); //assign images to sprites
 
-
-
-
-
-
-
-  profPuce = new Character(windowPositions[2][1][0]+houseXOffset, windowPositions[2][1][1]+houseYOffset, 0, 0, lamp);
+  //construct the cast of characters and give them a few starting touches
+  profPuce = new Character(windowPositions[3][3][0]+houseXOffset, windowPositions[3][1][1]+houseYOffset, puce);
+  ladyLilac = new Character(windowPositions[2][0][0]+houseXOffset, windowPositions[2][0][1]+houseYOffset, lilac);
+  sirCyan = new Character(windowPositions[2][1][0]+houseXOffset, windowPositions[2][1][1]+houseYOffset, cyan);
+  mrsMaroon = new Character(windowPositions[3][5][0]+houseXOffset-width/64, windowPositions[3][5][1]+houseYOffset, maroon);
+  drDrab = new Character(windowPositions[3][0][0]+houseXOffset, windowPositions[3][0][1]+houseYOffset, drab);
+  cptCobalt = new Character(windowPositions[3][1][0]+houseXOffset-width/64, windowPositions[3][3][1]+houseYOffset, cobalt);
+  profPuce.orientation = -1;
+  ladyLilac.orientation = -1;
+  drDrab.orientation = -1;
 }
 
 
@@ -335,6 +335,10 @@ function draw() {
 // loadGraphics()
 // a function that holds all our loadImage and loadAnimation calls
 function loadGraphics() {
+  //start screen images
+  blurredShot = loadImage(`assets/images/blurredshot.png`);
+  instructions = loadImage(`assets/images/controls.png`);
+
   //GUI images
   filmRoll = loadImage(`assets/images/film_roll.png`); //load the film roll image
 
@@ -368,6 +372,14 @@ function loadGraphics() {
       `assets/images/door_0006.png`,
       `assets/images/door_0007.png`,
       `assets/images/door_0008.png`);
+
+  //characters
+  puce = loadImage(`assets/images/puce.png`);
+  lilac = loadImage(`assets/images/lilac.png`);
+  cyan = loadImage(`assets/images/cyan.png`);
+  maroon = loadImage(`assets/images/maroon.png`);
+  drab = loadImage(`assets/images/drab.png`);
+  cobalt = loadImage(`assets/images/cobalt.png`);
 }
 
 
@@ -390,6 +402,12 @@ function resizeGraphics() {
   }
   doorClosed.resize(archWindowWidth, archWindowHeight);
   doorOpened.resize(archWindowWidth, archWindowHeight);
+  puce.resize(archWindowWidth, archWindowHeight);
+  lilac.resize(archWindowWidth, archWindowHeight);
+  cyan.resize(archWindowWidth, archWindowHeight);
+  maroon.resize(archWindowWidth, archWindowHeight);
+  drab.resize(archWindowWidth, archWindowHeight);
+  cobalt.resize(archWindowWidth, archWindowHeight);
 }
 
 
@@ -644,13 +662,38 @@ function displayHouse() {
     }
   }
 
+
+
+
+
+
+
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+
+
+  //update the characters at each frame
+  profPuce.update();
+  ladyLilac.update();
+  sirCyan.update();
+  mrsMaroon.update();
+  drDrab.update();
+  cptCobalt.update();
+
+
+  //moveCue(0, 5, 0, sirCyan, windowPositions[2][4][0] + houseXOffset, windowPositions[2][4][1] + houseYOffset, 3, 0);
+
+
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+
+
   drawSprites(); //draw sprites
 
-
-  profPuce.update();
-
-
-  moveCue(0, 5, 0, profPuce, windowPositions[2][4][0] + houseXOffset, windowPositions[2][4][1] + houseYOffset, 3, 0);
 
   //drawing the house facade grid that masks the space between windows
   fill(30, 0, 0);
@@ -849,13 +892,15 @@ function checkZoom() {
 
 
 // moveCue()
-//
+// a function triggered at minut:second:frame to start moving character to (posX, posY) at (velX, velY) volocity
 function moveCue(minute, second, frame, character, posX, posY, velX, velY) {
-  if (minutes == minute && seconds == second && frames == frame) {
+  if (minutes == minute && seconds == second && frames == frame) { //make sure the cue only happens on cue
+    //give the character a new position to move to
     character.targetX = posX;
     character.targetY = posY;
+    //set the speed at which you want them to move
     character.dx = velX;
     character.dy = velY;
-    character.moving = 1;
+    character.moving = 1; //start them moving
   }
 }
