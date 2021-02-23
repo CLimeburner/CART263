@@ -107,6 +107,9 @@ let snapshotBuffer = false;
 //variable to provide the strength of glare when a photo is taken
 let glare = 0;
 
+//variable for fading into the game from black
+let startFadeIn = 1;
+
 //an array to hold the photos taken
 let photo = [];
 
@@ -234,6 +237,7 @@ function setup() {
   mrsMaroon = new Character(windowPositions[3][5][0]+houseXOffset-width/64, windowPositions[3][5][1]+houseYOffset, maroon);
   drDrab = new Character(windowPositions[3][0][0]+houseXOffset, windowPositions[3][0][1]+houseYOffset, drab);
   cptCobalt = new Character(windowPositions[3][1][0]+houseXOffset-width/64, windowPositions[3][3][1]+houseYOffset, cobalt);
+  //some of the characters should just start facing a certain way
   profPuce.orientation = -1;
   ladyLilac.orientation = -1;
   drDrab.orientation = -1;
@@ -306,7 +310,9 @@ function draw() {
     //draw the actual graphics
     noStroke(); //set shapes to not have an outline by default
     displayBackground(); //draw the background
-    displayHouse(); //draw the building
+    displayHouseBackground(); //draw the building
+    displayHouseInterior();
+    displayHouseForeground();
     displayFocus(); //show which window the camera is focused on
     if (checkZoom()) {
       displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
@@ -320,6 +326,16 @@ function draw() {
     textSize(32);
     text(minutes + `:` + seconds + `:` + frames, 40, 300);
     pop();
+
+    // a routine that fades the main game in from black
+    if (startFadeIn > 0.005) {
+      startFadeIn -= 0.005;
+      push();
+      fill(`rgba(0, 0, 0, ${startFadeIn})`);
+      rect(width/2, height/2, width, height);
+      pop();
+    }
+
   } else if (gameState == 3) {
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////// DARKROOM ////////////////////////////////
@@ -633,8 +649,8 @@ function displayBackground() {
 
 
 // displayHouse()
-// a function that draws the house and its details
-function displayHouse() {
+// a function that draws the parts of the house behind the plane of the sprites
+function displayHouseBackground() {
   //draw the building
   fill(30, 0, 0);
   rectMode(CENTER);
@@ -661,18 +677,12 @@ function displayHouse() {
           archWindowHeight);                        //height
     }
   }
+}
 
 
-
-
-
-
-
-  /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
-
+// displayHouseInterior
+// a function that updates and draws the sprites inside the house
+function displayHouseInterior() {
 
   //update the characters at each frame
   profPuce.update();
@@ -682,19 +692,82 @@ function displayHouse() {
   drDrab.update();
   cptCobalt.update();
 
+  //this is all the choreography for the game
+  moveCue(0, 1, 0, mrsMaroon, windowPositions[3][4][0] + houseXOffset, windowPositions[3][4][1] + houseYOffset, -1, 0); //maroon to dining room
+  turnCue(0, 3, 0, ladyLilac, 1); //lilac turn left
+  turnCue(0, 4, 0, mrsMaroon, -1); //Maroon turn right
+  moveCue(0, 4, 0, mrsMaroon, windowPositions[3][5][0] + houseXOffset, windowPositions[3][5][1] + houseYOffset, 1, 0); //maroon to kitchen
+  turnCue(0, 5, 0, profPuce, 1); //Puce turn left
+  moveCue(0, 5, 0, profPuce, windowPositions[3][1][0] + houseXOffset + archWindowWidth/2, windowPositions[3][1][1] + houseYOffset, -1, 0); //puce to parlor
+  turnCue(0, 8, 0, ladyLilac, -1); //lilac turn right
+  turnCue(0, 9, 0, cptCobalt, -1); //cobalt turn right
+  moveCue(0, 12, 0, drDrab, windowPositions[3][4][0] + houseXOffset - width/64, windowPositions[3][4][1] + houseYOffset, 1, 0); //drab to dining room
+  turnCue(0, 14, 0, ladyLilac, 1); //lilac turn left
+  turnCue(0, 17, 0, mrsMaroon, 1); //Maroon turn left
+  moveCue(0, 17, 0, mrsMaroon, windowPositions[3][4][0] + houseXOffset + width/64, windowPositions[3][4][1] + houseYOffset, -1, 0); //maroon to dining room
+  turnCue(0, 22, 30, drDrab, 1); //drab turn left
+  moveCue(0, 23, 0, drDrab, windowPositions[3][3][0] + houseXOffset, windowPositions[3][3][1] + houseYOffset, -1, 0); //drab across dining room
+  moveCue(0, 23, 0, mrsMaroon, windowPositions[3][2][0] + houseXOffset - archWindowWidth/2, windowPositions[3][2][1] + houseYOffset, -1, 0); //maroon to ground floor hallway
+  moveCue(0, 29, 0, mrsMaroon, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 1, -1); //maroon climbing stairs to second floor
+  snapCue(0, 31, 0, mrsMaroon, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //maroon snapping to secomd floor
+  moveCue(0, 31, 30, mrsMaroon, windowPositions[2][2][0] + houseXOffset, windowPositions[2][2][1] + houseYOffset, -1, 0); //maroon across second floor hallway
+  turnCue(0, 34, 0, sirCyan, -1); //cyan turn right
+  animationCue(0, 34, 15, furnitureSprites[2][1], `opening`); //open the door
+  animationCue(0, 34, 45, furnitureSprites[2][1], `open`); //the door is open
+  moveCue(0, 35, 0, drDrab, windowPositions[3][2][0] + houseXOffset, windowPositions[3][2][1] + houseYOffset, -1, 0); //drab to first floor hallway
+  turnCue(0, 36, 0, mrsMaroon, -1); //maroon turn right
+  moveCue(0, 36, 0, mrsMaroon, windowPositions[2][3][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][3][1] + houseYOffset, 1, 0); //maroon to second floor right bedroom
+  turnCue(0, 36, 15, sirCyan, 1); //cyan turn left
+  turnCue(0, 37, 0, sirCyan, -1); //cyan turn right
+  moveCue(0, 37, 0, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 1, 0); //cyan to top of stairs on second floor
+  animationCue(0, 38, 15, furnitureSprites[2][4], `opening`); //open the door
+  animationCue(0, 38, 45, furnitureSprites[2][4], `open`); //the door is open
+  turnCue(0, 39, 0, ladyLilac, 1); //lilac turn left
+  lightCue(0, 40, 0, 2, 1); //switch on light in lower-right bedroom
+  turnCue(0, 41, 0, mrsMaroon, 1); //maroon turn left
+  moveCue(0, 41, 0, mrsMaroon, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -1, 0); //maroon to staircase
+  turnCue(0, 42, 0, ladyLilac, -1); //lilac turn right
+  snapCue(0, 42, 0, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset + archWindowWidth/1.5); //cyan snapping in preparation to move to first floor
+  turnCue(0, 42, 0, sirCyan, 1); //cyan turn left
+  moveCue(0, 42, 0, sirCyan, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset, -1, 1); //cyan to first floor
+  moveCue(0, 43, 30, ladyLilac, windowPositions[2][1][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][1][1] + houseYOffset, 1, 0); //lilac to her bedroom door
+  moveCue(0, 43, 30, mrsMaroon, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -1, -1); //maroon to third floor
+  snapCue(0, 43, 30, sirCyan, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset); //cyan snapping to first floor
+  moveCue(0, 43, 30, sirCyan, windowPositions[3][0][0] + houseXOffset, windowPositions[3][0][1] + houseYOffset, -1, 0); //cyan across parlor
+  snapCue(0, 45, 0, mrsMaroon, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //maroon snap to third floor
+  lightCue(0, 45, 30, 1, 0); //switch off light in lower-left bedroom
+  animationCue(0, 45, 30, furnitureSprites[2][1], `closing`); //close the door
+  animationCue(0, 45, 30, furnitureSprites[2][1], `closed`); //the door is closed
+  animationCue(0, 46, 15, furnitureSprites[1][1], `opening`); //open the door
+  moveCue(0, 46, 30, ladyLilac, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 1, 0); //lilac to top of stairs on second floor
+  animationCue(0, 46, 45, furnitureSprites[1][1], `open`); //the door is open
+  lightCue(0, 47, 0, 3, 1); //switch on light in upper-left bedroom
+  turnCue(0, 47, 30, mrsMaroon, -1); //maroon turn right
+  moveCue(0, 47, 30, mrsMaroon, windowPositions[1][4][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][4][1] + houseYOffset, 1, 0); //maroon to third floor right bedroom
+  turnCue(0, 47, 45, sirCyan, -1); //cyan turn right
+  snapCue(0, 50, 0, ladyLilac, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset + archWindowWidth/1.5); //lilac snapping in preparation to move to first floor
+  turnCue(0, 50, 0, ladyLilac, 1); //cyan turn left
+  moveCue(0, 50, 0, ladyLilac, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset, -1, 1); //lilac to first floor
+  snapCue(0, 51, 30, ladyLilac, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset); //lilac snapping to first floor
+  animationCue(0, 52, 0, furnitureSprites[1][4], `opening`); //open the door
+  animationCue(0, 52, 30, furnitureSprites[1][4], `open`); //the door is open
+  lightCue(0, 53, 0, 4, 1); //switch on light in upper-right bedroom
 
-  //moveCue(0, 5, 0, sirCyan, windowPositions[2][4][0] + houseXOffset, windowPositions[2][4][1] + houseYOffset, 3, 0);
 
 
-  /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
+
+
+
+
 
 
   drawSprites(); //draw sprites
+}
 
 
+// displayHouseForeground()
+// a function that draws the parts of the house in front of the plane of the sprites
+function displayHouseForeground() {
   //drawing the house facade grid that masks the space between windows
   fill(30, 0, 0);
   //vertical bars
@@ -891,8 +964,8 @@ function checkZoom() {
 }
 
 
-// moveCue()
-// a function triggered at minut:second:frame to start moving character to (posX, posY) at (velX, velY) volocity
+// moveCue(minutes, second, frame, character, posX, posY, velX, velY)
+// a function triggered at minute:second:frame to start moving character to (posX, posY) at (velX, velY) volocity
 function moveCue(minute, second, frame, character, posX, posY, velX, velY) {
   if (minutes == minute && seconds == second && frames == frame) { //make sure the cue only happens on cue
     //give the character a new position to move to
@@ -902,5 +975,56 @@ function moveCue(minute, second, frame, character, posX, posY, velX, velY) {
     character.dx = velX;
     character.dy = velY;
     character.moving = 1; //start them moving
+  }
+}
+
+
+// turnCue(minute, second, frame, character, dir)
+// a function triggered minute:second:frame to make character look in direction dir
+function turnCue(minute, second, frame, character, dir) {
+  if (minutes == minute && seconds == second && frames == frame) {
+    character.orientation = dir;
+  }
+}
+
+
+// snapCue(minute, second, frame, character, xPos, yPos)
+// a function that triggers at minute:second:frame and snaps character to position (xPos, yPos) and stops them moving
+function snapCue(minute, second, frame, character, xPos, yPos) {
+  if (minutes == minute && seconds == second && frames == frame) {
+    character.sprite.position.x = xPos;
+    character.sprite.position.y = yPos;
+    character.moving = 0;
+  }
+}
+
+
+// lightCue(minute, second, frame, room, value)
+// a function that toggles the "lighting" to value in room at time minute:second:frame
+function lightCue(minute, second, frame, room, value) {
+  if (minutes == minute && seconds == second && frames == frame) {
+    //arbitrary room numbering for the sake of simple groupings
+    if (room == 1) { //lower-left bedroom
+      windowLights[2][0] = value;
+      windowLights[2][1] = value;
+    } else if (room == 2) { //lower-right bedroom
+      windowLights[2][4] = value;
+      windowLights[2][5] = value;
+    } else if (room == 3) { //upper-left bedroom
+      windowLights[1][0] = value;
+      windowLights[1][1] = value;
+    } else if (room == 4) { //upper-right bedroom
+      windowLights[1][4] = value;
+      windowLights[1][5] = value;
+    }
+  }
+}
+
+
+// animationCue(minute, second, frame, sprite, `animation`)
+// a function that changes sprite to `animation` at time minute:second:frame
+function animationCue(minute, second, frame, sprite, animation) {
+  if (minutes == minute && seconds == second && frames == frame) {
+    sprite.changeAnimation(animation); //change the animation
   }
 }

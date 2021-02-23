@@ -17,12 +17,14 @@ class Character {
     this.y = y;         //y position
     this.dx = 0;        //x-axis displacement
     this.dy = 0;        //y-axis displacement
+    this.drot = 0;      //the angular displacement
     this.image = image; //the character's silhouette
 
     this.orientation = 1; //whether or not the image should be flipped
 
     this.targetX = 0;     //destinaiton x position
     this.targetY = 0;     //destination y position
+    this.targetRot = 0;   //destination rotation
     this.moving = 0;      //is it moving or not
 
     //creating a sprite for the character for easy of manipulation
@@ -49,10 +51,10 @@ class Character {
     }
 
     //if the character has reached it's target destination +- the speed it's going at, stop.
-    if (this.sprite.position.x <= this.targetX + this.dx
-    && this.sprite.position.x >= this.targetX - this.dx
-    && this.sprite.position.y >= this.targetY + this.dy
-    && this.sprite.position.y <= this.targetY - this.dy) {
+    if (this.sprite.position.x <= this.targetX + Math.abs(this.dx)
+    && this.sprite.position.x >= this.targetX - Math.abs(this.dx)
+    && this.sprite.position.y >= this.targetY + Math.abs(this.dy)
+    && this.sprite.position.y <= this.targetY - Math.abs(this.dy)) {
       this.dx = 0;
       this.dy = 0;
       this.moving = 0;
