@@ -5,10 +5,15 @@
 ///////////////////////////////////////////////////////////////////////////////
 /*****************
 
-Rear Window
-Chip Limeburner
+STAKEOUT
+Author: Chip Limeburner
 
-Description
+Stakeout is a playable story experience making use of a tangible peripheral
+interface and leveraging concepts of ambiguity and self-constructed narrative.
+In borrowing the framing device of Alfred Hitchcock's Rear Window, players are
+shown a story, but one of which they don't have all the deals, requiring them
+to gather their own evidence and piece together their own understanding of what
+takes place. 
 
 ******************/
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,6 +22,40 @@ Description
 
 FUNCTIONS FOUND IN THIS DOCUMENT:
 
+preload() - Loads assets.
+setup() - Initializes serial port if available, various variables supporting the game geometry, and sprites with their associated images and animations.
+draw() - Determines if the game is in a state for the start screen, main game, or concluding "dark room" and calls functions accordingly.
+
+loadGraphics() - Loads all the PNGs for graphics and sprites.
+resizeGraphics() - Resizes loaded images to the appriorate size to appear in windows.
+initializeSprites() - Creates null sprites for everything that needs sprites.
+assignGraphics() - Ties animations and images to their respective sprites.
+keypressed() - Event listener for key presses.
+peripheralKeyPressed() - Simulates event listener for inputs coming from the tangible camera peripheral.
+storePreviousData() - Stores a copy of previous data from serial channel for comparison and signal edge detection.
+parseData() - Recieves the byte from the serial channel and breaks it up into seperate button inputs.
+displayStartBackground() - Draws the background of the start screen.
+displayStartText() - Draws the text and instructions on the start screen.
+updateTimer() - Increments variables for frames, seconds, and minutes, since the start of the main draw loop, creating a usable time code for cue functions.
+checkInputs() - Takes data from both keypress events and incoming serial data and transltes both inputs to usable game commands.
+mainLoopGraphics() - Draws all the graphics for the main game loop.
+zoomIn() - Scales graphics and centers the view on the window the player is currently "focused" on.
+mainFadeIn() - Opens the main game loop with a blakc overlay that fades to transparent.
+displayBackground() - Draws the sky, moon and trees.
+displayHouseBackground() - Draws the general box outlining the house and the interior lighting of the windows.
+displayHouseInterior() - Draws the furntiture and character sprites.
+referenceBeatSheet() - Contains all the cues that dictate character movement during the main game.
+displayHouseForeground() - Draws the roof, top row of windows, window frames and sills, and a grid of brick-colored bars that mask the spaces between windows.
+displayFocus() - Draws the dotted line that indcates which window the player is "focused" on.
+displayFilmRemaining() - Draws the counter for how many pictures the player has left to take.
+displayCameraBarrel() - Draws the circular mask when the player view is zoomed in.
+displayGlare() - Draws a white overlay on the screen when the player takes a picture that fades.
+checkZoom() - Checks to see if the player is zooming or not. Handles the inverted logic between keyboard vs peripheral inputs for zooming.
+moveCue(minutes, second, frame, character, posX, posY, velX, velY) - Cues translations over time of characters.
+turnCue(minute, second, frame, character, dir) - Cues characters flipping horizontally.
+snapCue(minute, second, frame, character, xPos, yPos) - Cues instantaneous translations of characters.
+lightCue(minute, second, frame, room, value) - Cues a toggling of state for window lighting.
+animationCue(minute, second, frame, sprite, animation) - Cues a change in animation for sprites (mostly used for door animation).
 
 ******************/
 ///////////////////////////////////////////////////////////////////////////////

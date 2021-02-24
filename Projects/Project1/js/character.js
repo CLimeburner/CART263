@@ -1,6 +1,6 @@
 /*****************
 
-Rear Window
+STAKEOUT
 CHARACTER CLASS
 Chip Limeburner
 
