@@ -13,7 +13,7 @@ interface and leveraging concepts of ambiguity and self-constructed narrative.
 In borrowing the framing device of Alfred Hitchcock's Rear Window, players are
 shown a story, but one of which they don't have all the deals, requiring them
 to gather their own evidence and piece together their own understanding of what
-takes place. 
+takes place.
 
 ******************/
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,6 +161,7 @@ let gameFont;
 //variable to store our sound effects
 let flashbulb;
 let gunshot;
+let ambience;
 
 //variable to hold the start screen graphic
 let blurredShot;
@@ -217,6 +218,7 @@ function preload() {
   soundFormats('mp3');
   gunshot = loadSound('assets/sounds/gunshot.mp3'); //a single shot in the distance. Source: BBC, (raw audio: https://sound-effects.bbcrewind.co.uk/search?q=07010122)
   flashbulb = loadSound('assets/sounds/flashbulb.mp3'); //vintage flashbulb sound. Source: Instant Media Musics (https://www.youtube.com/watch?v=YDdYUN83aYc&ab_channel=InstantMediaMusics)
+  ambience = loadSound('assets/sounds/ambience.mp3'); //nighttime ambient soundscape. Source: BBC, (raw audio: https://sound-effects.bbcrewind.co.uk/search?q=07051098)
 }
 
 
@@ -280,6 +282,8 @@ function setup() {
   profPuce.orientation = -1;
   ladyLilac.orientation = -1;
   drDrab.orientation = -1;
+
+  ambience.setVolume(0.25); //lower the colume on the ambient track
 }
 
 
@@ -299,6 +303,11 @@ function draw() {
     ///////////////////////////////////////////////////////////////////////////
     //////////////////////////////// MAIN GAME ////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
+
+    //If the ambience isn't playing, play it
+    if (ambience.isPlaying() == false) {
+      ambience.play(); //playing the ambience
+    }
 
     updateTimer(); //update the running timer at each frame
 
