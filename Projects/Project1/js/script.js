@@ -252,89 +252,20 @@ function draw() {
     ////////////////////////////// START SCREEN ///////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
-    push();
-    background(0); //set background to black
-    //blurry background graphic
-    imageMode(CENTER);
-    tint(255,100);
-    image(blurredShot, width/2, height/2, height*1.15, height);
+    displayStartBackground(); //display the background
 
-    //start screen text and controls
-    fill(255,255,255);
-    textSize(230);
-    textFont(`Courier`);
-    textAlign(CENTER);
-    text(`STAKEOUT`, width/2, height/3.25);
-    tint(255,255);
-    image(instructions, width/2, height/1.75, width/2, height/2);
-    textSize(55);
-    text(`Press 'spacebar' to start`, width/2, 2.75*height/3.25);
-    pop();
+    displayStartText(); //display the text over the background
 
   } else if (gameState == 2) {
     ///////////////////////////////////////////////////////////////////////////
     //////////////////////////////// MAIN GAME ////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
-    //update timer
-    frames++;
-    if (frames == 60) {
-      frames = 0;
-      seconds++;
-    }
-    if (seconds == 60) {
-      seconds = 0;
-      minutes++;
-    }
+    updateTimer(); //update the running timer at each frame
 
-    //pull the serial comms data and parse it appropriately. Send "key" commands if neccesary.
-    if (serial.available() > 0) {
-      data = serial.last();
-    }
-    storePreviousData(); //store last serial data states for signal edge detection
-    parseData(); //breakdown serial data into usable variables
-    peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
+    checkInputs(); //check for input from either camera or keyboard
 
-
-    //handling zooming effects and scaling on the back end
-    viewScale = 1; //default graphics to zoomed out view
-    //zoom in when the SHIFT key is pressed
-    if (checkZoom()) {
-      zoomIn();
-    }
-    //update "origin" used for focus and zooming in
-    originX = houseXOffset + windowPositions[focusY][focusX][0];
-    originY = houseYOffset + windowPositions[focusY][focusX][1];
-
-
-    //draw the actual graphics
-    noStroke(); //set shapes to not have an outline by default
-    displayBackground(); //draw the background
-    displayHouseBackground(); //draw the building
-    displayHouseInterior();
-    displayHouseForeground();
-    displayFocus(); //show which window the camera is focused on
-    if (checkZoom()) {
-      displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
-    }
-    displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
-    displayFilmRemaining(); //show the number of photos you have left to take
-
-    //draw timer so I can see what I'm doing
-    push();
-    fill(255,255,255);
-    textSize(32);
-    text(minutes + `:` + seconds + `:` + frames, 40, 300);
-    pop();
-
-    // a routine that fades the main game in from black
-    if (startFadeIn > 0.005) {
-      startFadeIn -= 0.005;
-      push();
-      fill(`rgba(0, 0, 0, ${startFadeIn})`);
-      rect(width/2, height/2, width, height);
-      pop();
-    }
+    mainLoopGraphics(); //display the graphics
 
   } else if (gameState == 3) {
     ///////////////////////////////////////////////////////////////////////////
@@ -557,6 +488,104 @@ function parseData() {
 }
 
 
+// displayStartBackground
+// a function that draws the background graphics of the start screen
+function displayStartBackground() {
+  push();
+  background(0); //set background to black
+  //blurry background graphic
+  imageMode(CENTER);
+  tint(255,100);
+  image(blurredShot, width/2, height/2, height*1.15, height);
+  pop();
+}
+
+
+// displayStartText
+// a function that draws the text of the start screen over the background
+function displayStartText() {
+  //start screen text and controls
+  push();
+  imageMode(CENTER);
+  fill(255,255,255);
+  textSize(230);
+  textFont(`Courier`);
+  textAlign(CENTER);
+  text(`STAKEOUT`, width/2, height/3.25);
+  tint(255,255);
+  image(instructions, width/2, height/1.75, width/2, height/2);
+  textSize(55);
+  text(`Press 'spacebar' to start`, width/2, 2.75*height/3.25);
+  pop();
+}
+
+
+// updateTimer()
+// a function that updates the timer used to meter out the game "cues"
+function updateTimer() {
+  //update timer
+  frames++;
+  if (frames == 60) {
+    frames = 0;
+    seconds++;
+  }
+  if (seconds == 60) {
+    seconds = 0;
+    minutes++;
+  }
+}
+
+
+// checkInputs()
+// a function that checks for both incoming serial data and key presses and parse both as inputs for the game
+function checkInputs() {
+  //pull the serial comms data and parse it appropriately. Send "key" commands if neccesary.
+  if (serial.available() > 0) {
+    data = serial.last();
+  }
+  storePreviousData(); //store last serial data states for signal edge detection
+  parseData(); //breakdown serial data into usable variables
+  peripheralKeyPressed(); //acts like keyPressed() but checks the formatted data from the serial input
+}
+
+
+// mainLoopGraphics()
+// a function that does all the graphics drawing for our main game
+function mainLoopGraphics() {
+  //handling zooming effects and scaling on the back end
+  viewScale = 1; //default graphics to zoomed out view
+  //zoom in when the SHIFT key is pressed
+  if (checkZoom()) {
+    zoomIn();
+  }
+  //update "origin" used for focus and zooming in
+  originX = houseXOffset + windowPositions[focusY][focusX][0];
+  originY = houseYOffset + windowPositions[focusY][focusX][1];
+
+  //draw the actual graphics
+  noStroke(); //set shapes to not have an outline by default
+  displayBackground(); //draw the background
+  displayHouseBackground(); //draw the building
+  displayHouseInterior();
+  displayHouseForeground();
+  displayFocus(); //show which window the camera is focused on
+  if (checkZoom()) {
+    displayCameraBarrel(); //when zoomed in, use a "barrel" effect to restrict peripheral vision
+  }
+  displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
+  displayFilmRemaining(); //show the number of photos you have left to take
+
+  //draw timer so I can see what I'm doing
+  push();
+  fill(255,255,255);
+  textSize(32);
+  text(minutes + `:` + seconds + `:` + frames, 40, 300);
+  pop();
+
+  mainFadeIn(); //fades in from black
+}
+
+
 // zoomIn()
 // a function that "zooms in", scaling graphics accordingly and centering them on screen based on your "focus"
 function zoomIn() {
@@ -565,6 +594,20 @@ function zoomIn() {
   translate(
         -originX + width/(2*viewScale),
         -originY + height/(2*viewScale));
+}
+
+
+// mainFadeIn
+// a function that fades in the main game when you start
+function mainFadeIn() {
+  // a routine that fades the main game in from black
+  if (startFadeIn > 0.005) {
+    startFadeIn -= 0.005;
+    push();
+    fill(`rgba(0, 0, 0, ${startFadeIn})`);
+    rect(width/2, height/2, width, height);
+    pop();
+  }
 }
 
 
@@ -692,6 +735,15 @@ function displayHouseInterior() {
   drDrab.update();
   cptCobalt.update();
 
+  referenceBeatSheet(); //check for cues at current time
+
+  drawSprites(); //draw sprites
+}
+
+
+// referenceBeatSheet()
+// a function containing all the cues for what happnes in the game
+function referenceBeatSheet() {
   //this is all the choreography for the game
   moveCue(0, 1, 0, mrsMaroon, windowPositions[3][4][0] + houseXOffset, windowPositions[3][4][1] + houseYOffset, -1, 0); //maroon to dining room
   turnCue(0, 3, 0, ladyLilac, 1); //lilac turn left
@@ -735,7 +787,7 @@ function displayHouseInterior() {
   snapCue(0, 43, 30, sirCyan, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset); //cyan snapping to first floor
   moveCue(0, 43, 30, sirCyan, windowPositions[3][0][0] + houseXOffset, windowPositions[3][0][1] + houseYOffset, -1, 0); //cyan across parlor
   snapCue(0, 45, 0, mrsMaroon, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //maroon snap to third floor
-  lightCue(0, 45, 30, 1, 0); //switch off light in lower-left bedroom
+  lightCue(0, 45, 30, 1, 0); //switch off  light in lower-left bedroom
   animationCue(0, 45, 30, furnitureSprites[2][1], `closing`); //close the door
   animationCue(0, 45, 30, furnitureSprites[2][1], `closed`); //the door is closed
   animationCue(0, 46, 15, furnitureSprites[1][1], `opening`); //open the door
@@ -761,7 +813,6 @@ function displayHouseInterior() {
 
 
 
-  drawSprites(); //draw sprites
 }
 
 
