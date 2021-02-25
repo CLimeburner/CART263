@@ -191,9 +191,9 @@ let doorClosing;
 let doorOpening;
 
 //variables to track frames and time to choreograph the "show"
-let minutes = 1;
-let seconds = 30;
-let frames = 59;
+let minutes = 0;
+let seconds = 0;
+let frames = 0;
 
 //variabels to store our cast of character
 let profPuce;
@@ -1013,7 +1013,7 @@ function referenceBeatSheet() {
   moveCue(1, 28, 30, drDrab, windowPositions[1][4][0] + houseXOffset, windowPositions[1][4][1] + houseYOffset, 2, 0); //drab to upper-right bedroom
   animationCue(1, 28, 45, furnitureSprites[1][1], `opening`); //open the door
   animationCue(1, 29, 15, furnitureSprites[1][1], `closing`); //close the door
-  moveCue(1, 29, 0, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, 2, 0); //cobalt to top of the stairs
+  moveCue(1, 29, 0, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][2][1] + houseYOffset, 2, 0); //cobalt to top of the stairs
   snapCue(1, 29, 15, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][2][1] + houseYOffset + archWindowHeight/3); //cobalt snap to third floor
   animationCue(1, 29, 45, furnitureSprites[1][1], `closed`); //the door is closed
   moveCue(1, 29, 15, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, 2); //cobalt descending stairs to second floor
@@ -1021,46 +1021,38 @@ function referenceBeatSheet() {
   turnCue(1, 30, 15, cptCobalt, 1); //cobalt turns left
   moveCue(1, 30, 15, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset, -2, 0); //cobalt to lower-left bedroom
   animationCue(1, 30, 45, furnitureSprites[2][1], `opening`); //open the door
-
-  ///////// Minute 1:31 snapping update for debug purposes //////////////////////////
-  snapCue(1, 31, 0, mrsMaroon, windowPositions[1][4][0] + houseXOffset + archWindowWidth/2, windowPositions[1][4][1] + houseYOffset);
-  snapCue(1, 31, 0, profPuce, windowPositions[1][4][0] + houseXOffset - archWindowWidth/2, windowPositions[1][4][1] + houseYOffset);
-  snapCue(1, 31, 0, sirCyan, windowPositions[1][5][0] + houseXOffset, windowPositions[1][5][1] + houseYOffset);
-  snapCue(1, 31, 0, ladyLilac, windowPositions[1][5][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][5][1] + houseYOffset);
-  snapCue(1, 31, 0, drDrab, windowPositions[1][4][0] + houseXOffset, windowPositions[1][4][1] + houseYOffset);
-
-  turnCue(1, 31, 0, mrsMaroon, -1);
-  turnCue(1, 31, 0, profPuce, -1);
-  turnCue(1, 31, 0, sirCyan, -1);
-  turnCue(1, 31, 0, ladyLilac, -1);
-  turnCue(1, 31, 0, drDrab, -1);
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  animationCue(1, 31, 15, furnitureSprites[2][1], `closing`); //close the door
-  animationCue(1, 31, 45, furnitureSprites[2][1], `closed`); //the door is closed
+  animationCue(1, 31, 15, furnitureSprites[2][1], `open`); //the door is open
+  turnCue(1, 32, 0, sirCyan, 1); //cyan turns left
+  moveCue(1, 32, 0, sirCyan, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, 0); //cyan to upper-left bedroom
   snapCue(1, 33, 0, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset + archWindowHeight/3); //cobalt kneels
+  turnCue(1, 34, 0, drDrab, 1); //drab turns left
+  moveCue(1, 34, 0, drDrab, windowPositions[1][1][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][1][1] + houseYOffset, -2, 0); //drab to upper-left bedroom
   snapCue(1, 34, 30, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset); //cobalt stands up
   turnCue(1, 35, 0, cptCobalt, -1); //cobalt turns right
   moveCue(1, 35, 0, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, 0); //cobalt to second-floor hallway
+  turnCue(1, 35, 0, profPuce, 1); //puce turns left
+  moveCue(1, 35, 30, profPuce, windowPositions[1][3][0] + houseXOffset, windowPositions[1][3][1] + houseYOffset, -1, 0); //puce to hallway
+  moveCue(1, 36, 0, ladyLilac, windowPositions[1][5][0] + houseXOffset, windowPositions[1][5][1] + houseYOffset, 1, 0); //lilac across bedroom
+  animationCue(1, 36, 0, furnitureSprites[1][1], `opening`); //open the door
+  moveCue(1, 36, 15, sirCyan, windowPositions[1][0][0] + houseXOffset, windowPositions[1][0][1] + houseYOffset, -2, 0); //cyan to upper-left bedroom
+  animationCue(1, 36, 15, furnitureSprites[1][1], `open`); //the door is open
+  moveCue(1, 37, 0, mrsMaroon, windowPositions[1][5][0] + houseXOffset - archWindowWidth/2, windowPositions[1][5][1] + houseYOffset, 1, 0); //puce to hallway
   snapCue(1, 37, 45, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset + archWindowHeight/3); //cobalt snapping to second floor stairs
   moveCue(1, 37, 45, cptCobalt, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset, -2, 2); //cobalt to first floor
   turnCue(1, 37, 45, cptCobalt, 1); //cobalt turns left
+  turnCue(1, 38, 30, sirCyan, -1); //cyan turns right
+  moveCue(1, 38, 30, sirCyan, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][2][1] + houseYOffset, 2, 0); //cyan to top of the stairs
   snapCue(1, 38, 45, cptCobalt, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset); //cobalt snapping to first floor
   moveCue(1, 38, 45, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][0][1] + houseYOffset, -2, 0); //cobalt to front door
+  turnCue(1, 39, 0, profPuce, -1); //puce turns right
+  turnCue(1, 39, 30, drDrab, 1); //drab turns right
+  snapCue(1, 39, 45, sirCyan, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][2][1] + houseYOffset + archWindowHeight/3); //cyan snapping to top of stairs
+  moveCue(1, 39, 45, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, 2); //cyan descending stairs to second floor
+  snapCue(1, 41, 0, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //cyan snapping to second floor
+  turnCue(1, 41, 0, sirCyan, 1); //cyan turns left
+  moveCue(1, 41, 0, sirCyan, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset, -2, 0);
   snapCue(1, 41, 0, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth, windowPositions[3][0][1] + houseYOffset + archWindowHeight); //cobalt snaps to outside
   moveCue(1, 41, 0, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][0][1] + houseYOffset, -3, 0); //cobalt absconding
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 
