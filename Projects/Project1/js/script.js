@@ -58,6 +58,11 @@ snapCue(minute, second, frame, character, xPos, yPos) - Cues instantaneous trans
 lightCue(minute, second, frame, room, value) - Cues a toggling of state for window lighting.
 animationCue(minute, second, frame, sprite, animation) - Cues a change in animation for sprites (mostly used for door animation).
 soundCue(minute, second, frame, sound) - Cues a sound effect.
+assignPhotoPositions() - Randomly generates positions and rotations for the photos displayed on the final screen. 
+displayDarkroomBackground() - Draws the background of the darkroom.
+displayPhotos() - Draws the photos you took over the course of the game, strewn about.
+darkroomOverlay() - Draws a red tint over the entire screen.
+displayDarkroomText() - Draws the text overlay for the final screen.
 
 ******************/
 ///////////////////////////////////////////////////////////////////////////////
@@ -206,6 +211,12 @@ let maroon;
 let drab;
 let cobalt;
 
+//variables for displaying pictures in the darkroom
+let photoPositionsAssigned = 0;
+let randomRotation = [];
+let randomX = [];
+let randomY = [];
+
 
 // preload()
 // Description of preload
@@ -322,8 +333,11 @@ function draw() {
     ///////////////////////////////// DARKROOM ////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
-
-
+    assignPhotoPositions();
+    displayDarkroomBackground();
+    displayPhotos();
+    darkroomOverlay();
+    displayDarkroomText();
 
   }
 }
@@ -479,6 +493,9 @@ function assignGraphics() {
 function keyPressed() {
   if (keyCode === 32 && gameState === 1) { //if you're on the start screen, press space to start
     gameState++;
+    return;
+  } else if (keyCode === 32 && gameState === 3) { //if you're on the darkroom screen, press space to restart the game
+    location.reload();
     return;
   } else if (keyCode === 65 && focusX > 0) { //A to move left
     focusX--;
@@ -1255,4 +1272,74 @@ function soundCue(minute, second, frame, sound) {
   if (minutes == minute && seconds == second && frames == frame) {
     sound.play(); //play the sound
   }
+}
+
+
+// assignPhotoPositions()
+// a function to randomly generate positions and rotations for the photos you take
+function assignPhotoPositions() {
+  if (photoPositionsAssigned == 0) {
+    for (let i = 0; i < photo.length; i++) {
+      randomRotation.push(random(-30, 30));
+      randomX.push(width/2 + random(-width/8, width/8));
+      randomY.push(height/2 + random(-height/8, height/8));
+    }
+    photoPositionsAssigned = 1;
+  }
+}
+
+
+// displayDarkroomBackground()
+// a function that draws the background for the darkroom
+function displayDarkroomBackground() {
+  push();
+  rectMode(CENTER);
+  fill(20, 10, 0); //dark brown
+  rect(width/2, height/2, width, height);
+  pop();
+}
+
+
+// displayPhotos()
+// draws the photos you've taken
+function displayPhotos() {
+  push();
+  fill(200);
+  rectMode(CENTER);
+  imageMode(CENTER);
+  angleMode(DEGREES);
+  noStroke();
+  for (let i = 0; i < photo.length; i++) {
+    rotate(randomRotation[i]);
+    rect(randomX[i], randomY[i], width/4, (9*width)/64);
+    image(photo[i], randomX[i], randomY[i], (width/4)-width/50, ((9*width)/64)-width/50);
+  }
+  pop();
+}
+
+
+// darkroomOverlay()
+// draws a red tint over the screen
+function darkroomOverlay() {
+  push();
+  rectMode(CENTER);
+  fill(`rgba(30, 0, 0, 0.75)`); //dark red
+  rect(width/2, height/2, width, height);
+  pop();
+}
+
+
+// displayDarkroomText()
+// draws the text for the final screen
+function displayDarkroomText() {
+  push();
+  fill(255,255,255);
+  textSize(70);
+  textFont(`Courier`);
+  textAlign(LEFT);
+  text(`What do you think happened?`, width/16, height/6);
+  textSize(50);
+  textAlign(RIGHT);
+  text(`Press spacebar to play again`, 15*width/16, 5*height/6);
+  pop();
 }
