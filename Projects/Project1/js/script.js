@@ -642,13 +642,6 @@ function mainLoopGraphics() {
   displayGlare(); //checks if snapshotBuffer is true, and if so, creates a bulb flash effect. Also fades the flash effect each frame.
   displayFilmRemaining(); //show the number of photos you have left to take
 
-  //draw timer so I can see what I'm doing
-  push();
-  fill(255,255,255);
-  textSize(32);
-  text(minutes + `:` + seconds + `:` + frames, 40, 300);
-  pop();
-
   mainFadeIn(); //fades in from black
 
   //Fade to black at the end of the story
