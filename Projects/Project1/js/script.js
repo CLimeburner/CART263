@@ -58,7 +58,7 @@ snapCue(minute, second, frame, character, xPos, yPos) - Cues instantaneous trans
 lightCue(minute, second, frame, room, value) - Cues a toggling of state for window lighting.
 animationCue(minute, second, frame, sprite, animation) - Cues a change in animation for sprites (mostly used for door animation).
 soundCue(minute, second, frame, sound) - Cues a sound effect.
-assignPhotoPositions() - Randomly generates positions and rotations for the photos displayed on the final screen. 
+assignPhotoPositions() - Randomly generates positions and rotations for the photos displayed on the final screen.
 displayDarkroomBackground() - Draws the background of the darkroom.
 displayPhotos() - Draws the photos you took over the course of the game, strewn about.
 darkroomOverlay() - Draws a red tint over the entire screen.
@@ -192,7 +192,7 @@ let doorOpening;
 
 //variables to track frames and time to choreograph the "show"
 let minutes = 1;
-let seconds = 14;
+let seconds = 30;
 let frames = 59;
 
 //variabels to store our cast of character
@@ -652,8 +652,9 @@ function mainLoopGraphics() {
   mainFadeIn(); //fades in from black
 
   //Fade to black at the end of the story
-  if (minutes >= 1 && seconds >= 20) {
-    mainFadeOut();
+  if (minutes >= 1 && seconds >= 43) {
+    mainFadeOut(); //fade out the visuals
+    ambience.setVolume(0, 3); //fade out the ambient track
   }
 }
 
@@ -681,6 +682,7 @@ function mainFadeIn() {
     pop();
   }
 }
+
 
 // mainFadeOut()
 // a function that fades in the main game when you start
@@ -719,7 +721,7 @@ function displayBackground() {
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////// BEGINNING OF A BUNCH OF ARBIRARILY PLACED TREES ///////////////////////////////////
+  //////////////////// BEGINNING OF A BUNCH OF ARBITRARILY PLACED TREES ///////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //Broadly speaking these trees are drawn in rows from left of screen to right.
@@ -939,24 +941,6 @@ function referenceBeatSheet() {
   turnCue(1, 11, 0, mrsMaroon, -1); //maroon turns right
   turnCue(1, 13, 0, drDrab, 1); //maroon turns left
   soundCue(1, 14, 30, gunshot); //cobalt fires a gun
-
-  ///////// Minute 1:15 snapping update for debug purposes //////////////////////////
-  snapCue(1, 15, 0, mrsMaroon, windowPositions[2][3][0] + houseXOffset + archWindowWidth/3, windowPositions[2][3][1] + houseYOffset);
-  snapCue(1, 15, 0, profPuce, windowPositions[3][3][0] + houseXOffset + archWindowWidth/2.5, windowPositions[3][3][1] + houseYOffset);
-  snapCue(1, 15, 0, sirCyan, windowPositions[3][3][0] + houseXOffset, windowPositions[3][3][1] + houseYOffset);
-  snapCue(1, 15, 0, ladyLilac, windowPositions[3][4][0] + houseXOffset, windowPositions[3][4][1] + houseYOffset);
-  snapCue(1, 15, 0, cptCobalt, windowPositions[1][4][0] + houseXOffset, windowPositions[1][4][1] + houseYOffset);
-  snapCue(1, 15, 0, drDrab, windowPositions[2][4][0] + houseXOffset , windowPositions[2][4][1] + houseYOffset);
-
-  turnCue(1, 15, 0, mrsMaroon, -1);
-  turnCue(1, 15, 0, profPuce, -1);
-  turnCue(1, 15, 0, sirCyan, -1);
-  turnCue(1, 15, 0, ladyLilac, 1);
-  turnCue(1, 15, 0, cptCobalt, 1);
-  turnCue(1, 15, 0, drDrab, 1);
-  //////////////////////////////////////////////////////////////////////////////////////
-
-
   moveCue(1, 15, 30, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth, windowPositions[1][2][1] + houseYOffset, -2, 0); //cobalt to upper-left bedroom door
   turnCue(1, 15, 20, sirCyan, 1); // the following lines are when everyone in the house is shocked and confused about the gunshot
   turnCue(1, 15, 30, mrsMaroon, 1);
@@ -981,11 +965,90 @@ function referenceBeatSheet() {
   animationCue(1, 18, 30, furnitureSprites[1][1], `opening`); //open the door
   animationCue(1, 19, 0, furnitureSprites[1][1], `open`); //the door is open
   moveCue(1, 19, 0, cptCobalt, windowPositions[1][1][0] + houseXOffset, windowPositions[1][1][1] + houseYOffset, -2, 0); //cobalt to upper-left bedroom
+  moveCue(1, 19, 0, sirCyan, windowPositions[3][1][0] + houseXOffset + archWindowWidth, windowPositions[3][1][1] + houseYOffset + archWindowHeight/2.5, -2 ,0); //cyan to bottom of first floor stairs
+  moveCue(1, 19, 30, ladyLilac, windowPositions[3][1][0] + houseXOffset + archWindowWidth, windowPositions[3][1][1] + houseYOffset + archWindowHeight/2.5, -2 ,0); //lilac to bottom of first floor stairs
   turnCue(1, 20, 0, cptCobalt, -1); //cobalt turns right
   animationCue(1, 20, 0, furnitureSprites[1][1], `closing`); //open the door
   animationCue(1, 20, 30, furnitureSprites[1][1], `closed`); //the door is open
+  turnCue(1, 20, 30, sirCyan, -1); //cyan turns right
+  moveCue(1, 20, 30, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, -2); //cyan to second floor
+  moveCue(1, 20, 45, profPuce, windowPositions[3][1][0] + houseXOffset + archWindowWidth, windowPositions[3][1][1] + houseYOffset + archWindowHeight/2.5, -2 ,0); //puce to bottom of first floor stairs
+  snapCue(1, 21, 30, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //cyan snap to second floor
+  moveCue(1, 21, 30, sirCyan, windowPositions[2][3][0] + houseXOffset - archWindowWidth/2, windowPositions[2][3][1] + houseYOffset, 2, 0); //cyan across second floor hall
+  turnCue(1, 22, 0, ladyLilac, -1); //lilac turns right
+  turnCue(1, 22, 0, mrsMaroon, 1); //maroon turns left
+  moveCue(1, 22, 0, ladyLilac, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, -2); //lilac to second floor
+  turnCue(1, 22, 30, profPuce, -1); //puce turns right
+  moveCue(1, 22, 30, profPuce, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, -2); //puce to second floor
+  snapCue(1, 23, 30, profPuce, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //puce snap to second floor
+  snapCue(1, 23, 0, ladyLilac, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //lilac snap to second floor
+  turnCue(1, 25, 0, sirCyan, 1); //cyan turns left
+  moveCue(1, 25, 0, sirCyan, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -2, 0); //cyan to staircase
+  moveCue(1, 25, 15, drDrab, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -2, 0); //drab to staircase
+  turnCue(1, 25, 15, mrsMaroon, 1); //maroon turns left
+  moveCue(1, 25, 15, mrsMaroon, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -2, 0); //maroon to staircase
+  moveCue(1, 25, 30, sirCyan, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, -2); //cyan to third floor
+  turnCue(1, 25, 45, ladyLilac, 1); //lilac turns left
+  moveCue(1, 25, 45, ladyLilac, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -2, 0); //lilac to staircase
+  turnCue(1, 25, 45, profPuce, 1); //puce turns left
+  moveCue(1, 25, 45, profPuce, windowPositions[2][2][0] + houseXOffset + archWindowWidth/2, windowPositions[2][2][1] + houseYOffset, -2, 0); //puce to staircase
+  moveCue(1, 26, 15, mrsMaroon, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, -2); //maroon to third floor
+  snapCue(1, 26, 30, sirCyan, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //cyan snap to third floor
+  turnCue(1, 26, 30, sirCyan, -1); //cyan turns right
+  moveCue(1, 26, 30, sirCyan, windowPositions[1][5][0] + houseXOffset, windowPositions[1][5][1] + houseYOffset, 2, 0); //cyan to upper-right bedroom
+  moveCue(1, 26, 30, ladyLilac, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, -2); //lilac to third floor
+  moveCue(1, 26, 45, profPuce, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, -2); //puce to third floor
+  snapCue(1, 27, 15, mrsMaroon, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //maroon snap to third floor
+  turnCue(1, 27, 15, mrsMaroon, -1); //maroon turns right
+  moveCue(1, 27, 15, mrsMaroon, windowPositions[1][4][0] + houseXOffset + archWindowWidth/2, windowPositions[1][4][1] + houseYOffset, 2, 0); //maroon to upper-right bedroom
+  snapCue(1, 27, 30, ladyLilac, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //lilac snap to third floor
+  turnCue(1, 27, 30, ladyLilac, -1); //lilac turns right
+  moveCue(1, 27, 30, ladyLilac, windowPositions[1][5][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][5][1] + houseYOffset, 2, 0); //lilac to upper right bedroom
+  moveCue(1, 27, 30, drDrab, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, -2, -2); //drab to third floor
+  snapCue(1, 27, 45, profPuce, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //puce snap to third floor
+  turnCue(1, 27, 45, profPuce, -1); //puce turns right
+  moveCue(1, 27, 45, profPuce, windowPositions[1][4][0] + houseXOffset - archWindowWidth/2, windowPositions[1][4][1] + houseYOffset, 2, 0); //puce to upper-right bedroom
+  snapCue(1, 28, 30, drDrab, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset); //drab snap to third floor
+  turnCue(1, 28, 30, drDrab, -1); //drab turns right
+  moveCue(1, 28, 30, drDrab, windowPositions[1][4][0] + houseXOffset, windowPositions[1][4][1] + houseYOffset, 2, 0); //drab to upper-right bedroom
+  animationCue(1, 28, 45, furnitureSprites[1][1], `opening`); //open the door
+  animationCue(1, 29, 15, furnitureSprites[1][1], `closing`); //close the door
+  moveCue(1, 29, 0, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[1][2][1] + houseYOffset, 2, 0); //cobalt to top of the stairs
+  snapCue(1, 29, 15, cptCobalt, windowPositions[1][2][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][2][1] + houseYOffset + archWindowHeight/3); //cobalt snap to third floor
+  animationCue(1, 29, 45, furnitureSprites[1][1], `closed`); //the door is closed
+  moveCue(1, 29, 15, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, 2); //cobalt descending stairs to second floor
+  snapCue(1, 30, 15, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset); //cobalt snapping to second floor
+  turnCue(1, 30, 15, cptCobalt, 1); //cobalt turns left
+  moveCue(1, 30, 15, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset, -2, 0); //cobalt to lower-left bedroom
+  animationCue(1, 30, 45, furnitureSprites[2][1], `opening`); //open the door
 
+  ///////// Minute 1:31 snapping update for debug purposes //////////////////////////
+  snapCue(1, 31, 0, mrsMaroon, windowPositions[1][4][0] + houseXOffset + archWindowWidth/2, windowPositions[1][4][1] + houseYOffset);
+  snapCue(1, 31, 0, profPuce, windowPositions[1][4][0] + houseXOffset - archWindowWidth/2, windowPositions[1][4][1] + houseYOffset);
+  snapCue(1, 31, 0, sirCyan, windowPositions[1][5][0] + houseXOffset, windowPositions[1][5][1] + houseYOffset);
+  snapCue(1, 31, 0, ladyLilac, windowPositions[1][5][0] + houseXOffset - archWindowWidth/1.25, windowPositions[1][5][1] + houseYOffset);
+  snapCue(1, 31, 0, drDrab, windowPositions[1][4][0] + houseXOffset, windowPositions[1][4][1] + houseYOffset);
 
+  turnCue(1, 31, 0, mrsMaroon, -1);
+  turnCue(1, 31, 0, profPuce, -1);
+  turnCue(1, 31, 0, sirCyan, -1);
+  turnCue(1, 31, 0, ladyLilac, -1);
+  turnCue(1, 31, 0, drDrab, -1);
+  //////////////////////////////////////////////////////////////////////////////////////
+
+  animationCue(1, 31, 15, furnitureSprites[2][1], `closing`); //close the door
+  animationCue(1, 31, 45, furnitureSprites[2][1], `closed`); //the door is closed
+  snapCue(1, 33, 0, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset + archWindowHeight/3); //cobalt kneels
+  snapCue(1, 34, 30, cptCobalt, windowPositions[2][0][0] + houseXOffset, windowPositions[2][0][1] + houseYOffset); //cobalt stands up
+  turnCue(1, 35, 0, cptCobalt, -1); //cobalt turns right
+  moveCue(1, 35, 0, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset, 2, 0); //cobalt to second-floor hallway
+  snapCue(1, 37, 45, cptCobalt, windowPositions[2][2][0] + houseXOffset + archWindowWidth/1.5, windowPositions[2][2][1] + houseYOffset + archWindowHeight/3); //cobalt snapping to second floor stairs
+  moveCue(1, 37, 45, cptCobalt, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset, -2, 2); //cobalt to first floor
+  turnCue(1, 37, 45, cptCobalt, 1); //cobalt turns left
+  snapCue(1, 38, 45, cptCobalt, windowPositions[3][2][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][2][1] + houseYOffset); //cobalt snapping to first floor
+  moveCue(1, 38, 45, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][0][1] + houseYOffset, -2, 0); //cobalt to front door
+  snapCue(1, 41, 0, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth, windowPositions[3][0][1] + houseYOffset + archWindowHeight); //cobalt snaps to outside
+  moveCue(1, 41, 0, cptCobalt, windowPositions[3][0][0] + houseXOffset - archWindowWidth/1.5, windowPositions[3][0][1] + houseYOffset, -3, 0); //cobalt absconding
 
 
 
@@ -1278,13 +1341,13 @@ function soundCue(minute, second, frame, sound) {
 // assignPhotoPositions()
 // a function to randomly generate positions and rotations for the photos you take
 function assignPhotoPositions() {
-  if (photoPositionsAssigned == 0) {
+  if (photoPositionsAssigned == 0) { //check to see if this has been done already
     for (let i = 0; i < photo.length; i++) {
-      randomRotation.push(random(-30, 30));
-      randomX.push(width/2 + random(-width/8, width/8));
-      randomY.push(height/2 + random(-height/8, height/8));
+      randomRotation.push(random(-30, 30)); //generate a random angle
+      randomX.push(width/2 + random(-width/8, width/8)); //generate a random X offset
+      randomY.push(height/2 + random(-height/8, height/8)); //generate a random Y offset
     }
-    photoPositionsAssigned = 1;
+    photoPositionsAssigned = 1; //don't do this again if it's already been done
   }
 }
 
@@ -1304,15 +1367,15 @@ function displayDarkroomBackground() {
 // draws the photos you've taken
 function displayPhotos() {
   push();
-  fill(200);
+  fill(200); //light grey
   rectMode(CENTER);
   imageMode(CENTER);
   angleMode(DEGREES);
   noStroke();
   for (let i = 0; i < photo.length; i++) {
-    rotate(randomRotation[i]);
-    rect(randomX[i], randomY[i], width/4, (9*width)/64);
-    image(photo[i], randomX[i], randomY[i], (width/4)-width/50, ((9*width)/64)-width/50);
+    rotate(randomRotation[i]); //set rotation
+    rect(randomX[i], randomY[i], width/4, (9*width)/64); //draw a grey rectangle for the picture border
+    image(photo[i], randomX[i], randomY[i], (width/4)-width/50, ((9*width)/64)-width/50); //draw the picture
   }
   pop();
 }
