@@ -9,12 +9,9 @@ body {
   overflow: hidden;
 }
 
-
-
-
 .toolbar-section {
   width: 90%;
-  height: 150px;
+  height: 50px;
   margin: auto;
   background-color: lightblue;
   margin-top: 10px;
