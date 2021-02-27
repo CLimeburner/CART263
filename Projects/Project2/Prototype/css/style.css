@@ -9,6 +9,12 @@ body {
   overflow: hidden;
 }
 
+h3 {
+  padding: 20px;
+  margin: 0px;
+  float: left;
+}
+
 .toolbar-section {
   width: 90%;
   height: 50px;
@@ -16,6 +22,30 @@ body {
   background-color: lightblue;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.layer-tab {
+  width: 98%;
+  height: 60px;
+  background-color: lightgray;
+  margin: auto;
+  margin-top: 2px;
+  margin-bottom: 0px;
+}
+
+.up-button {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  background-color: lightblue;
+}
+
+.down-button {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  background-color: lightpink;
+  float: right;
 }
 
 #toolbar {
@@ -26,7 +56,7 @@ body {
 #layer-list {
   position: relative;
   bottom: 0;
-  background-color: lightgrey;
+  background-color: darkgray;
   height: 40%;
   width: 100%;
   overflow-y: scroll;
@@ -46,4 +76,18 @@ body {
   width: 300px;
   height: 100%;
   background-color: lightyellow;
+}
+
+#new-layer-button {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background-color: lightgreen;
+  width: 50px;
+  height: 50px;
+  z-index: 100;
+}
+
+[id*="current-layer-tab"] {
+  background-color: white;
 }
