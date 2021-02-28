@@ -10,6 +10,7 @@ class Layer {
     this.layerIdNum = idNum;
     this.layersIndex = idNum;
     this.layerKind = "background"
+    this.name = `Layer ${idNum}`;
     this.img;
     this.xOrigin = width/2;
     this.yOrigin = height/2;

@@ -55,7 +55,7 @@ function createNewLayer() {
      <div class="up-button"></div>
      <div class="down-button"></div>
    </div>
-   <H3>Layer ${layerCounter}</H3>`;
+   <H3>${layers[layers.length-1].name}</H3>`;
 
   layerTab.addEventListener("click", tabSwitcher(layerTab)); //add the event listener that allows the tab to be selected
   layerTab.children[0].children[0].addEventListener("click", moveLayerUp(layerTab));
@@ -78,6 +78,7 @@ function tabSwitcher(tab) {
       }
     }
     tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
+    document.getElementById("layerName").value = activeLayer.name;
   }
 }
 
@@ -90,6 +91,7 @@ function tabSelector(tab) {
     }
   }
   tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
+  document.getElementById("layerName").value = activeLayer.name;
 }
 
 
@@ -107,7 +109,6 @@ function moveLayerUp(tab) {
       //swap layer index values
       layerA.layersIndex--;
       layerB.layersIndex++;
-      console.log(layers);
     }
   }
 }
@@ -127,7 +128,14 @@ function moveLayerDown(tab) {
       //swap layer index values
       layerA.layersIndex++;
       layerB.layersIndex--;
-      console.log(layers);
     }
+  }
+}
+
+function updateName(event) {
+  //needs to trigger on enter key
+  if(event.key == "Enter") {
+    activeLayer.name = document.getElementById("layerName").value;
+    document.getElementById("layer-list").children[activeLayer.layersIndex].children[1].innerHTML = activeLayer.name;
   }
 }
