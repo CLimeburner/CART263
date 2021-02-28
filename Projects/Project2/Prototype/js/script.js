@@ -27,7 +27,7 @@ function draw() {
 
 }
 
-function keyPressed() {
+/*function keyPressed() {
   if (key === "y") {
     if (activeLayer.layersIndex-1 != 0) {
       //moveLayerUp(layers[activeLayer.layersIndex-1],layers[activeLayer.layersIndex-2]);
@@ -39,7 +39,7 @@ function keyPressed() {
       moveLayerDown();
     }
   }
-}
+}*/
 
 
 function createNewLayer() {
@@ -58,8 +58,8 @@ function createNewLayer() {
    <H3>Layer ${layerCounter}</H3>`;
 
   layerTab.addEventListener("click", tabSwitcher(layerTab)); //add the event listener that allows the tab to be selected
-  layerTab.children[0].children[0].addEventListener("click", moveLayerUp);
-  layerTab.children[0].children[1].addEventListener("click", moveLayerDown);
+  layerTab.children[0].children[0].addEventListener("click", moveLayerUp(layerTab));
+  layerTab.children[0].children[1].addEventListener("click", moveLayerDown(layerTab));
   if(layerCounter == 1) {
     activeLayer = layerTab;
     layerTab.id += "current-layer-tab";
@@ -93,30 +93,41 @@ function tabSelector(tab) {
 }
 
 
-function moveLayerUp() {
-  //////needs to change active layer somehow
-  let layerA = layers[activeLayer.layersIndex-1]; //the active tab
-  let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
-  let list = document.getElementById("layer-list"); //get our layer-list object
-  let buffer = layerB; //get the adjacent element above
-  layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
-  layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-  list.children[layerA.layersIndex-1].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex]); //move the DOM element physically up in the child list
-  //swap layer index values
-  layerA.layersIndex--;
-  layerB.layersIndex++;
+function moveLayerUp(tab) {
+  return function() {
+    tabSelector(tab);
+    if(layers[activeLayer.layersIndex-2]) {
+      let layerA = layers[activeLayer.layersIndex-1]; //the active tab
+      let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
+      let list = document.getElementById("layer-list"); //get our layer-list object
+      let buffer = layerB; //get the adjacent element above
+      layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
+      layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
+      list.children[layerA.layersIndex-1].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex]); //move the DOM element physically up in the child list
+      //swap layer index values
+      layerA.layersIndex--;
+      layerB.layersIndex++;
+      console.log(layers);
+    }
+  }
 }
 
-function moveLayerDown() {
-  //////needs to change active layer somehow
-  let layerA = layers[activeLayer.layersIndex-1]; //the active tab
-  let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
-  let list = document.getElementById("layer-list"); //get our layer-list object
-  let buffer = layerB; //get the adjacent element below
-  layers[layerA.layersIndex] = layerA; //move layerA down in the array
-  layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-  list.children[layerA.layersIndex+1].insertAdjacentElement("afterend", list.children[layerA.layersIndex]);//move the DOM element physically down in the child list
-  //swap layer index values
-  layerA.layersIndex++;
-  layerB.layersIndex--;
+function moveLayerDown(tab) {
+  return function() {
+    tabSelector(tab);
+    if(layers[activeLayer.layersIndex]) {
+      //////needs to change active layer somehow
+      let layerA = layers[activeLayer.layersIndex-1]; //the active tab
+      let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
+      let list = document.getElementById("layer-list"); //get our layer-list object
+      let buffer = layerB; //get the adjacent element below
+      layers[layerA.layersIndex] = layerA; //move layerA down in the array
+      layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
+      list.children[layerA.layersIndex+1].insertAdjacentElement("afterend", list.children[layerA.layersIndex]);//move the DOM element physically down in the child list
+      //swap layer index values
+      layerA.layersIndex++;
+      layerB.layersIndex--;
+      console.log(layers);
+    }
+  }
 }
