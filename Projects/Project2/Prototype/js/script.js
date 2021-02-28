@@ -27,21 +27,9 @@ function draw() {
 
 }
 
-/*function keyPressed() {
-  if (key === "y") {
-    if (activeLayer.layersIndex-1 != 0) {
-      //moveLayerUp(layers[activeLayer.layersIndex-1],layers[activeLayer.layersIndex-2]);
-      moveLayerUp();
-    }
-  } else if (key === "h") {
-    if (activeLayer.layersIndex != layers.length) {
-      //moveLayerDown(layers[activeLayer.layersIndex-1],layers[activeLayer.layersIndex]);
-      moveLayerDown();
-    }
-  }
-}*/
 
-
+// createNewLayer()
+// initializes new layers
 function createNewLayer() {
   layers.push(new Layer(layerCounter)); //create the new layer object and add it to the layers array
   let layerTab = document.createElement("div"); //create the tab
@@ -68,36 +56,29 @@ function createNewLayer() {
 }
 
 
+// tabSwitcher(tab)
+// makes tab the active layer and updates the toolbar to reflect as such
 function tabSwitcher(tab) {
   return function() { //returns a function so the callback can take parameters
-    for (let i = 2; i < document.getElementById("layer-list").childNodes.length; i++) {
-      if (document.getElementById("layer-list").childNodes[i] === tab) {
-        activeLayer = layers[i-3]; //if the iterated tab is the one you clicked, make it the active one
-      } else {
-        document.getElementById("layer-list").childNodes[i].id = "" //otherwise make sure it ISNT the active one
-      }
-    }
-    tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
-    document.getElementById("layerName").value = activeLayer.name;
+    setActiveLayer(tab); //assigns tab as the active layer
+    setToolbarProperties(); //updates toolbar to display properties for the active layer
   }
 }
 
+
+// tabSelector(tab)
+// makes tab the active layer and updates the toolbar to reflect as such
 function tabSelector(tab) {
-  for (let i = 2; i < document.getElementById("layer-list").childNodes.length; i++) {
-    if (document.getElementById("layer-list").childNodes[i] === tab) {
-      activeLayer = layers[i-3]; //if the iterated tab is the one you clicked, make it the active one
-    } else {
-      document.getElementById("layer-list").childNodes[i].id = "" //otherwise make sure it ISNT the active one
-    }
-  }
-  tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
-  document.getElementById("layerName").value = activeLayer.name;
+  setActiveLayer(tab); //assigns tab as the active layer
+  setToolbarProperties(); //updates toolbar to display properties for the active layer
 }
 
 
+// moveLayerUp(tab)
+// swaps the position of tab with the layer above it
 function moveLayerUp(tab) {
   return function() {
-    tabSelector(tab);
+    tabSelector(tab); //make the moving layer the active one
     if(layers[activeLayer.layersIndex-2]) {
       let layerA = layers[activeLayer.layersIndex-1]; //the active tab
       let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
@@ -113,11 +94,12 @@ function moveLayerUp(tab) {
   }
 }
 
+// moveLayerDown(tab)
+// swaps the position of tab with the layer below it
 function moveLayerDown(tab) {
   return function() {
-    tabSelector(tab);
+    tabSelector(tab); //make the moving layer the active one
     if(layers[activeLayer.layersIndex]) {
-      //////needs to change active layer somehow
       let layerA = layers[activeLayer.layersIndex-1]; //the active tab
       let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
       let list = document.getElementById("layer-list"); //get our layer-list object
@@ -132,10 +114,41 @@ function moveLayerDown(tab) {
   }
 }
 
+
+// updateName(event)
+// updates the active layer's name
 function updateName(event) {
-  //needs to trigger on enter key
   if(event.key == "Enter") {
     activeLayer.name = document.getElementById("layerName").value;
     document.getElementById("layer-list").children[activeLayer.layersIndex].children[1].innerHTML = activeLayer.name;
   }
+}
+
+
+// updateType()
+// updates the active layer's type
+function updateType() {
+  activeLayer.type = document.getElementById("layerType").value;
+}
+
+
+// setActiveLayer(tab)
+// makes the arrangements to set tab as the active layer
+function setActiveLayer(tab) {
+  for (let i = 2; i < document.getElementById("layer-list").childNodes.length; i++) {
+    if (document.getElementById("layer-list").childNodes[i] === tab) {
+      activeLayer = layers[i-3]; //if the iterated tab is the one you clicked, make it the active one
+    } else {
+      document.getElementById("layer-list").childNodes[i].id = "" //otherwise make sure it ISNT the active one
+    }
+  }
+  tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
+}
+
+
+// setToolbarProperties()
+// updates the toolbar to display the active layer's properties
+function setToolbarProperties() {
+  document.getElementById("layerName").value = activeLayer.name;
+  document.getElementById("layerType").value = activeLayer.type;
 }

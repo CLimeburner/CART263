@@ -31,7 +31,15 @@
           <input type="text" id="layerName" name="layerName" value="" onkeydown="updateName(event)">
         </div>
         <div class="toolbar-section" id="">
-
+          <p style="margin: 0px;">Layer Type:</p>
+          <select class="" id="layerType" name="layerType" onchange="updateType()">
+            <option value="background">Background</option>
+            <option value="rotational">Rotational</option>
+            <option value="translational">Translational</option>
+            <option value="flap">Flap</option>
+            <option value="string">String</option>
+            <option value="annotation">Annotation</option>
+          </select>
         </div>
         <div class="toolbar-section" id="">
         </div>
