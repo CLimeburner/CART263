@@ -48,6 +48,15 @@ h3 {
   float: right;
 }
 
+.sidebar-title{
+  margin: 10px;
+  margin-left:15px
+}
+
+.toolbar-section-title {
+  margin: 0px;
+}
+
 #toolbar {
   height: 60%;
   overflow-y: scroll;

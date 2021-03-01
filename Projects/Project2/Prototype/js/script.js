@@ -46,9 +46,15 @@ function draw() {
 
   updateActiveLayer();
 
+  if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking) {
+    updateToolbarTransform();
+  }
+
   drawLayerImages();
 
   drawTransformPoints();
+
+
 
 }
 
@@ -56,12 +62,33 @@ function draw() {
 // mousePressed()
 // tracks mouse position based on certain prerequisites
 function mousePressed() {
+  checkMoveAction();
+  checkScaleAction();
+}
+
+
+// mouseReleased()
+// stops tracking the mouse on release
+function mouseReleased() {
+  moveTracking = false;
+  leftScaleTracking = false;
+  rightScaleTracking = false;
+  topScaleTracking = false;
+  bottomScaleTracking = false;
+}
+
+
+function checkMoveAction() {
   if (mouseX > activeLayer.xOrigin - activeLayer.width/2
    && mouseX < activeLayer.xOrigin + activeLayer.width/2
    && mouseY > activeLayer.yOrigin - activeLayer.height/2
    && mouseY < activeLayer.yOrigin + activeLayer.height/2) {
      moveTracking = true;
-   }
+  }
+}
+
+
+function checkScaleAction() {
   if (mouseX > activeLayer.xOrigin - (activeLayer.width/2) - 5
    && mouseX < activeLayer.xOrigin - (activeLayer.width/2) + 5) {
       leftScaleTracking = true;
@@ -82,17 +109,6 @@ function mousePressed() {
      bottomScaleTracking = true;
      moveTracking = false;
   }
-}
-
-
-// mouseReleased()
-// stops tracking the mouse on release
-function mouseReleased() {
-  moveTracking = false;
-  leftScaleTracking = false;
-  rightScaleTracking = false;
-  topScaleTracking = false;
-  bottomScaleTracking = false;
 }
 
 
@@ -177,7 +193,7 @@ function createNewLayer() {
   layerTab.children[0].children[0].addEventListener("click", moveLayerUp(layerTab));
   layerTab.children[0].children[1].addEventListener("click", moveLayerDown(layerTab));
   if(layerCounter == 1) {
-    activeLayer = layerTab;
+    activeLayer = layers[0];
     layerTab.id += "current-layer-tab";
   }
   layerCounter++; //increment layerCounter
@@ -248,7 +264,7 @@ function moveLayerDown(tab) {
 function updateName(event) {
   if(event.key == "Enter") {
     activeLayer.name = document.getElementById("layerName").value;
-    document.getElementById("layer-list").children[activeLayer.layersIndex].children[1].innerHTML = activeLayer.name;
+    document.getElementById("layer-list").children[activeLayer.layersIndex+1].children[1].innerHTML = activeLayer.name;
   }
 }
 
@@ -257,6 +273,7 @@ function updateName(event) {
 // updates the active layer's type
 function updateType() {
   activeLayer.type = document.getElementById("layerType").value;
+  setToolbarProperties();
 }
 
 
@@ -264,7 +281,6 @@ function updateImage() {
   activeLayer.img = loadImage(URL.createObjectURL(document.getElementById("layerImage").files[0])); //load the uploaded image data
   //assign appropriate initial sizes, given our canvas
   let wxhRatio = activeLayer.img.width/activeLayer.img.height;
-  console.log(activeLayer.img.width);
   if(activeLayer.type == "background") {
     activeLayer.width = width;
     activeLayer.height = height;
@@ -275,17 +291,44 @@ function updateImage() {
     activeLayer.width = width/2;
     activeLayer.height = activeLayer.width * wxhRatio;
   }
+  setToolbarProperties();
+}
+
+
+
+function updateXOrigin(event) {
+  /*if(event.key === "Enter") {
+    activeLayer.xOrigin = document.getElementById("layerX").value;
+  }*/
+}
+
+function updateYOrigin(event) {
+  /*if(event.key === "Enter") {
+    activeLayer.yOrigin = document.getElementById("layerY").value;
+  }*/
+}
+
+function updateHeight(event) {
+  /*if(event.key === "Enter") {
+    activeLayer.height = document.getElementById("layerHeight").value;
+  }*/
+}
+
+function updateWidth(event) {
+  /*if(event.key === "Enter") {
+    activeLayer.width = document.getElementById("layerWidth").value;
+  }*/
 }
 
 
 // setActiveLayer(tab)
 // makes the arrangements to set tab as the active layer
 function setActiveLayer(tab) {
-  for (let i = 2; i < document.getElementById("layer-list").childNodes.length; i++) {
-    if (document.getElementById("layer-list").childNodes[i] === tab) {
-      activeLayer = layers[i-3]; //if the iterated tab is the one you clicked, make it the active one
+  for (let i = 2; i < document.getElementById("layer-list").children.length; i++) {
+    if (document.getElementById("layer-list").children[i] === tab) {
+      activeLayer = layers[i-2]; //if the iterated tab is the one you clicked, make it the active one
     } else {
-      document.getElementById("layer-list").childNodes[i].id = "" //otherwise make sure it ISNT the active one
+      document.getElementById("layer-list").children[i].id = "" //otherwise make sure it ISNT the active one
     }
   }
   tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
@@ -295,6 +338,62 @@ function setActiveLayer(tab) {
 // setToolbarProperties()
 // updates the toolbar to display the active layer's properties
 function setToolbarProperties() {
+  //when a layer is selected, populate the toolbar with the name, type, and image tools
+  document.getElementById("toolbar").innerHTML =
+  `<h2 class="sidebar-title">Toolbar</h2>
+
+  <div class="toolbar-section" id="">
+    <p class="toolbar-section-title">Layer Name:</p>
+    <input type="text" id="layerName" name="layerName" value="" onkeydown="updateName(event)">
+  </div>
+
+  <div class="toolbar-section" id="">
+    <p class="toolbar-section-title">Layer Type:</p>
+    <select class="" id="layerType" name="layerType" onchange="updateType()">
+      <option value="background">Background</option>
+      <option value="rotational">Rotational</option>
+      <option value="translational">Translational</option>
+      <option value="flap">Flap</option>
+      <option value="string">String</option>
+      <option value="annotation">Annotation</option>
+    </select>
+  </div>
+
+  <div class="toolbar-section" id="">
+    <p class="toolbar-section-title">Layer Image:</p>
+    <input type="file" id="layerImage" name="layerImage" value="" accept="image/*" onchange="updateImage()">
+  </div>`;
+
+  //if the layer has an image, populate the toolbar additionally with the center and size tools
+  if(activeLayer.img) {
+    document.getElementById("toolbar").innerHTML +=
+    `<div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Center:</p>
+      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerX" name="layerX" value="" style="width:50px;float:left;" onkeydown="updateXOrigin(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerY" name="layerY" value="" style="width:50px;float:left;" onkeydown="updateYOrigin(event)">
+    </div>
+
+    <div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Size:</p>
+      <p style="margin:0px;float:left;">Width:</p> <input type="text" id="layerWidth" name="layerWidth" value="" style="width:50px;float:left;" onkeydown="updateWidth(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Height:</p> <input type="text" id="layerHeight" name="layerHeight" value="" style="width:50px;float:left;" onkeydown="updateHeight(event)">
+    </div>`;
+  }
+
+  //populate the tool values
   document.getElementById("layerName").value = activeLayer.name;
   document.getElementById("layerType").value = activeLayer.type;
+  if(activeLayer.img) {
+    updateToolbarTransform();
+  }
+}
+
+
+// updateToolbarTransform
+// updates the toolbar sidebar when a transformation is carried out
+function updateToolbarTransform() {
+  document.getElementById("layerX").value = activeLayer.xOrigin;
+  document.getElementById("layerY").value = activeLayer.yOrigin;
+  document.getElementById("layerWidth").value = activeLayer.width;
+  document.getElementById("layerHeight").value = activeLayer.height;
 }
