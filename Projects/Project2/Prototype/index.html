@@ -13,10 +13,6 @@
     <script src="js/libraries/p5.min.js"></script>
     <script src="js/libraries/p5.sound.min.js"></script>
     <script src="js/libraries/p5.play.js" type="text/javascript"></script>
-
-    <!-- My script(s) -->
-    <script src="js/layer.js"></script>
-    <script src="js/script.js"></script>
   </head>
   <body>
 
@@ -26,10 +22,12 @@
 
     <div class="" id="editor-pane">
       <div class="" id="toolbar">
+
         <div class="toolbar-section" id="">
           <p style="margin: 0px;">Layer Name:</p>
           <input type="text" id="layerName" name="layerName" value="" onkeydown="updateName(event)">
         </div>
+
         <div class="toolbar-section" id="">
           <p style="margin: 0px;">Layer Type:</p>
           <select class="" id="layerType" name="layerType" onchange="updateType()">
@@ -41,13 +39,32 @@
             <option value="annotation">Annotation</option>
           </select>
         </div>
+
         <div class="toolbar-section" id="">
+          <p style="margin: 0px;">Layer Image:</p>
+          <input type="file" id="layerImage" name="layerImage" value="" accept="image/*" onchange="updateImage()">
         </div>
+
+        <div class="toolbar-section" id="">
+
+        </div>
+
+        <div class="toolbar-section" id="">
+
+        </div>
+
       </div>
       <div class="" id="layer-list">
-        <div class="" id="new-layer-button" onclick="createNewLayer()"></div>
+        <div class="" id="new-layer-button" onclick="createNewLayer()">
+
+        </div>
       </div>
     </div>
 
+
+
+    <!-- My script(s) -->
+    <script src="js/layer.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>

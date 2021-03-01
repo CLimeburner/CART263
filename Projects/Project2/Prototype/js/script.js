@@ -1,11 +1,19 @@
 "use strict";
 
-let cnv;
+let cnv; //variable to hold the canvas
+let cnvX; //the canvas' X position
+let cnvY; // the canvas' Y position
 
 
 let layers = []; //an array of our layer objects
 let activeLayer = 0; //the current active layer object
 let layerCounter = 1; //a variable used for initializing and tracking total number of layers
+
+let moveTracking = false;
+let leftScaleTracking = false;
+let rightScaleTracking = false;
+let topScaleTracking = false;
+let bottomScaleTracking = false;
 
 
 
@@ -16,15 +24,135 @@ function preload() {
 
 
 function setup() {
-  cnv = createCanvas(800, 600);
-  cnv.parent(`viewport-pane`);
-  cnv.background(0);
+  cnv = createCanvas(800, 600); //create the canvas
+  cnv.parent(`viewport-pane`); //position canvas in the HTML framework
+  cnv.background(0); //set canvas background
+  //center the canvas
+  cnvX = ((windowWidth - width) - 300)/2;
+  cnvY = (windowHeight - height)/2;
+  cnv.position(cnvX, cnvY);
 
 }
 
 
 function draw() {
+  //update the canvas position
+  cnvX = ((windowWidth - width) - 300)/2;
+  cnvY = (windowHeight - height)/2;
+  cnv.position(cnvX, cnvY);
 
+  background(0);
+
+
+  updateActiveLayer();
+
+  drawLayerImages();
+
+  drawTransformPoints();
+
+}
+
+
+// mousePressed()
+// tracks mouse position based on certain prerequisites
+function mousePressed() {
+  if (mouseX > activeLayer.xOrigin - activeLayer.width/2
+   && mouseX < activeLayer.xOrigin + activeLayer.width/2
+   && mouseY > activeLayer.yOrigin - activeLayer.height/2
+   && mouseY < activeLayer.yOrigin + activeLayer.height/2) {
+     moveTracking = true;
+   }
+  if (mouseX > activeLayer.xOrigin - (activeLayer.width/2) - 5
+   && mouseX < activeLayer.xOrigin - (activeLayer.width/2) + 5) {
+      leftScaleTracking = true;
+      moveTracking = false;
+  }
+  if (mouseX > activeLayer.xOrigin + (activeLayer.width/2) - 5
+   && mouseX < activeLayer.xOrigin + (activeLayer.width/2) + 5) {
+      rightScaleTracking = true;
+      moveTracking = false;
+  }
+  if (mouseY > activeLayer.yOrigin - (activeLayer.height/2) - 5
+   && mouseY < activeLayer.yOrigin - (activeLayer.height/2) + 5) {
+     topScaleTracking = true;
+     moveTracking = false;
+  }
+  if (mouseY > activeLayer.yOrigin + (activeLayer.height/2) - 5
+   && mouseY < activeLayer.yOrigin + (activeLayer.height/2) + 5) {
+     bottomScaleTracking = true;
+     moveTracking = false;
+  }
+}
+
+
+// mouseReleased()
+// stops tracking the mouse on release
+function mouseReleased() {
+  moveTracking = false;
+  leftScaleTracking = false;
+  rightScaleTracking = false;
+  topScaleTracking = false;
+  bottomScaleTracking = false;
+}
+
+
+// updateActiveLayer()
+// updates active layer properties based on moving and scaling actions
+function updateActiveLayer() {
+  //update active layer info
+  if (moveTracking) {
+    activeLayer.xOrigin += movedX;
+    activeLayer.yOrigin += movedY;
+  }
+  if (topScaleTracking) {
+    activeLayer.yOrigin += movedY/2;
+    activeLayer.height -= movedY;
+  }
+  if (bottomScaleTracking) {
+    activeLayer.yOrigin += movedY/2;
+    activeLayer.height += movedY;
+  }
+  if (leftScaleTracking) {
+    activeLayer.xOrigin += movedX/2;
+    activeLayer.width -= movedX;
+  }
+  if (rightScaleTracking) {
+    activeLayer.xOrigin += movedX/2;
+    activeLayer.width += movedX;
+  }
+}
+
+
+// drawLayerImages()
+// iterates through the layers, drawing their images
+function drawLayerImages() {
+  //draw the layers
+  imageMode(CENTER);
+  for (let i = layers.length - 1; i > -1; i--) {
+    if(layers[i].img) {
+      image(layers[i].img, layers[i].xOrigin, layers[i].yOrigin, layers[i].width, layers[i].height);
+    }
+  }
+}
+
+
+// drawTransformPoints()
+// draws the corner and edge points for scaling actions
+function drawTransformPoints() {
+  //draw tranform points for active layer
+  if(activeLayer.img) {
+    push();
+    fill(255);
+    ellipse(activeLayer.xOrigin - activeLayer.width/2, activeLayer.yOrigin - activeLayer.height/2, 10); //upper left corner
+    ellipse(activeLayer.xOrigin, activeLayer.yOrigin - activeLayer.height/2, 10); //upper middle
+    ellipse(activeLayer.xOrigin + activeLayer.width/2, activeLayer.yOrigin - activeLayer.height/2, 10); //upper right corner
+    ellipse(activeLayer.xOrigin - activeLayer.width/2, activeLayer.yOrigin, 10); //middle left side
+    ellipse(activeLayer.xOrigin + activeLayer.width/2, activeLayer.yOrigin, 10); //middle right side
+    ellipse(activeLayer.xOrigin - activeLayer.width/2, activeLayer.yOrigin + activeLayer.height/2, 10); //lower left corner
+    ellipse(activeLayer.xOrigin, activeLayer.yOrigin + activeLayer.height/2, 10); //lower middle
+    ellipse(activeLayer.xOrigin + activeLayer.width/2, activeLayer.yOrigin + activeLayer.height/2, 10); //lower right corner
+    pop();
+  }
 }
 
 
@@ -129,6 +257,24 @@ function updateName(event) {
 // updates the active layer's type
 function updateType() {
   activeLayer.type = document.getElementById("layerType").value;
+}
+
+
+function updateImage() {
+  activeLayer.img = loadImage(URL.createObjectURL(document.getElementById("layerImage").files[0])); //load the uploaded image data
+  //assign appropriate initial sizes, given our canvas
+  let wxhRatio = activeLayer.img.width/activeLayer.img.height;
+  console.log(activeLayer.img.width);
+  if(activeLayer.type == "background") {
+    activeLayer.width = width;
+    activeLayer.height = height;
+  } else if(width > height) {
+    activeLayer.height = height/2;
+    activeLayer.width = activeLayer.height * wxhRatio;
+  } else {
+    activeLayer.width = width/2;
+    activeLayer.height = activeLayer.width * wxhRatio;
+  }
 }
 
 
