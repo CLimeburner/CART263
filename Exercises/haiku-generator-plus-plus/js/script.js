@@ -3,24 +3,99 @@
 Haiku Generator ++
 Coded by: Chip Limeburner
 
+
 */
 
 "use strict";
 
+//array of seasons
+let seasons = [
+  `Spring`,
+  `Summer`,
+  `Autumn`,
+  `Winter`
+];
+
+//arrary of background colors for each season
+let seasonBackgrounds = [
+  ,
+  ,
+  ,
+
+];
+
+//array of text colors for each season
+let seasonTextColors = [
+  ,
+  ,
+  ,
+
+];
+
+//aray of five syllable lines for each season
 let fiveSyllableLines = [
-  `O, to be a tree`,
-  `The cat does not know`,
-  `We are all forests`,
-  `You have done your best`,
-  `They are all gone now`
+
+  [`Crocuses in bloom`,
+  `Warm rain falls to earth`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`Campfires at dusk`,
+  `Soft beams of sunlight`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`Leaves fall from branches`,
+  `?`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`Snow gently falling`,
+  `?`,
+  `?`,
+  `?`,
+  `Refrigerator`],
+
 ];
+
+//array of seven syllable lines for each season
 let sevenSyllableLines = [
-  `Say the things left unsaid`,
-  `Never believe the wind's lies`,
-  `The autumn stretches its legs`,
-  `Nothing can satisfy you`,
-  `They will not come back again`
+
+  [`?`,
+  `?`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`?`,
+  `?`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`The coming chill of winter`,
+  `?`,
+  `?`,
+  `?`,
+  `?`],
+
+  [`?`,
+  `?`,
+  `?`,
+  `?`,
+  `?`],
+
 ];
+
+//generate a random season title
+let seasonIndex = Math.floor(Math.random() * 4);
+let title = seasons[seasonIndex];
+let titleH1 = document.getElementById(`title`);
+titleH1.innerText = title;
+line1P.addEventListener(`click`, titleClicked);
 
 // generate three random lines
 let line1 = random(fiveSyllableLines);
@@ -40,10 +115,15 @@ line2P.addEventListener(`click`, lineClicked);
 line3P.addEventListener(`click`, lineClicked);
 
 
+function titleClicked(event) {
+
+}
+
 
 function lineClicked(event) {
   fadeOut(event.target, 1);
 }
+
 
 function fadeOut(element, opacity) {
   opacity -= 0.01;
@@ -58,6 +138,7 @@ function fadeOut(element, opacity) {
   }
 }
 
+
 function fadeIn(element, opacity) {
   opacity += 0.01;
   element.style[`opacity`] = opacity;
@@ -67,6 +148,7 @@ function fadeIn(element, opacity) {
     });
   }
 }
+
 
 function setNewLine(element) {
   if(element === line1P || element === line3P) {
@@ -78,6 +160,6 @@ function setNewLine(element) {
 
 
 function random(array) {
-  let index = Math.floor(Math.random() * array.length);
-  return array[index];
+  let index = Math.floor(Math.random() * array[seasonIndex].length);
+  return array[seasonIndex][index];
 }

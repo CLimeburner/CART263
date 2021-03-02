@@ -10,6 +10,14 @@ body {
   background-color: #abcbab;
 }
 
+h1 {
+    text-align: center;
+}
+
+.haiku-line {
+  text-align: center;
+}
+
 #haiku {
   font-family: Helvetica, sans-serif;
   font-size: 2rem;
