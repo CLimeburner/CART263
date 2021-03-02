@@ -35,7 +35,6 @@ function setup() {
   cnvX = ((windowWidth - width) - 300)/2;
   cnvY = (windowHeight - height)/2;
   cnv.position(cnvX, cnvY);
-
 }
 
 
@@ -47,18 +46,14 @@ function draw() {
 
   background(0);
 
-  updateActiveLayer();
-
-
+  updateActiveLayer(); //updates transform information based on mouse movements if mouse is clicked
   if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking || rotOriginTracking) {
-    updateToolbarTransform();
+    updateToolbarTransform(); //update the toolbar to reflect the actual transform of the layer
   }
 
-  drawLayerImages();
-
-  drawTransformPoints();
-
-  drawRotationalOrigin();
+  drawLayerImages(); //draws the layer image
+  drawTransformPoints(); //draws the transform points bounding the image
+  drawRotationalOrigin(); //draws the rotational origin if it's a rotational layer
 
 }
 
@@ -86,6 +81,8 @@ function mouseReleased() {
 }
 
 
+// checkMoveAction()
+// check for events to move the layer
 function checkMoveAction() {
   if (mouseX > activeLayer.xOrigin - activeLayer.width/2
    && mouseX < activeLayer.xOrigin + activeLayer.width/2
@@ -96,6 +93,8 @@ function checkMoveAction() {
 }
 
 
+// checkScaleAction()
+// check for events to scale the layer
 function checkScaleAction() {
   if (mouseX > activeLayer.xOrigin - (activeLayer.width/2) - 5
    && mouseX < activeLayer.xOrigin - (activeLayer.width/2) + 5) {
@@ -120,6 +119,8 @@ function checkScaleAction() {
 }
 
 
+// checkRotOriginAction()
+// check for events to move the rotational origin
 function checkRotOriginAction() {
   if (mouseX > activeLayer.xOrigin + activeLayer.pivotXOffset - 5
    && mouseX < activeLayer.xOrigin + activeLayer.pivotXOffset + 5
@@ -202,15 +203,17 @@ function drawTransformPoints() {
 }
 
 
+// drawRotationalOrigin()
+// draws the origin around which the layer will rotate if it's a rotational layer
 function drawRotationalOrigin() {
   if(activeLayer.type == "rotational") {
     push();
     fill(255);
-    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 10);
+    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 10); //center dot
     stroke(255);
     strokeWeight(2);
     noFill();
-    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 20);
+    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 20); //ring around dot for greater visibility
     pop();
   }
 }
@@ -321,6 +324,8 @@ function updateType() {
 }
 
 
+// updateImage
+// updates the active layer's image when one is uploaded
 function updateImage() {
   activeLayer.img = loadImage(URL.createObjectURL(document.getElementById("layerImage").files[0])); //load the uploaded image data
   //assign appropriate initial sizes, given our canvas
@@ -453,6 +458,8 @@ function updateToolbarTransform() {
 }
 
 
+// updateRotationalTransform()
+// updates the sidebar values for the rotational origin
 function updateRotationalTransform() {
   document.getElementById("layerRotX").value = activeLayer.xOrigin + activeLayer.pivotXOffset;
   document.getElementById("layerRotY").value = activeLayer.yOrigin + activeLayer.pivotYOffset;
