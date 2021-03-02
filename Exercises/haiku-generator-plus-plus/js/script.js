@@ -18,18 +18,18 @@ let seasons = [
 
 //arrary of background colors for each season
 let seasonBackgrounds = [
-  ,
-  ,
-  ,
-
+  `#acde73`,
+  `#45e6d8`,
+  `#b5783e`,
+  `#69b3d1`
 ];
 
 //array of text colors for each season
 let seasonTextColors = [
-  ,
-  ,
-  ,
-
+  `#f8fcb8`,
+  `#f6fcd2`,
+  `#f0e8d3`,
+  `#d3f0ed`
 ];
 
 //aray of five syllable lines for each season
@@ -37,7 +37,7 @@ let fiveSyllableLines = [
 
   [`Crocuses in bloom`,
   `Warm rain falls to earth`,
-  `?`,
+  `Ripples on the pond`,
   `?`,
   `?`],
 
@@ -48,13 +48,13 @@ let fiveSyllableLines = [
   `?`],
 
   [`Leaves fall from branches`,
-  `?`,
+  `Birds migrating south`,
   `?`,
   `?`,
   `?`],
 
   [`Snow gently falling`,
-  `?`,
+  `Warm by the fire`,
   `?`,
   `?`,
   `Refrigerator`],
@@ -64,13 +64,13 @@ let fiveSyllableLines = [
 //array of seven syllable lines for each season
 let sevenSyllableLines = [
 
-  [`?`,
+  [`New offshoots in the forest`,
   `?`,
   `?`,
   `?`,
   `?`],
 
-  [`?`,
+  [`Waves crash on the sandy beach`,
   `?`,
   `?`,
   `?`,
@@ -113,6 +113,14 @@ line3P.innerText = line3;
 line1P.addEventListener(`click`, lineClicked);
 line2P.addEventListener(`click`, lineClicked);
 line3P.addEventListener(`click`, lineClicked);
+
+
+document.body.style[`background-color`] = seasonBackgrounds[seasonIndex];
+document.getElementById(`title`).style[`color`] = seasonTextColors[seasonIndex];
+let lines = document.getElementsByClassName(`haiku-line`);
+for (let i = 0; i < lines.length; i++) {
+  lines[i].style[`color`] = seasonTextColors[seasonIndex];
+}
 
 
 function titleClicked(event) {
@@ -165,8 +173,9 @@ function fadeIn(element, opacity) {
 
 function setNewTitle(element) {
   seasonIndex = Math.floor(Math.random() * 4);
-  console.log(seasonIndex);
   element.innerText = seasons[seasonIndex];
+  document.body.style[`background-color`] = seasonBackgrounds[seasonIndex];
+  document.getElementById(`title`).style[`color`] = seasonTextColors[seasonIndex];
 }
 
 
@@ -175,6 +184,10 @@ function setNewLine(element) {
     element.innerText = random(fiveSyllableLines);
   } else if(element === line2P) {
     element.innerText = random(sevenSyllableLines);
+  }
+  lines = document.getElementsByClassName(`haiku-line`);
+  for (let i = 0; i < lines.length; i++) {
+    lines[i].style[`color`] = seasonTextColors[seasonIndex];
   }
 }
 
