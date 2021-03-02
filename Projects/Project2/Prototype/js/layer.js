@@ -16,6 +16,8 @@ class Layer {
     this.yOrigin = height/2;
     this.width;
     this.height;
+    this.pivotXOffset = 0;
+    this.pivotYOffset = 0;
   }
 
 

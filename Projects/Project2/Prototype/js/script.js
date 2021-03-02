@@ -14,6 +14,10 @@ let leftScaleTracking = false;
 let rightScaleTracking = false;
 let topScaleTracking = false;
 let bottomScaleTracking = false;
+let rotOriginTracking = false;
+
+let mouseOffsetX;
+let mouseOffsetY;
 
 
 
@@ -43,10 +47,10 @@ function draw() {
 
   background(0);
 
-
   updateActiveLayer();
 
-  if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking) {
+
+  if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking || rotOriginTracking) {
     updateToolbarTransform();
   }
 
@@ -54,7 +58,7 @@ function draw() {
 
   drawTransformPoints();
 
-
+  drawRotationalOrigin();
 
 }
 
@@ -62,8 +66,11 @@ function draw() {
 // mousePressed()
 // tracks mouse position based on certain prerequisites
 function mousePressed() {
+  mouseOffsetX = activeLayer.xOrigin - mouseX;
+  mouseOffsetY = activeLayer.yOrigin - mouseY;
   checkMoveAction();
   checkScaleAction();
+  checkRotOriginAction();
 }
 
 
@@ -75,6 +82,7 @@ function mouseReleased() {
   rightScaleTracking = false;
   topScaleTracking = false;
   bottomScaleTracking = false;
+  rotOriginTracking = false;
 }
 
 
@@ -112,13 +120,28 @@ function checkScaleAction() {
 }
 
 
+function checkRotOriginAction() {
+  if (mouseX > activeLayer.xOrigin + activeLayer.pivotXOffset - 5
+   && mouseX < activeLayer.xOrigin + activeLayer.pivotXOffset + 5
+   && mouseY > activeLayer.yOrigin + activeLayer.pivotYOffset - 5
+   && mouseY < activeLayer.yOrigin + activeLayer.pivotYOffset + 5) {
+      rotOriginTracking = true;
+      moveTracking = false;
+  }
+}
+
+
 // updateActiveLayer()
 // updates active layer properties based on moving and scaling actions
 function updateActiveLayer() {
   //update active layer info
+
+  ////////////////////////////////////////////////
+  /////////This is causing the problem////////////
+  ////////////////////////////////////////////////
   if (moveTracking) {
-    activeLayer.xOrigin += movedX;
-    activeLayer.yOrigin += movedY;
+    activeLayer.xOrigin = mouseX + mouseOffsetX;
+    activeLayer.yOrigin = mouseY + mouseOffsetY;
   }
   if (topScaleTracking) {
     activeLayer.yOrigin += movedY/2;
@@ -136,6 +159,13 @@ function updateActiveLayer() {
     activeLayer.xOrigin += movedX/2;
     activeLayer.width += movedX;
   }
+  if (rotOriginTracking) {
+    activeLayer.pivotXOffset += movedX;
+    activeLayer.pivotYOffset += movedY;
+  }
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
 }
 
 
@@ -167,6 +197,20 @@ function drawTransformPoints() {
     ellipse(activeLayer.xOrigin - activeLayer.width/2, activeLayer.yOrigin + activeLayer.height/2, 10); //lower left corner
     ellipse(activeLayer.xOrigin, activeLayer.yOrigin + activeLayer.height/2, 10); //lower middle
     ellipse(activeLayer.xOrigin + activeLayer.width/2, activeLayer.yOrigin + activeLayer.height/2, 10); //lower right corner
+    pop();
+  }
+}
+
+
+function drawRotationalOrigin() {
+  if(activeLayer.type == "rotational") {
+    push();
+    fill(255);
+    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 10);
+    stroke(255);
+    strokeWeight(2);
+    noFill();
+    ellipse(activeLayer.xOrigin + activeLayer.pivotXOffset, activeLayer.yOrigin + activeLayer.pivotYOffset, 20);
     pop();
   }
 }
@@ -296,28 +340,20 @@ function updateImage() {
 
 
 
-function updateXOrigin(event) {
-  /*if(event.key === "Enter") {
-    activeLayer.xOrigin = document.getElementById("layerX").value;
-  }*/
+function updateXOrigin() {
+  //activeLayer.xOrigin = document.getElementById("layerX").value;
 }
 
-function updateYOrigin(event) {
-  /*if(event.key === "Enter") {
-    activeLayer.yOrigin = document.getElementById("layerY").value;
-  }*/
+function updateYOrigin() {
+  //activeLayer.yOrigin = document.getElementById("layerY").value;
 }
 
-function updateHeight(event) {
-  /*if(event.key === "Enter") {
-    activeLayer.height = document.getElementById("layerHeight").value;
-  }*/
+function updateHeight() {
+  //activeLayer.height = document.getElementById("layerHeight").value;
 }
 
-function updateWidth(event) {
-  /*if(event.key === "Enter") {
-    activeLayer.width = document.getElementById("layerWidth").value;
-  }*/
+function updateWidth() {
+  //activeLayer.width = document.getElementById("layerWidth").value;
 }
 
 
@@ -369,14 +405,23 @@ function setToolbarProperties() {
     document.getElementById("toolbar").innerHTML +=
     `<div class="toolbar-section" id="">
       <p class="toolbar-section-title">Center:</p>
-      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerX" name="layerX" value="" style="width:50px;float:left;" onkeydown="updateXOrigin(event)">
-      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerY" name="layerY" value="" style="width:50px;float:left;" onkeydown="updateYOrigin(event)">
+      <p style="margin:0px;float:left;">X:</p> <input type="number" id="layerX" name="layerX" value="" style="width:50px;float:left;" onchange="updateXOrigin()">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="number" id="layerY" name="layerY" value="" style="width:50px;float:left;" onchange="updateYOrigin()">
     </div>
 
     <div class="toolbar-section" id="">
       <p class="toolbar-section-title">Size:</p>
-      <p style="margin:0px;float:left;">Width:</p> <input type="text" id="layerWidth" name="layerWidth" value="" style="width:50px;float:left;" onkeydown="updateWidth(event)">
-      <p style="margin:0px;margin-left:20px;float:left;">Height:</p> <input type="text" id="layerHeight" name="layerHeight" value="" style="width:50px;float:left;" onkeydown="updateHeight(event)">
+      <p style="margin:0px;float:left;">Width:</p> <input type="number" id="layerWidth" name="layerWidth" value="" style="width:50px;float:left;" onchange="updateWidth()">
+      <p style="margin:0px;margin-left:20px;float:left;">Height:</p> <input type="number" id="layerHeight" name="layerHeight" value="" style="width:50px;float:left;" onchange="updateHeight()">
+    </div>`;
+  }
+
+  if(activeLayer.type == "rotational") {
+    document.getElementById("toolbar").innerHTML +=
+    `<div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Pivot Point:</p>
+      <p style="margin:0px;float:left;">X:</p> <input type="number" id="layerRotX" name="layerRotX" value="" style="width:50px;float:left;">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="number" id="layerRotY" name="layerRotY" value="" style="width:50px;float:left;">
     </div>`;
   }
 
@@ -396,4 +441,19 @@ function updateToolbarTransform() {
   document.getElementById("layerY").value = activeLayer.yOrigin;
   document.getElementById("layerWidth").value = activeLayer.width;
   document.getElementById("layerHeight").value = activeLayer.height;
+  if(activeLayer.type == "rotational") {
+    updateRotationalTransform()
+  }
+  if(activeLayer.type == "translational") {
+
+  }
+  if(activeLayer.type == "flap") {
+
+  }
+}
+
+
+function updateRotationalTransform() {
+  document.getElementById("layerRotX").value = activeLayer.xOrigin + activeLayer.pivotXOffset;
+  document.getElementById("layerRotY").value = activeLayer.yOrigin + activeLayer.pivotYOffset;
 }
