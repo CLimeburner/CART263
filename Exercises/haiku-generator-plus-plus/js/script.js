@@ -95,7 +95,7 @@ let seasonIndex = Math.floor(Math.random() * 4);
 let title = seasons[seasonIndex];
 let titleH1 = document.getElementById(`title`);
 titleH1.innerText = title;
-line1P.addEventListener(`click`, titleClicked);
+titleH1.addEventListener(`click`, titleClicked);
 
 // generate three random lines
 let line1 = random(fiveSyllableLines);
@@ -116,7 +116,7 @@ line3P.addEventListener(`click`, lineClicked);
 
 
 function titleClicked(event) {
-
+  fadeOut(event.target, 1);
 }
 
 
@@ -133,7 +133,20 @@ function fadeOut(element, opacity) {
       fadeOut(element, opacity);
     });
   } else {
-    setNewLine(element);
+    if (element.id == `title`) {
+      setNewTitle(element);
+      setTimeout(function() {
+        fadeOut(line1P, 1);
+      }, 100);
+      setTimeout(function() {
+        fadeOut(line2P, 1);
+      }, 600);
+      setTimeout(function() {
+        fadeOut(line3P, 1);
+      }, 1100);
+    } else {
+      setNewLine(element);
+    }
     fadeIn(element, 0);
   }
 }
@@ -147,6 +160,13 @@ function fadeIn(element, opacity) {
       fadeIn(element, opacity);
     });
   }
+}
+
+
+function setNewTitle(element) {
+  seasonIndex = Math.floor(Math.random() * 4);
+  console.log(seasonIndex);
+  element.innerText = seasons[seasonIndex];
 }
 
 
