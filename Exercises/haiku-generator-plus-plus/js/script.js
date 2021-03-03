@@ -3,7 +3,7 @@
 Haiku Generator ++
 Coded by: Chip Limeburner
 
-
+Generates seasonal haikus that can be refreshed with a click.
 */
 
 "use strict";
@@ -18,76 +18,74 @@ let seasons = [
 
 //arrary of background colors for each season
 let seasonBackgrounds = [
-  `#acde73`,
-  `#45e6d8`,
-  `#b5783e`,
-  `#69b3d1`
+  `#acde73`, //Spring
+  `#45e6d8`, //Summer
+  `#b5783e`, //Fall
+  `#69b3d1` //Winter
 ];
 
 //array of text colors for each season
 let seasonTextColors = [
-  `#f8fcb8`,
-  `#f6fcd2`,
-  `#f0e8d3`,
-  `#d3f0ed`
+  `#f8fcb8`, //Spring
+  `#f6fcd2`, //Summer
+  `#f0e8d3`, //Fall
+  `#d3f0ed` //Winter
 ];
 
 //aray of five syllable lines for each season
 let fiveSyllableLines = [
-
+  //Spring
   [`Crocuses in bloom`,
   `Warm rain falls to earth`,
   `Ripples on the pond`,
-  `?`,
-  `?`],
-
+  `The soft glow at dawn`,
+  `The days grow longer`],
+  //Summer
   [`Campfires at dusk`,
   `Soft beams of sunlight`,
-  `?`,
-  `?`,
-  `?`],
-
+  `The starry night sky`,
+  `The chirp of crickets`,
+  `Heat off the asphalt`],
+  //Fall
   [`Leaves fall from branches`,
   `Birds migrating south`,
-  `?`,
-  `?`,
-  `?`],
-
-  [`Snow gently falling`,
-  `Warm by the fire`,
-  `?`,
-  `?`,
+  `The days shortening`,
+  `The smell of crisp air`,
+  `Squirrels caching food`],
+  //Winter
+  [`Flakes gently falling`,
+  `Snow forts in the park`,
+  `Clatter on the rink`,
+  `Hot cocoa in hand`,
   `Refrigerator`],
-
 ];
 
 //array of seven syllable lines for each season
 let sevenSyllableLines = [
-
+  //Spring
   [`New offshoots in the forest`,
-  `?`,
-  `?`,
-  `?`,
-  `?`],
-
+  `Eggs hatching in nests above`,
+  `A zephyr among the leaves`,
+  `The cycle begins again`,
+  `The birds return from abroad`],
+  //Summer
   [`Waves crash on the sandy beach`,
-  `?`,
-  `?`,
-  `?`,
-  `?`],
-
+  `Fruit growing on every branch`,
+  `Lazy days lost at the pool`,
+  `Soft moss carpets the forest`,
+  `Hiking trails through the mountains`],
+  //Fall
   [`The coming chill of winter`,
-  `?`,
-  `?`,
-  `?`,
-  `?`],
-
-  [`?`,
-  `?`,
-  `?`,
-  `?`,
-  `?`],
-
+  `Cinammon, ginger, and cloves`,
+  `Pumpkins on every doorstep`,
+  `Color changes in the trees`,
+  `Children returning to school`],
+  //Winter
+  [`The closing of the cycle`,
+  `Jack Frost nipping at your nose`,
+  `Pine trees decked out with tinsel`,
+  `Staying warm by the fire`,
+  `Icicles hang from the eaves`],
 ];
 
 //generate a random season title
