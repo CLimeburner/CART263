@@ -88,6 +88,10 @@ let sevenSyllableLines = [
   `Icicles hang from the eaves`],
 ];
 
+document.getElementById("save-button").addEventListener(`click`, function() {
+  window.print();
+});
+
 //generate a random season title
 let seasonIndex = Math.floor(Math.random() * 4); //generate a random season that will use for the rest of our poem
 let title = seasons[seasonIndex]; //pull the seasonal title based on our index
