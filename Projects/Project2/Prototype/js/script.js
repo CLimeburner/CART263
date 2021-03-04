@@ -19,6 +19,8 @@ let rotOriginTracking = false;
 
 let mouseOffsetX;
 let mouseOffsetY;
+let dragOffsetX;
+let dragOffsetY;
 
 let interfaceToolMode = "edit";
 
@@ -31,10 +33,10 @@ function preload() {
 
 
 function setup() {
-  let canvasWidth = prompt("Please input the desired width of your diagram in px:");
-  let canvasHeight = prompt("Please input the desired height of your diagram in px:");
+  /*let canvasWidth = prompt("Please input the desired width of your diagram in px:");
+  let canvasHeight = prompt("Please input the desired height of your diagram in px:");*/
 
-  cnv = createCanvas(canvasWidth, canvasHeight); //create the canvas
+  cnv = createCanvas(800, 600); //create the canvas
   cnv.parent(`viewport-pane`); //position canvas in the HTML framework
   cnv.background(0); //set canvas background
   //center the canvas
@@ -79,8 +81,8 @@ function mousePressed() {
     checkScaleAction();
     checkRotOriginAction();
   } else if (interfaceToolMode == "drag") {
-    mouseOffsetX = winMouseX;
-    mouseOffsetY = winMouseY;
+    dragOffsetX = winMouseX;
+    dragOffsetY = winMouseY;
     dragTracking = true;
   }
 }
@@ -150,13 +152,13 @@ function checkRotOriginAction() {
 }
 
 
-//
-//
+// updateDrag()
+// moves the canvas at each frame based on how much the mouse has moved
 function updateDrag() {
-  cnvX -= (mouseOffsetX - winMouseX);
-  cnvY -= (mouseOffsetY - winMouseY);
-  mouseOffsetX = winMouseX;
-  mouseOffsetY = winMouseY;
+  cnvX -= (dragOffsetX - winMouseX);
+  cnvY -= (dragOffsetY - winMouseY);
+  dragOffsetX = winMouseX;
+  dragOffsetY = winMouseY;
 }
 
 
@@ -194,6 +196,7 @@ function updateActiveLayer() {
   }
   mouseOffsetX = mouseX;
   mouseOffsetY = mouseY;
+
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
@@ -375,20 +378,46 @@ function updateImage() {
 
 
 
-function updateXOrigin() {
-  //activeLayer.xOrigin = document.getElementById("layerX").value;
+function updateXOrigin(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.xOrigin - document.getElementById("layerX").value;
+    activeLayer.xOrigin -= buffer;
+  }
 }
 
-function updateYOrigin() {
-  //activeLayer.yOrigin = document.getElementById("layerY").value;
+function updateYOrigin(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.yOrigin - document.getElementById("layerY").value;
+    activeLayer.yOrigin -= buffer;
+  }
 }
 
-function updateHeight() {
-  //activeLayer.height = document.getElementById("layerHeight").value;
+function updateHeight(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.height - document.getElementById("layerHeight").value;
+    activeLayer.height -= buffer;
+  }
 }
 
-function updateWidth() {
-  //activeLayer.width = document.getElementById("layerWidth").value;
+function updateWidth(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.width - document.getElementById("layerWidth").value;
+    activeLayer.width -= buffer;
+  }
+}
+
+function updateRotXOrigin(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - document.getElementById("layerRotX").value);
+    activeLayer.pivotXOffset -= buffer;
+  }
+}
+
+function updateRotYOrigin(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - document.getElementById("layerRotY").value);
+    activeLayer.pivotYOffset -= buffer;
+  }
 }
 
 
@@ -440,14 +469,14 @@ function setToolbarProperties() {
     document.getElementById("toolbar").innerHTML +=
     `<div class="toolbar-section" id="">
       <p class="toolbar-section-title">Center:</p>
-      <p style="margin:0px;float:left;">X:</p> <input type="number" id="layerX" name="layerX" value="" style="width:50px;float:left;" onchange="updateXOrigin()">
-      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="number" id="layerY" name="layerY" value="" style="width:50px;float:left;" onchange="updateYOrigin()">
+      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerX" name="layerX" value="" style="width:50px;float:left;" onkeydown="updateXOrigin(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerY" name="layerY" value="" style="width:50px;float:left;" onkeydown="updateYOrigin(event)">
     </div>
 
     <div class="toolbar-section" id="">
       <p class="toolbar-section-title">Size:</p>
-      <p style="margin:0px;float:left;">Width:</p> <input type="number" id="layerWidth" name="layerWidth" value="" style="width:50px;float:left;" onchange="updateWidth()">
-      <p style="margin:0px;margin-left:20px;float:left;">Height:</p> <input type="number" id="layerHeight" name="layerHeight" value="" style="width:50px;float:left;" onchange="updateHeight()">
+      <p style="margin:0px;float:left;">Width:</p> <input type="text" id="layerWidth" name="layerWidth" value="" style="width:50px;float:left;" onkeydown="updateWidth(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Height:</p> <input type="text" id="layerHeight" name="layerHeight" value="" style="width:50px;float:left;" onkeydown="updateHeight(event)">
     </div>`;
   }
 
@@ -455,8 +484,8 @@ function setToolbarProperties() {
     document.getElementById("toolbar").innerHTML +=
     `<div class="toolbar-section" id="">
       <p class="toolbar-section-title">Pivot Point:</p>
-      <p style="margin:0px;float:left;">X:</p> <input type="number" id="layerRotX" name="layerRotX" value="" style="width:50px;float:left;">
-      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="number" id="layerRotY" name="layerRotY" value="" style="width:50px;float:left;">
+      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerRotX" name="layerRotX" value="" style="width:50px;float:left;" onkeydown="updateRotXOrigin(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerRotY" name="layerRotY" value="" style="width:50px;float:left;" onkeydown="updateRotYOrigin(event)">
     </div>`;
   }
 
