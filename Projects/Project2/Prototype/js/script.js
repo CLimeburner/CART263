@@ -259,7 +259,7 @@ function createNewLayer() {
   let layerTab = document.createElement("div"); //create the tab
   layerTab.className += "layer-tab"; //assign the tab's class
 
-  document.getElementById("layer-list").appendChild(layerTab); //add the tab to the layer-list
+  document.getElementById("layers-container").appendChild(layerTab); //add the tab to the layer-list
   //addMovementButtons(layerTab);
 
   layerTab.innerHTML = //add some inner structure for button
@@ -306,11 +306,11 @@ function moveLayerUp(tab) {
     if(layers[activeLayer.layersIndex-2]) {
       let layerA = layers[activeLayer.layersIndex-1]; //the active tab
       let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
-      let list = document.getElementById("layer-list"); //get our layer-list object
+      let list = document.getElementById("layers-container"); //get our layer-list object
       let buffer = layerB; //get the adjacent element above
       layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
       layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-      list.children[layerA.layersIndex-1].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex]); //move the DOM element physically up in the child list
+      list.children[layerA.layersIndex-2].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex-1]); //move the DOM element physically up in the child list
       //swap layer index values
       layerA.layersIndex--;
       layerB.layersIndex++;
@@ -326,11 +326,11 @@ function moveLayerDown(tab) {
     if(layers[activeLayer.layersIndex]) {
       let layerA = layers[activeLayer.layersIndex-1]; //the active tab
       let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
-      let list = document.getElementById("layer-list"); //get our layer-list object
+      let list = document.getElementById("layers-container"); //get our layer-list object
       let buffer = layerB; //get the adjacent element below
       layers[layerA.layersIndex] = layerA; //move layerA down in the array
       layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-      list.children[layerA.layersIndex+1].insertAdjacentElement("afterend", list.children[layerA.layersIndex]);//move the DOM element physically down in the child list
+      list.children[layerA.layersIndex].insertAdjacentElement("afterend", list.children[layerA.layersIndex-1]);//move the DOM element physically down in the child list
       //swap layer index values
       layerA.layersIndex++;
       layerB.layersIndex--;
@@ -424,11 +424,11 @@ function updateRotYOrigin(event) {
 // setActiveLayer(tab)
 // makes the arrangements to set tab as the active layer
 function setActiveLayer(tab) {
-  for (let i = 2; i < document.getElementById("layer-list").children.length; i++) {
-    if (document.getElementById("layer-list").children[i] === tab) {
-      activeLayer = layers[i-2]; //if the iterated tab is the one you clicked, make it the active one
+  for (let i = 0; i < document.getElementById("layers-container").children.length; i++) {
+    if (document.getElementById("layers-container").children[i] === tab) {
+      activeLayer = layers[i]; //if the iterated tab is the one you clicked, make it the active one
     } else {
-      document.getElementById("layer-list").children[i].id = "" //otherwise make sure it ISNT the active one
+      document.getElementById("layers-container").children[i].id = "" //otherwise make sure it ISNT the active one
     }
   }
   tab.id += "current-layer-tab"; //give the clicked tab the current layer ID
