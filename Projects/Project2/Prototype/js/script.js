@@ -9,6 +9,7 @@ let layers = []; //an array of our layer objects
 let activeLayer = 0; //the current active layer object
 let layerCounter = 1; //a variable used for initializing and tracking total number of layers
 
+let dragTracking = false;
 let moveTracking = false;
 let leftScaleTracking = false;
 let rightScaleTracking = false;
@@ -18,6 +19,8 @@ let rotOriginTracking = false;
 
 let mouseOffsetX;
 let mouseOffsetY;
+
+let interfaceToolMode = "edit";
 
 
 
@@ -43,15 +46,20 @@ function setup() {
 
 function draw() {
   //update the canvas position
-  cnvX = ((windowWidth - width) - 300)/2;
-  cnvY = (windowHeight - height)/2;
+  /*cnvX = ((windowWidth - width) - 300)/2;
+  cnvY = (windowHeight - height)/2;*/
   cnv.position(cnvX, cnvY);
 
   background(0);
 
-  updateActiveLayer(); //updates transform information based on mouse movements if mouse is clicked
+
   if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking || rotOriginTracking) {
+    updateActiveLayer(); //updates transform information based on mouse movements if mouse is clicked
     updateToolbarTransform(); //update the toolbar to reflect the actual transform of the layer
+  }
+
+  if(dragTracking) {
+    updateDrag();
   }
 
   drawLayerImages(); //draws the layer image
@@ -64,17 +72,24 @@ function draw() {
 // mousePressed()
 // tracks mouse position based on certain prerequisites
 function mousePressed() {
-  mouseOffsetX = activeLayer.xOrigin - mouseX;
-  mouseOffsetY = activeLayer.yOrigin - mouseY;
-  checkMoveAction();
-  checkScaleAction();
-  checkRotOriginAction();
+  if (interfaceToolMode == "edit") {
+    mouseOffsetX = mouseX;
+    mouseOffsetY = mouseY;
+    checkMoveAction();
+    checkScaleAction();
+    checkRotOriginAction();
+  } else if (interfaceToolMode == "drag") {
+    mouseOffsetX = winMouseX;
+    mouseOffsetY = winMouseY;
+    dragTracking = true;
+  }
 }
 
 
 // mouseReleased()
 // stops tracking the mouse on release
 function mouseReleased() {
+  dragTracking = false;
   moveTracking = false;
   leftScaleTracking = false;
   rightScaleTracking = false;
@@ -135,6 +150,16 @@ function checkRotOriginAction() {
 }
 
 
+//
+//
+function updateDrag() {
+  cnvX -= (mouseOffsetX - winMouseX);
+  cnvY -= (mouseOffsetY - winMouseY);
+  mouseOffsetX = winMouseX;
+  mouseOffsetY = winMouseY;
+}
+
+
 // updateActiveLayer()
 // updates active layer properties based on moving and scaling actions
 function updateActiveLayer() {
@@ -144,29 +169,31 @@ function updateActiveLayer() {
   /////////This is causing the problem////////////
   ////////////////////////////////////////////////
   if (moveTracking) {
-    activeLayer.xOrigin = mouseX + mouseOffsetX;
-    activeLayer.yOrigin = mouseY + mouseOffsetY;
+    activeLayer.xOrigin += mouseX - mouseOffsetX;
+    activeLayer.yOrigin += mouseY - mouseOffsetY;
   }
   if (topScaleTracking) {
-    activeLayer.yOrigin += movedY/2;
-    activeLayer.height -= movedY;
+    activeLayer.yOrigin += (mouseY - mouseOffsetY)/2;
+    activeLayer.height -= mouseY - mouseOffsetY;
   }
   if (bottomScaleTracking) {
-    activeLayer.yOrigin += movedY/2;
-    activeLayer.height += movedY;
+    activeLayer.yOrigin += (mouseY - mouseOffsetY)/2;
+    activeLayer.height += mouseY - mouseOffsetY;
   }
   if (leftScaleTracking) {
-    activeLayer.xOrigin += movedX/2;
-    activeLayer.width -= movedX;
+    activeLayer.xOrigin += (mouseX - mouseOffsetX)/2;
+    activeLayer.width -= mouseX - mouseOffsetX;
   }
   if (rightScaleTracking) {
-    activeLayer.xOrigin += movedX/2;
-    activeLayer.width += movedX;
+    activeLayer.xOrigin += (mouseX - mouseOffsetX)/2;
+    activeLayer.width += mouseX - mouseOffsetX;
   }
   if (rotOriginTracking) {
-    activeLayer.pivotXOffset += movedX;
-    activeLayer.pivotYOffset += movedY;
+    activeLayer.pivotXOffset += mouseX - mouseOffsetX;
+    activeLayer.pivotYOffset += mouseY - mouseOffsetY;
   }
+  mouseOffsetX = mouseX;
+  mouseOffsetY = mouseY;
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
@@ -466,4 +493,16 @@ function updateToolbarTransform() {
 function updateRotationalTransform() {
   document.getElementById("layerRotX").value = activeLayer.xOrigin + activeLayer.pivotXOffset;
   document.getElementById("layerRotY").value = activeLayer.yOrigin + activeLayer.pivotYOffset;
+}
+
+
+// swapToolMode(element, mode)
+// swap to the appropriate tool mode when element is clicked
+function swapToolMode(element, mode) {
+  interfaceToolMode = mode;
+  let interfaceButtons = document.getElementsByClassName(`interface-buttons`);
+  for (let i = 0; i < interfaceButtons.length; i++) {
+    interfaceButtons[i].style[`background-color`] = "lightgray";
+  }
+  element.style[`background-color`] = "white";
 }

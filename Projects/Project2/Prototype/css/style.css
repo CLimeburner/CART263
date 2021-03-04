@@ -57,6 +57,22 @@ h3 {
   margin: 0px;
 }
 
+.interface-buttons {
+  background-color: lightgray;
+  margin:5px;
+  width: 50px;
+  height: 50px;
+}
+
+#interface-tools {
+  position: fixed;
+  left:0px;
+  top: 300px;
+  width: 60px;
+  height: 115px;
+  background-color: darkgray;
+}
+
 #toolbar {
   height: 60%;
   overflow-y: scroll;
