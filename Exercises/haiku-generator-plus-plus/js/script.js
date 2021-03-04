@@ -88,6 +88,7 @@ let sevenSyllableLines = [
   `Icicles hang from the eaves`],
 ];
 
+//add an event listener to our print button
 document.getElementById("save-button").addEventListener(`click`, function() {
   window.print();
 });
