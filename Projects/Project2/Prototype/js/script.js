@@ -48,8 +48,6 @@ function setup() {
 
 function draw() {
   //update the canvas position
-  /*cnvX = ((windowWidth - width) - 300)/2;
-  cnvY = (windowHeight - height)/2;*/
   cnv.position(cnvX, cnvY);
 
   background(0);
@@ -534,4 +532,10 @@ function swapToolMode(element, mode) {
     interfaceButtons[i].style[`background-color`] = "lightgray";
   }
   element.style[`background-color`] = "white";
+  if(mode ==`drag`) {
+    document.getElementsByTagName("body")[0].style.cursor = "move";
+  } else {
+    document.getElementsByTagName("body")[0].style.cursor = "default";
+
+  }
 }

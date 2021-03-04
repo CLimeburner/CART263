@@ -73,6 +73,10 @@ h3 {
   background-color: darkgray;
 }
 
+#interface-tools:hover {
+  cursor: default;
+}
+
 #toolbar {
   height: 60%;
   overflow-y: scroll;
