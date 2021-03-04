@@ -28,7 +28,10 @@ function preload() {
 
 
 function setup() {
-  cnv = createCanvas(800, 600); //create the canvas
+  let canvasWidth = prompt("Please input the desired width of your diagram in px:");
+  let canvasHeight = prompt("Please input the desired height of your diagram in px:");
+
+  cnv = createCanvas(canvasWidth, canvasHeight); //create the canvas
   cnv.parent(`viewport-pane`); //position canvas in the HTML framework
   cnv.background(0); //set canvas background
   //center the canvas
