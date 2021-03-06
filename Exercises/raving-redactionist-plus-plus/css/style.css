@@ -1,0 +1,23 @@
+/*********************************************
+
+Here is a description of any special CSS used.
+By default that's nothing.
+
+**********************************************/
+
+.redacted {
+  background-color: black;
+  user-select: none;
+}
+
+.revealed {
+  color: red;
+  text-decoration: underline;
+}
+
+#secret-document {
+  font-family: monospace;
+  font-size: 1.25rem;
+  width: 50vw;
+  margin: auto;
+}
