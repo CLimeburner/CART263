@@ -267,24 +267,24 @@ function createNewLayer() {
    </div>
    <H3>${layers[layers.length-1].name}</H3>`;
 
-  layerTab.addEventListener("click", tabSwitcher(layerTab)); //add the event listener that allows the tab to be selected
-  layerTab.children[0].children[0].addEventListener("click", moveLayerUp(layerTab));
-  layerTab.children[0].children[1].addEventListener("click", moveLayerDown(layerTab));
-  if(layerCounter == 1) {
+  //add the event listener that allows the tab to be selected
+  layerTab.addEventListener("click", function() {
+    tabSelector(layerTab)
+  });
+  //add event listeners to move layer tabs up or down in the hierarchy
+  layerTab.children[0].children[0].addEventListener("click", function() {
+    moveLayerUp(layerTab)
+  });
+  layerTab.children[0].children[1].addEventListener("click", function() {
+    moveLayerDown(layerTab)
+  });
+
+  if(layerCounter == 1) { //if this is the first layer, make it the active layer by default
     activeLayer = layers[0];
     layerTab.id += "current-layer-tab";
   }
-  layerCounter++; //increment layerCounter
-}
 
-
-// tabSwitcher(tab)
-// makes tab the active layer and updates the toolbar to reflect as such
-function tabSwitcher(tab) {
-  return function() { //returns a function so the callback can take parameters
-    setActiveLayer(tab); //assigns tab as the active layer
-    setToolbarProperties(); //updates toolbar to display properties for the active layer
-  }
+  layerCounter++; //increment layerCounter to track the total number of layers
 }
 
 
@@ -299,40 +299,36 @@ function tabSelector(tab) {
 // moveLayerUp(tab)
 // swaps the position of tab with the layer above it
 function moveLayerUp(tab) {
-  return function() {
-    tabSelector(tab); //make the moving layer the active one
-    if(layers[activeLayer.layersIndex-2]) {
-      let layerA = layers[activeLayer.layersIndex-1]; //the active tab
-      let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
-      let list = document.getElementById("layers-container"); //get our layer-list object
-      let buffer = layerB; //get the adjacent element above
-      layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
-      layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-      list.children[layerA.layersIndex-2].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex-1]); //move the DOM element physically up in the child list
-      //swap layer index values
-      layerA.layersIndex--;
-      layerB.layersIndex++;
-    }
+  tabSelector(tab); //make the moving layer the active one
+  if(layers[activeLayer.layersIndex-2]) {
+    let layerA = layers[activeLayer.layersIndex-1]; //the active tab
+    let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
+    let list = document.getElementById("layers-container"); //get our layer-list object
+    let buffer = layerB; //get the adjacent element above
+    layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
+    layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
+    list.children[layerA.layersIndex-2].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex-1]); //move the DOM element physically up in the child list
+    //swap layer index values
+    layerA.layersIndex--;
+    layerB.layersIndex++;
   }
 }
 
 // moveLayerDown(tab)
 // swaps the position of tab with the layer below it
 function moveLayerDown(tab) {
-  return function() {
-    tabSelector(tab); //make the moving layer the active one
-    if(layers[activeLayer.layersIndex]) {
-      let layerA = layers[activeLayer.layersIndex-1]; //the active tab
-      let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
-      let list = document.getElementById("layers-container"); //get our layer-list object
-      let buffer = layerB; //get the adjacent element below
-      layers[layerA.layersIndex] = layerA; //move layerA down in the array
-      layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-      list.children[layerA.layersIndex].insertAdjacentElement("afterend", list.children[layerA.layersIndex-1]);//move the DOM element physically down in the child list
-      //swap layer index values
-      layerA.layersIndex++;
-      layerB.layersIndex--;
-    }
+  tabSelector(tab); //make the moving layer the active one
+  if(layers[activeLayer.layersIndex]) {
+    let layerA = layers[activeLayer.layersIndex-1]; //the active tab
+    let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
+    let list = document.getElementById("layers-container"); //get our layer-list object
+    let buffer = layerB; //get the adjacent element below
+    layers[layerA.layersIndex] = layerA; //move layerA down in the array
+    layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
+    list.children[layerA.layersIndex].insertAdjacentElement("afterend", list.children[layerA.layersIndex-1]);//move the DOM element physically down in the child list
+    //swap layer index values
+    layerA.layersIndex++;
+    layerB.layersIndex--;
   }
 }
 
@@ -342,7 +338,7 @@ function moveLayerDown(tab) {
 function updateName(event) {
   if(event.key == "Enter") {
     activeLayer.name = document.getElementById("layerName").value;
-    document.getElementById("layer-list").children[activeLayer.layersIndex+1].children[1].innerHTML = activeLayer.name;
+    document.getElementById("layers-container").children[activeLayer.layersIndex-1].children[1].innerHTML = activeLayer.name;
   }
 }
 
@@ -375,13 +371,13 @@ function updateImage() {
 }
 
 
-
 function updateXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.xOrigin - document.getElementById("layerX").value;
     activeLayer.xOrigin -= buffer;
   }
 }
+
 
 function updateYOrigin(event) {
   if (event.key == `Enter`) {
@@ -390,12 +386,14 @@ function updateYOrigin(event) {
   }
 }
 
+
 function updateHeight(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.height - document.getElementById("layerHeight").value;
     activeLayer.height -= buffer;
   }
 }
+
 
 function updateWidth(event) {
   if (event.key == `Enter`) {
@@ -404,12 +402,14 @@ function updateWidth(event) {
   }
 }
 
+
 function updateRotXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - document.getElementById("layerRotX").value);
     activeLayer.pivotXOffset -= buffer;
   }
 }
+
 
 function updateRotYOrigin(event) {
   if (event.key == `Enter`) {
