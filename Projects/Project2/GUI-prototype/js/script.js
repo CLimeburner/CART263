@@ -307,8 +307,8 @@ function moveLayerDown(tab) {
 // updates the active layer's name
 function updateName(event) {
   if(event.key == "Enter") {
-    activeLayer.name = document.getElementById("layerName").value;
-    document.getElementById("layers-container").children[activeLayer.layersIndex-1].children[1].innerHTML = activeLayer.name;
+    activeLayer.name = $(`#layerName`).val();
+    $(`.layer-nametag:eq(${activeLayer.layersIndex-1})`).html(activeLayer.name);
   }
 }
 
@@ -316,7 +316,7 @@ function updateName(event) {
 // updateType()
 // updates the active layer's type
 function updateType() {
-  activeLayer.type = document.getElementById("layerType").value;
+  activeLayer.type = $(`#layerType`).val();
   setToolbarProperties();
 }
 
@@ -343,7 +343,7 @@ function updateImage() {
 
 function updateXOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.xOrigin - document.getElementById("layerX").value;
+    let buffer = activeLayer.xOrigin - $(`#layerX`).val();
     activeLayer.xOrigin -= buffer;
   }
 }
@@ -351,7 +351,7 @@ function updateXOrigin(event) {
 
 function updateYOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.yOrigin - document.getElementById("layerY").value;
+    let buffer = activeLayer.yOrigin - $(`#layerY`).val();
     activeLayer.yOrigin -= buffer;
   }
 }
@@ -359,7 +359,7 @@ function updateYOrigin(event) {
 
 function updateHeight(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.height - document.getElementById("layerHeight").value;
+    let buffer = activeLayer.height - $(`#layerHeight`).val();
     activeLayer.height -= buffer;
   }
 }
@@ -367,7 +367,7 @@ function updateHeight(event) {
 
 function updateWidth(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.width - document.getElementById("layerWidth").value;
+    let buffer = activeLayer.width - $(`#layerWidth`).val();
     activeLayer.width -= buffer;
   }
 }
@@ -375,7 +375,7 @@ function updateWidth(event) {
 
 function updateRotXOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - document.getElementById("layerRotX").value);
+    let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - $(`#layerRotX`).val());
     activeLayer.pivotXOffset -= buffer;
   }
 }
@@ -383,7 +383,7 @@ function updateRotXOrigin(event) {
 
 function updateRotYOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - document.getElementById("layerRotY").value);
+    let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - $(`#layerRotY`).val());
     activeLayer.pivotYOffset -= buffer;
   }
 }
@@ -530,7 +530,7 @@ function displayLayerList() {
        <div class="up-button"></div>
        <div class="down-button"></div>
      </div>
-     <H3>${layers[i].name}</H3>
+     <H3 class="layer-nametag">${layers[i].name}</H3>
     </div>`;
   }
   $(`#layers-container`).html(htmlBuffer);
