@@ -8,7 +8,7 @@ class Layer {
 
   constructor(idNum) {
     this.layerIdNum = idNum;
-    this.layersIndex = idNum;
+    this.layersIndex = 1;
     this.name = `Layer ${idNum}`;
     this.type = "background"
     this.img;

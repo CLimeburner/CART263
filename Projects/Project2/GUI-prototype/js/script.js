@@ -164,10 +164,6 @@ function updateDrag() {
 // updates active layer properties based on moving and scaling actions
 function updateActiveLayer() {
   //update active layer info
-
-  ////////////////////////////////////////////////
-  /////////This is causing the problem////////////
-  ////////////////////////////////////////////////
   if (moveTracking) {
     activeLayer.xOrigin += mouseX - mouseOffsetX;
     activeLayer.yOrigin += mouseY - mouseOffsetY;
@@ -194,10 +190,6 @@ function updateActiveLayer() {
   }
   mouseOffsetX = mouseX;
   mouseOffsetY = mouseY;
-
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
 }
 
 
@@ -253,38 +245,18 @@ function drawRotationalOrigin() {
 // createNewLayer()
 // initializes new layers
 function createNewLayer() {
-  layers.push(new Layer(layerCounter)); //create the new layer object and add it to the layers array
-  let layerTab = document.createElement("div"); //create the tab
-  layerTab.className += "layer-tab"; //assign the tab's class
-
-  document.getElementById("layers-container").appendChild(layerTab); //add the tab to the layer-list
-  //addMovementButtons(layerTab);
-
-  layerTab.innerHTML = //add some inner structure for button
-  `<div style="float: left;">
-     <div class="up-button"></div>
-     <div class="down-button"></div>
-   </div>
-   <H3>${layers[layers.length-1].name}</H3>`;
-
-  //add the event listener that allows the tab to be selected
-  layerTab.addEventListener("click", function() {
-    tabSelector(layerTab)
-  });
-  //add event listeners to move layer tabs up or down in the hierarchy
-  layerTab.children[0].children[0].addEventListener("click", function() {
-    moveLayerUp(layerTab)
-  });
-  layerTab.children[0].children[1].addEventListener("click", function() {
-    moveLayerDown(layerTab)
-  });
-
+  for(let i = 0; i < layers.length; i++) {
+    layers[i].layersIndex++;
+  }
+  layers.unshift(new Layer(layerCounter)); //create the new layer object and add it to the layers array
   if(layerCounter == 1) { //if this is the first layer, make it the active layer by default
     activeLayer = layers[0];
-    layerTab.id += "current-layer-tab";
+    //layerTab.id += "current-layer-tab";
   }
 
   layerCounter++; //increment layerCounter to track the total number of layers
+
+  displayLayerList();
 }
 
 
@@ -303,14 +275,13 @@ function moveLayerUp(tab) {
   if(layers[activeLayer.layersIndex-2]) {
     let layerA = layers[activeLayer.layersIndex-1]; //the active tab
     let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
-    let list = document.getElementById("layers-container"); //get our layer-list object
     let buffer = layerB; //get the adjacent element above
     layers[layerA.layersIndex-2] = layerA; //move layerA up in the array
     layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-    list.children[layerA.layersIndex-2].insertAdjacentElement("beforebegin", list.children[layerA.layersIndex-1]); //move the DOM element physically up in the child list
     //swap layer index values
     layerA.layersIndex--;
     layerB.layersIndex++;
+    displayLayerList();
   }
 }
 
@@ -321,14 +292,13 @@ function moveLayerDown(tab) {
   if(layers[activeLayer.layersIndex]) {
     let layerA = layers[activeLayer.layersIndex-1]; //the active tab
     let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
-    let list = document.getElementById("layers-container"); //get our layer-list object
     let buffer = layerB; //get the adjacent element below
     layers[layerA.layersIndex] = layerA; //move layerA down in the array
     layers[layerA.layersIndex-1] = buffer; //move layerB to where layerA used to be
-    list.children[layerA.layersIndex].insertAdjacentElement("afterend", list.children[layerA.layersIndex-1]);//move the DOM element physically down in the child list
     //swap layer index values
     layerA.layersIndex++;
     layerB.layersIndex--;
+    displayLayerList();
   }
 }
 
@@ -538,4 +508,40 @@ function swapToolMode(element, mode) {
     document.getElementsByTagName("body")[0].style.cursor = "default";
 
   }
+}
+
+
+// displayLayerList()
+// draws the HTML elements based on the layers[] array
+function displayLayerList() {
+  let htmlBuffer = ``;
+  for (let i = 0; i < layers.length; i++) {
+    htmlBuffer +=
+    `<div class="layer-tab" id="`
+
+    if (layers[i] == activeLayer) {
+      htmlBuffer +=
+      `current-layer-tab`
+    }
+
+    htmlBuffer +=
+    `">
+      <div style="float: left;">
+       <div class="up-button"></div>
+       <div class="down-button"></div>
+     </div>
+     <H3>${layers[i].name}</H3>
+    </div>`;
+  }
+  $(`#layers-container`).html(htmlBuffer);
+  $(`.layer-tab`).on(`click`, function() {
+    tabSelector(this);
+  });
+  $(`.up-button`).on(`click`, function() {
+    moveLayerUp(this);
+  });
+  $(`.down-button`).on(`click`, function() {
+    moveLayerDown(this);
+  });
+
 }
