@@ -9,30 +9,36 @@ let title = `Choose a title`;
 let paragraph = `Enter some paragraph text`;
 
 
-compileHtmlDoc();
+compileHtmlDoc(); //do an initial compile of the default state for display purposes.
 
 
-
+// updateBackgroundColor()
+// Updates the page background color based on user input.
 function updateBackgroundColor() {
   backingColor = $(`#color-box`).val();
   compileHtmlDoc();
 }
 
 
+// updateTitle()
+// Updates the title based on user input.
 function updateTitle() {
   title = $(`#title-box`).val();
   compileHtmlDoc();
 }
 
 
+// updateParagraph()
+// Updates the paragraph copy based on user input.
 function updateParagraph() {
   paragraph = $(`#copy-box`).val();
   compileHtmlDoc();
 }
 
 
+// compileHtmlDoc()
+// Procedurally generates an HTML file based on the parameters the user has input.
 function compileHtmlDoc() {
-
 //clear the html
 newHTMLDocument = ``;
 
@@ -99,8 +105,10 @@ $(`iframe`).attr(`src`, demoURL);
 }
 
 
+// exportHtml()
+// This takes the compiled HTML and downloads it on the client-side via a hidden link on the page.
 function exportHtml() {
-  $(`#download-link`).attr(`download`, `${title}.html`);
-  $(`#download-link`).attr(`href`, demoURL);
-  document.getElementById(`download-link`).click();
+  $(`#download-link`).attr(`download`, `${title}.html`); //assign title to the file
+  $(`#download-link`).attr(`href`, demoURL);  //pass temporary URL to the link
+  document.getElementById(`download-link`).click(); //simulate a click on the download link
 }
