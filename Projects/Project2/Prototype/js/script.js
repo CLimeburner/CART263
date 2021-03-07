@@ -53,9 +53,22 @@ newHTMLDocument +=
 //insert our CSS
 newHTMLDocument +=
 `body {
-  height: 100%;
-  width: 100%;
-  background-color: ${backingColor};}`
+  position: fixed;
+  height: 600px;
+  width: 400px;
+  top: 0;
+  left: 0;
+  margin: 0px;
+}
+
+ #diagram-container {
+  position: fixed;
+  height: 600px;
+  width: 400px;
+  top: 0;
+  left: 0;
+  background-color: ${backingColor};
+ }`
 
 //close the style and body tags
 newHTMLDocument +=
@@ -64,7 +77,8 @@ newHTMLDocument +=
 
 //open the body tag
 newHTMLDocument +=
-  `<body>`
+  `<body>
+    <div id="diagram-container">`
 
 //insert our body html
 newHTMLDocument +=
@@ -74,7 +88,8 @@ newHTMLDocument +=
 
 //close the body tag
 newHTMLDocument +=
-`</body>
+`</div>
+ </body>
 </html>`
 
 //make a blob from our html, create a URL for it, and push it to the iframe
