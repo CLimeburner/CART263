@@ -8,13 +8,21 @@
 
     <!-- CSS stylesheet(s) -->
     <link rel="stylesheet" type="text/css" href="css/style.css" />
-    
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   </head>
   <body>
 
     <div class="" id="interface-container">
-
+      <p>Background Color:</p>
+      <input type="color" name="color" value="ffffff" id="color-box" oninput="updateBackgroundColor()">
+      <p>Title:</p>
+      <input type="text" name="title" value="" id="title-box" onchange="updateTitle()">
+      <p>Paragraph:</p>
+      <input type="text" name="copy" value="" id="copy-box" onchange="updateParagraph()">
+      <p></p>
+      <input type="button" name="Export" value="Export" id="export-button" onclick="exportHtml()">
+      <a id="download-link" download="page.html" href=""></a>
     </div>
 
     <iframe src="" width="400" height="600" id="demo-frame"></iframe>

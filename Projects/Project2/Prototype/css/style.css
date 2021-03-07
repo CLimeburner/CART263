@@ -12,3 +12,8 @@
 #demo-frame {
   float: left;
 }
+
+
+#download-link {
+  display: none;
+}

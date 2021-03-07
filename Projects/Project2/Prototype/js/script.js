@@ -4,16 +4,31 @@
 let newHTMLDocument;
 let demoURL;
 
+let backingColor = `#ffffff`;
+let title = `Choose a title`;
+let paragraph = `Enter some paragraph text`;
+
+
+compileHtmlDoc();
 
 
 
-$(`#interface-container`).click(compileHtmlDoc);
+function updateBackgroundColor() {
+  backingColor = $(`#color-box`).val();
+  compileHtmlDoc();
+}
 
 
+function updateTitle() {
+  title = $(`#title-box`).val();
+  compileHtmlDoc();
+}
 
 
-
-
+function updateParagraph() {
+  paragraph = $(`#copy-box`).val();
+  compileHtmlDoc();
+}
 
 
 function compileHtmlDoc() {
@@ -40,7 +55,7 @@ newHTMLDocument +=
 `body {
   height: 100%;
   width: 100%;
-  background-color: blue;}`
+  background-color: ${backingColor};}`
 
 //close the style and body tags
 newHTMLDocument +=
@@ -53,7 +68,9 @@ newHTMLDocument +=
 
 //insert our body html
 newHTMLDocument +=
-  ``
+  `<h1>${title}</h1>
+  <p>${paragraph}
+  </p>`
 
 //close the body tag
 newHTMLDocument +=
@@ -64,5 +81,11 @@ newHTMLDocument +=
 let htmlBlob = new Blob([newHTMLDocument], {type : 'text/html'});
 demoURL = URL.createObjectURL(htmlBlob);
 $(`iframe`).attr(`src`, demoURL);
+}
 
+
+function exportHtml() {
+  $(`#download-link`).attr(`download`, `${title}.html`);
+  $(`#download-link`).attr(`href`, demoURL);
+  document.getElementById(`download-link`).click();
 }
