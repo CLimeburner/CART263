@@ -270,8 +270,8 @@ function tabSelector(tab) {
 
 // moveLayerUp(tab)
 // swaps the position of tab with the layer above it
-function moveLayerUp(tab) {
-  tabSelector(tab); //make the moving layer the active one
+function moveLayerUp(clickedButton) {
+  tabSelector(clickedButton.parentNode.parentNode); //make the moving layer the active one
   if(layers[activeLayer.layersIndex-2]) {
     let layerA = layers[activeLayer.layersIndex-1]; //the active tab
     let layerB = layers[activeLayer.layersIndex-2]; //the tab it's replacing
@@ -287,8 +287,8 @@ function moveLayerUp(tab) {
 
 // moveLayerDown(tab)
 // swaps the position of tab with the layer below it
-function moveLayerDown(tab) {
-  tabSelector(tab); //make the moving layer the active one
+function moveLayerDown(clickedButton) {
+  tabSelector(clickedButton.parentNode.parentNode); //make the moving layer the active one
   if(layers[activeLayer.layersIndex]) {
     let layerA = layers[activeLayer.layersIndex-1]; //the active tab
     let layerB = layers[activeLayer.layersIndex]; //the tab it's replacing
@@ -375,7 +375,7 @@ function updateWidth(event) {
 
 function updateRotXOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - $(`#layerRotX`).val());
+    let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - $("#layerRotX").val());
     activeLayer.pivotXOffset -= buffer;
   }
 }
@@ -383,7 +383,7 @@ function updateRotXOrigin(event) {
 
 function updateRotYOrigin(event) {
   if (event.key == `Enter`) {
-    let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - $(`#layerRotY`).val());
+    let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - $("#layerRotY").val());
     activeLayer.pivotYOffset -= buffer;
   }
 }
@@ -530,12 +530,14 @@ function displayLayerList() {
        <div class="up-button"></div>
        <div class="down-button"></div>
      </div>
-     <H3 class="layer-nametag">${layers[i].name}</H3>
+     <div class="nametag-container">
+      <H3 class="layer-nametag">${layers[i].name}</H3>
+     </div>
     </div>`;
   }
   $(`#layers-container`).html(htmlBuffer);
-  $(`.layer-tab`).on(`click`, function() {
-    tabSelector(this);
+  $(`.nametag-container`).on(`click`, function() {
+    tabSelector(this.parentNode);
   });
   $(`.up-button`).on(`click`, function() {
     moveLayerUp(this);

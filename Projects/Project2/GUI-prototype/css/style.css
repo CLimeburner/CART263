@@ -64,6 +64,13 @@ h3 {
   height: 50px;
 }
 
+.nametag-container {
+  position:relative;
+  float:left;
+  height:60px;
+  width:264px;
+}
+
 #interface-tools {
   position: fixed;
   left:0px;
@@ -115,6 +122,8 @@ h3 {
   height: 50px;
   z-index: 100;
 }
+
+
 
 [id*="current-layer-tab"] {
   background-color: white;
