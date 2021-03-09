@@ -33,10 +33,10 @@ function preload() {
 
 
 function setup() {
-  /*let canvasWidth = prompt("Please input the desired width of your diagram in px:");
-  let canvasHeight = prompt("Please input the desired height of your diagram in px:");*/
+  let canvasWidth = 800; //prompt("Please input the desired width of your diagram in px:");
+  let canvasHeight = 600; //prompt("Please input the desired height of your diagram in px:");
 
-  cnv = createCanvas(800, 600); //create the canvas
+  cnv = createCanvas(canvasWidth, canvasHeight); //create the canvas
   cnv.parent(`viewport-pane`); //position canvas in the HTML framework
   cnv.background(0); //set canvas background
   //center the canvas
@@ -514,28 +514,35 @@ function swapToolMode(element, mode) {
 // displayLayerList()
 // draws the HTML elements based on the layers[] array
 function displayLayerList() {
-  let htmlBuffer = ``;
+  let htmlBuffer = ``; //create an empty buffer to load with our layer tab elements
+  //for each layer in the layers array, create appropriate tabs
   for (let i = 0; i < layers.length; i++) {
+    //open a div in the buffer
     htmlBuffer +=
     `<div class="layer-tab" id="`
 
+    //if this tab is the active one, give it the active tab ID
     if (layers[i] == activeLayer) {
       htmlBuffer +=
       `current-layer-tab`
     }
 
+    //add most of the functional parts of the tab such as buttons and nametag
     htmlBuffer +=
     `">
       <div style="float: left;">
-       <div class="up-button"></div>
-       <div class="down-button"></div>
+       <div class="up-button" title="Move layer up"><img src="assets/images/uparrow.png" alt=""></div>
+       <div class="down-button" title="Move layer down"><img src="assets/images/downarrow.png" alt=""></div>
      </div>
      <div class="nametag-container">
       <H3 class="layer-nametag">${layers[i].name}</H3>
      </div>
     </div>`;
   }
-  $(`#layers-container`).html(htmlBuffer);
+
+  $(`#layers-container`).html(htmlBuffer); //create the html element from what's in the buffer
+
+  //give the html element the appropriate event listeners
   $(`.nametag-container`).on(`click`, function() {
     tabSelector(this.parentNode);
   });
