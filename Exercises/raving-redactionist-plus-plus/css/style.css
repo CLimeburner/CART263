@@ -5,6 +5,7 @@ By default that's nothing.
 
 **********************************************/
 
+
 .redacted {
   background-color: black;
   user-select: none;
@@ -12,7 +13,7 @@ By default that's nothing.
 
 .revealed {
   color: #CC0000;
-  text-decoration: underline;
+  font-weight: bold;
 }
 
 .snide-text {
@@ -23,6 +24,16 @@ By default that's nothing.
 
 .top-secret {
   width: auto;
+}
+
+.extra-secret:hover {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.extra-secret-fixed {
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 #secret-document {
