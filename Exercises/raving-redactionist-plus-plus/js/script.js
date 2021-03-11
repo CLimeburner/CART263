@@ -18,13 +18,14 @@ setInterval(revelation, 750); //every "timer" interval, call the revelation func
 function redact(event) {
   $(this).removeClass(`revealed`);
   $(this).addClass(`redacted`);
+  $(`#counter`).html($(`.revealed`).length); //update counter of revealed secrets
 }
 
 //  revelation()
 //  for each redacted element, attempt to reveal it
 function revelation() {
   $(`.redacted`).each(attemptReveal);
-  difficulty += 0.005; //increase the probability of a reveal
+  difficulty += 0.001; //increase the probability of a reveal
 }
 
 // attemptReveal()
@@ -35,4 +36,5 @@ function attemptReveal() {
     $(this).removeClass(`redacted`);
     $(this).addClass(`revealed`);
   }
+  $(`#counter`).html($(`.revealed`).length); //update counter of revealed secrets
 }
