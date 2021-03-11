@@ -7,7 +7,7 @@ Coded by: Chip Limeburner
 
 "use strict";
 
-let difficulty = 0.05; //a variable to allow us to manipulate the probablity of elements becoming visible
+let difficulty = 0.03; //a variable to allow us to manipulate the probablity of elements becoming visible
 
 $(`.top-secret`).on(`click`, redact); //add an event listener for clicking on top-secret elements
 
