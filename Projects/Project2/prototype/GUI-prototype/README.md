@@ -1,5 +1,5 @@
-# Read Me
+# GUI Prototype
 
 ## Chip Limeburner
 
-Description
+This prototype demonstrates general interface functionality to be used in the final platform.
