@@ -14,3 +14,12 @@ $(`.secret`).one(`mouseover`, function(event) {
     helper: `clone`
   });
 });
+
+$(`#answer`).droppable({
+  drop: function(event, ui) {
+    let letter = ui.draggable.text();
+    $(this).append(letter);
+    ui.draggable.draggable(`disable`);
+    ui.draggable.removeClass(`found`);
+  }
+});
