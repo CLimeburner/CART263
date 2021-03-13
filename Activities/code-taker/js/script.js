@@ -8,6 +8,15 @@ Coded by: Chip Limeburner
 
 "use strict";
 
+$(`#solved-dialog`).dialog({
+  autoOpen: false,
+  buttons: {
+    "I know.": function() {
+      $(this).dialog(`close`);
+    }
+  }
+});
+
 $(`.secret`).one(`mouseover`, function(event) {
   $(this).addClass(`found`, 500);
   $(this).draggable({
@@ -21,5 +30,9 @@ $(`#answer`).droppable({
     $(this).append(letter);
     ui.draggable.draggable(`disable`);
     ui.draggable.removeClass(`found`);
+
+    if($(this).text() === `Theremin`) {
+      $(`#solved-dialog`).dialog(`open`);
+    }
   }
 });
