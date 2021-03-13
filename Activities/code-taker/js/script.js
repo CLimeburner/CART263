@@ -1,9 +1,9 @@
 /**
-Title of Project
-Author Name
 
-This is a template. You must fill in the title,
-author, and this description to match your project!
+Code Taker
+Tutorial by: Pippin Barr
+Coded by: Chip Limeburner
+
 */
 
 "use strict";
