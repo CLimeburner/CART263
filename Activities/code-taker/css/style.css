@@ -5,6 +5,14 @@ By default that's nothing.
 
 **********************************************/
 
+#poem {
+  font-size: 1.2rem;
+}
+
+.found {
+  color: red;
+}
+
 #answer {
   width: 10rem;
   height: 2rem;
