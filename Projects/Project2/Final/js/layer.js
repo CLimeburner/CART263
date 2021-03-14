@@ -18,6 +18,7 @@ class Layer {
     this.height;
     this.pivotXOffset = 0;
     this.pivotYOffset = 0;
+    this.angle = 0;
   }
 
 

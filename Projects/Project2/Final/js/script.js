@@ -24,6 +24,9 @@ let dragOffsetY;
 
 let interfaceToolMode = "edit";
 
+let grabbedLayer = undefined;
+let initialAngle = undefined;
+let deltaAngle = undefined;
 
 
 
@@ -38,11 +41,13 @@ function setup() {
 
   cnv = createCanvas(canvasWidth, canvasHeight); //create the canvas
   cnv.parent(`viewport-pane`); //position canvas in the HTML framework
-  cnv.background(0); //set canvas background
+  cnv.background(`rgba(0, 0, 0, 0)`); //set canvas background
   //center the canvas
   cnvX = ((windowWidth - width) - 300)/2;
   cnvY = (windowHeight - height)/2;
   cnv.position(cnvX, cnvY);
+
+  angleMode(DEGREES);
 }
 
 
@@ -63,9 +68,17 @@ function draw() {
   }
 
   drawLayerImages(); //draws the layer image
-  drawTransformPoints(); //draws the transform points bounding the image
-  drawRotationalOrigin(); //draws the rotational origin if it's a rotational layer
 
+  if(interfaceToolMode == "edit") {
+    drawTransformPoints(); //draws the transform points bounding the image
+    drawRotationalOrigin(); //draws the rotational origin if it's a rotational layer
+  }
+
+  if(grabbedLayer) {
+    mouseOffsetX = mouseX - grabbedLayer.xOrigin;
+    mouseOffsetY = mouseY - grabbedLayer.yOrigin;
+    grabbedLayer.angle = (initialAngle - deltaAngle) + createVector(mouseOffsetX, mouseOffsetY).heading();
+  }
 }
 
 
@@ -82,6 +95,14 @@ function mousePressed() {
     dragOffsetX = winMouseX;
     dragOffsetY = winMouseY;
     dragTracking = true;
+  } else if (interfaceToolMode == "live") {
+    getGrabbedObject(); //figure out which layer has been clicked on
+    if (grabbedLayer) {
+      mouseOffsetX = mouseX - grabbedLayer.xOrigin;
+      mouseOffsetY = mouseY - grabbedLayer.yOrigin;
+      initialAngle = grabbedLayer.angle;
+      deltaAngle = createVector(mouseOffsetX, mouseOffsetY).heading();
+    }
   }
 }
 
@@ -96,8 +117,43 @@ function mouseReleased() {
   topScaleTracking = false;
   bottomScaleTracking = false;
   rotOriginTracking = false;
+  grabbedLayer = undefined;
+  initialAngle = undefined;
 }
 
+
+//
+//
+function detectClick(incomingX, incomingY, incomingLayer) {
+  let bufferImage = incomingLayer.img;
+  bufferImage.resize(incomingLayer.width, incomingLayer.height);
+  let transAdjustedX = incomingX - incomingLayer.xOrigin + (incomingLayer.width/2);
+  let transAdjustedY = incomingY - incomingLayer.yOrigin + (incomingLayer.height/2);
+
+  let bufferVector = createVector(transAdjustedX - (incomingLayer.width/2 + incomingLayer.pivotXOffset), transAdjustedY - (incomingLayer.height/2 + incomingLayer.pivotYOffset));
+  bufferVector.rotate(-incomingLayer.angle);
+
+  let outgoingX = bufferVector.x + (incomingLayer.width/2 + incomingLayer.pivotXOffset);
+  let outgoingY = bufferVector.y + (incomingLayer.height/2 + incomingLayer.pivotYOffset);
+
+  if(incomingLayer.img.get(outgoingX, outgoingY)[3] == 255) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+//
+//
+function getGrabbedObject() {
+  for (let i = 0; i < layers.length; i++) {
+    if (detectClick(event.offsetX, event.offsetY, layers[i])) {
+      grabbedLayer = layers[i];
+      break;
+    }
+  }
+}
 
 // checkMoveAction()
 // check for events to move the layer
@@ -200,7 +256,12 @@ function drawLayerImages() {
   imageMode(CENTER);
   for (let i = layers.length - 1; i > -1; i--) {
     if(layers[i].img) {
-      image(layers[i].img, layers[i].xOrigin, layers[i].yOrigin, layers[i].width, layers[i].height);
+      push();
+      translate(layers[i].xOrigin, layers[i].yOrigin);
+      rotate(layers[i].angle);
+      image(layers[i].img, 0, 0, layers[i].width, layers[i].height);
+      //image(layers[i].img, layers[i].xOrigin, layers[i].yOrigin, layers[i].width, layers[i].height);
+      pop();
     }
   }
 }
@@ -506,7 +567,9 @@ function swapToolMode(element, mode) {
     document.getElementsByTagName("body")[0].style.cursor = "move";
   } else {
     document.getElementsByTagName("body")[0].style.cursor = "default";
-
+    for (let i = 0; i < layers.length; i++) {
+      layers[i].angle = 0;
+    }
   }
 }
 
