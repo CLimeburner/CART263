@@ -75,8 +75,8 @@ function draw() {
   }
 
   if(grabbedLayer) {
-    mouseOffsetX = mouseX - grabbedLayer.xOrigin;
-    mouseOffsetY = mouseY - grabbedLayer.yOrigin;
+    mouseOffsetX = mouseX - (grabbedLayer.xOrigin + grabbedLayer.pivotXOffset);
+    mouseOffsetY = mouseY - (grabbedLayer.yOrigin + grabbedLayer.pivotYOffset);
     grabbedLayer.angle = (initialAngle - deltaAngle) + createVector(mouseOffsetX, mouseOffsetY).heading();
   }
 }
@@ -98,8 +98,8 @@ function mousePressed() {
   } else if (interfaceToolMode == "live") {
     getGrabbedObject(); //figure out which layer has been clicked on
     if (grabbedLayer) {
-      mouseOffsetX = mouseX - grabbedLayer.xOrigin;
-      mouseOffsetY = mouseY - grabbedLayer.yOrigin;
+      mouseOffsetX = mouseX - (grabbedLayer.xOrigin + grabbedLayer.pivotXOffset);
+      mouseOffsetY = mouseY - (grabbedLayer.yOrigin + grabbedLayer.pivotYOffset);
       initialAngle = grabbedLayer.angle;
       deltaAngle = createVector(mouseOffsetX, mouseOffsetY).heading();
     }
@@ -257,8 +257,9 @@ function drawLayerImages() {
   for (let i = layers.length - 1; i > -1; i--) {
     if(layers[i].img) {
       push();
-      translate(layers[i].xOrigin, layers[i].yOrigin);
+      translate(layers[i].xOrigin + layers[i].pivotXOffset, layers[i].yOrigin + layers[i].pivotYOffset);
       rotate(layers[i].angle);
+      translate(-layers[i].pivotXOffset,-layers[i].pivotYOffset);
       image(layers[i].img, 0, 0, layers[i].width, layers[i].height);
       //image(layers[i].img, layers[i].xOrigin, layers[i].yOrigin, layers[i].width, layers[i].height);
       pop();
