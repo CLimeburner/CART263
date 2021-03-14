@@ -437,20 +437,27 @@ function moveLayerDown(clickedButton) {
 // deleteLayer(clickedButton)
 // deletes layers when you click their "x" button
 function deleteLayer(clickedButton) {
-  let layerBuffer = clickedButton.parentNode.parentNode;
-  let bufferIndex = 0;
-  for (let i = 0; i < document.getElementById("layers-container").children.length; i++) { //cycle through all the layers to find the right one
-    if (document.getElementById("layers-container").children[i] === layerBuffer) {
-      layers.splice(i,1); //excise the layer to be removed
-      for(let j = 1; j <= layers.length; j++) { //update the indecies of all the other layer objects
-        layers[j-1].layersIndex = j;
+  if(layers.length > 1) { //if there's more than one layer
+    let layerBuffer = clickedButton.parentNode.parentNode;
+    let bufferIndex = 0;
+    for (let i = 0; i < document.getElementById("layers-container").children.length; i++) { //cycle through all the layers to find the right one
+      if (document.getElementById("layers-container").children[i] === layerBuffer) {
+        layers.splice(i,1); //excise the layer to be removed
+        for(let j = 1; j <= layers.length; j++) { //update the indecies of all the other layer objects
+          layers[j-1].layersIndex = j;
+        }
+        bufferIndex = i; //save the index of the removed layer for updating the active layer object
+        break
       }
-      bufferIndex = i; //save the index of the removed layer for updating the active layer object
-      break
     }
+    if(layers[bufferIndex]) {
+      activeLayer = layers[bufferIndex]; //update the active layer object
+    } else {
+      activeLayer = layers[layers.length - 1]; //if there is no layers[bufferIndex], just default to the bottom-most layer
+    }
+    displayLayerList(); //update the visible layer list
+    setToolbarProperties(); //update the toolbar
   }
-  activeLayer = layers[bufferIndex]; //update the active layer object
-  displayLayerList(); //update the visible layer list
 }
 
 
@@ -484,8 +491,8 @@ function updateType() {
 }
 
 
-//
-//
+// updateXOrigin(event)
+// updates layer X origin when you set it from the toolbar
 function updateXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.xOrigin - $(`#layerX`).val();
@@ -494,8 +501,8 @@ function updateXOrigin(event) {
 }
 
 
-//
-//
+// updateYOrigin(event)
+// updates layer Y origin when you set it from the toolbar
 function updateYOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.yOrigin - $(`#layerY`).val();
@@ -504,8 +511,8 @@ function updateYOrigin(event) {
 }
 
 
-//
-//
+// updateHeight(event)
+// updates layer height when you set it from the toolbar
 function updateHeight(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.height - $(`#layerHeight`).val();
@@ -514,8 +521,8 @@ function updateHeight(event) {
 }
 
 
-//
-//
+// updateWidth(event)
+// updates layer width when you set it from the toolbar
 function updateWidth(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.width - $(`#layerWidth`).val();
@@ -524,8 +531,8 @@ function updateWidth(event) {
 }
 
 
-//
-//
+// updateRotYOrigin(event)
+// updates layer rotational X origin when you set it from the toolbar
 function updateRotXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - $("#layerRotX").val());
@@ -534,8 +541,8 @@ function updateRotXOrigin(event) {
 }
 
 
-//
-//
+// updateRotYOrigin(event)
+// updates layer rotational Y origin when you set it from the toolbar
 function updateRotYOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - $("#layerRotY").val());
@@ -544,8 +551,8 @@ function updateRotYOrigin(event) {
 }
 
 
-//
-//
+// updateSlideStartX(event)
+// updates layer translation starting X origin when you set it from the toolbar
 function updateSlideStartX(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.slideStartX + (activeLayer.xOrigin - $("#layerTransStartX").val());
@@ -554,8 +561,8 @@ function updateSlideStartX(event) {
 }
 
 
-//
-//
+// updateSlideStartY(event)
+// updates layer translation starting Y origin when you set it from the toolbar
 function updateSlideStartY(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.slideStartY + (activeLayer.yOrigin - $("#layerTransStartY").val());
@@ -564,8 +571,8 @@ function updateSlideStartY(event) {
 }
 
 
-//
-//
+// updateSlideEndX(event)
+// updates layer translation ending X origin when you set it from the toolbar
 function updateSlideEndX(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.slideEndX + (activeLayer.xOrigin - $("#layerTransEndX").val());
@@ -574,8 +581,8 @@ function updateSlideEndX(event) {
 }
 
 
-//
-//
+// updateSlideEndY(event)
+// updates layer translation ending Y origin  when you set it from the toolbar
 function updateSlideEndY(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.slideEndY + (activeLayer.yOrigin - $("#layerTransEndY").val());
