@@ -9,6 +9,7 @@ let layers = []; //an array of our layer objects
 let activeLayer = 0; //the current active layer object
 let layerCounter = 1; //a variable used for initializing and tracking total number of layers
 
+//variables for tracking what physical proprties should be tracked at a given moment
 let dragTracking = false;
 let moveTracking = false;
 let leftScaleTracking = false;
@@ -17,13 +18,15 @@ let topScaleTracking = false;
 let bottomScaleTracking = false;
 let rotOriginTracking = false;
 
+//variables for manipulating mouse position data
 let mouseOffsetX;
 let mouseOffsetY;
 let dragOffsetX;
 let dragOffsetY;
 
-let interfaceToolMode = "edit";
+let interfaceToolMode = "edit"; //variable to track which tool mode is active
 
+//variables for live mode manipulation tracking
 let grabbedLayer = undefined;
 let initialAngle = undefined;
 let deltaAngle = undefined;
@@ -74,7 +77,7 @@ function draw() {
     drawRotationalOrigin(); //draws the rotational origin if it's a rotational layer
   }
 
-  if(grabbedLayer) {
+  if(grabbedLayer && grabbedLayer.type == "rotational") {
     mouseOffsetX = mouseX - (grabbedLayer.xOrigin + grabbedLayer.pivotXOffset);
     mouseOffsetY = mouseY - (grabbedLayer.yOrigin + grabbedLayer.pivotYOffset);
     grabbedLayer.angle = (initialAngle - deltaAngle) + createVector(mouseOffsetX, mouseOffsetY).heading();
@@ -97,7 +100,7 @@ function mousePressed() {
     dragTracking = true;
   } else if (interfaceToolMode == "live") {
     getGrabbedObject(); //figure out which layer has been clicked on
-    if (grabbedLayer) {
+    if (grabbedLayer && grabbedLayer.type == "rotational") {
       mouseOffsetX = mouseX - (grabbedLayer.xOrigin + grabbedLayer.pivotXOffset);
       mouseOffsetY = mouseY - (grabbedLayer.yOrigin + grabbedLayer.pivotYOffset);
       initialAngle = grabbedLayer.angle;
@@ -122,8 +125,8 @@ function mouseReleased() {
 }
 
 
-//
-//
+// detectClick(incomingX, incomingY, incomingLayer)
+// determines if a click happened in an opaque part of a given image layer
 function detectClick(incomingX, incomingY, incomingLayer) {
   let bufferImage = incomingLayer.img;
   bufferImage.resize(incomingLayer.width, incomingLayer.height);
@@ -144,12 +147,12 @@ function detectClick(incomingX, incomingY, incomingLayer) {
 }
 
 
-//
-//
+// getGrabbedObject()
+// identify the layer that has been clicked on
 function getGrabbedObject() {
-  for (let i = 0; i < layers.length; i++) {
+  for (let i = 0; i < layers.length; i++) { //cycle through the layers
     if (detectClick(event.offsetX, event.offsetY, layers[i])) {
-      grabbedLayer = layers[i];
+      grabbedLayer = layers[i]; //take the first one you hit
       break;
     }
   }
@@ -365,6 +368,26 @@ function moveLayerDown(clickedButton) {
 }
 
 
+// deleteLayer(clickedButton)
+// deletes layers when you click their "x" button
+function deleteLayer(clickedButton) {
+  let layerBuffer = clickedButton.parentNode.parentNode;
+  let bufferIndex = 0;
+  for (let i = 0; i < document.getElementById("layers-container").children.length; i++) { //cycle through all the layers to find the right one
+    if (document.getElementById("layers-container").children[i] === layerBuffer) {
+      layers.splice(i,1); //excise the layer to be removed
+      for(let j = 1; j <= layers.length; j++) { //update the indecies of all the other layer objects
+        layers[j-1].layersIndex = j;
+      }
+      bufferIndex = i; //save the index of the removed layer for updating the active layer object
+      break
+    }
+  }
+  activeLayer = layers[bufferIndex]; //update the active layer object
+  displayLayerList(); //update the visible layer list
+}
+
+
 // updateName(event)
 // updates the active layer's name
 function updateName(event) {
@@ -403,6 +426,8 @@ function updateImage() {
 }
 
 
+//
+//
 function updateXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.xOrigin - $(`#layerX`).val();
@@ -411,6 +436,8 @@ function updateXOrigin(event) {
 }
 
 
+//
+//
 function updateYOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.yOrigin - $(`#layerY`).val();
@@ -419,6 +446,8 @@ function updateYOrigin(event) {
 }
 
 
+//
+//
 function updateHeight(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.height - $(`#layerHeight`).val();
@@ -427,6 +456,8 @@ function updateHeight(event) {
 }
 
 
+//
+//
 function updateWidth(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.width - $(`#layerWidth`).val();
@@ -435,6 +466,8 @@ function updateWidth(event) {
 }
 
 
+//
+//
 function updateRotXOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.pivotXOffset + (activeLayer.xOrigin - $("#layerRotX").val());
@@ -443,6 +476,8 @@ function updateRotXOrigin(event) {
 }
 
 
+//
+//
 function updateRotYOrigin(event) {
   if (event.key == `Enter`) {
     let buffer = activeLayer.pivotYOffset + (activeLayer.yOrigin - $("#layerRotY").val());
@@ -480,7 +515,7 @@ function setToolbarProperties() {
   <div class="toolbar-section" id="">
     <p class="toolbar-section-title">Layer Type:</p>
     <select class="" id="layerType" name="layerType" onchange="updateType()">
-      <option value="background">Background</option>
+      <option value="background">Static</option>
       <option value="rotational">Rotational</option>
       <option value="translational">Translational</option>
       <option value="flap">Flap</option>
@@ -600,6 +635,7 @@ function displayLayerList() {
      </div>
      <div class="nametag-container">
       <H3 class="layer-nametag">${layers[i].name}</H3>
+      <p class="close-button">&times</p>
      </div>
     </div>`;
   }
@@ -616,5 +652,8 @@ function displayLayerList() {
   $(`.down-button`).on(`click`, function() {
     moveLayerDown(this);
   });
+  $(`.close-button`).on(`click`, function() {
+    deleteLayer(this);
+  })
 
 }
