@@ -17,6 +17,8 @@ let rightScaleTracking = false;
 let topScaleTracking = false;
 let bottomScaleTracking = false;
 let rotOriginTracking = false;
+let transStartTracking = false;
+let transEndTracking = false;
 
 //variables for manipulating mouse position data
 let mouseOffsetX;
@@ -61,7 +63,7 @@ function draw() {
   background(0);
 
 
-  if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking || rotOriginTracking) {
+  if(moveTracking || topScaleTracking || bottomScaleTracking || leftScaleTracking || rightScaleTracking || rotOriginTracking || transStartTracking || transEndTracking) {
     updateActiveLayer(); //updates transform information based on mouse movements if mouse is clicked
     updateToolbarTransform(); //update the toolbar to reflect the actual transform of the layer
   }
@@ -75,6 +77,7 @@ function draw() {
   if(interfaceToolMode == "edit") {
     drawTransformPoints(); //draws the transform points bounding the image
     drawRotationalOrigin(); //draws the rotational origin if it's a rotational layer
+    drawTranslationPath(); //draws points defining the translation path if it's a translation layer
   }
 
   if(grabbedLayer && grabbedLayer.type == "rotational") {
@@ -93,7 +96,12 @@ function mousePressed() {
     mouseOffsetY = mouseY;
     checkMoveAction();
     checkScaleAction();
-    checkRotOriginAction();
+    if(activeLayer.type == `rotational`) {
+      checkRotOriginAction();
+    }
+    if(activeLayer.type == `translational`) {
+      checkTransPathAction();
+    }
   } else if (interfaceToolMode == "drag") {
     dragOffsetX = winMouseX;
     dragOffsetY = winMouseY;
@@ -120,6 +128,8 @@ function mouseReleased() {
   topScaleTracking = false;
   bottomScaleTracking = false;
   rotOriginTracking = false;
+  transStartTracking = false;
+  transEndTracking = false;
   grabbedLayer = undefined;
   initialAngle = undefined;
 }
@@ -157,6 +167,7 @@ function getGrabbedObject() {
     }
   }
 }
+
 
 // checkMoveAction()
 // check for events to move the layer
@@ -209,6 +220,25 @@ function checkRotOriginAction() {
 }
 
 
+// checkTransPathAction()
+// check fro events to move the points defining the axis of translation
+function checkTransPathAction() {
+  if (mouseX > activeLayer.xOrigin + activeLayer.slideStartX - 5
+   && mouseX < activeLayer.xOrigin + activeLayer.slideStartX + 5
+   && mouseY > activeLayer.yOrigin + activeLayer.slideStartY - 5
+   && mouseY < activeLayer.yOrigin + activeLayer.slideStartY + 5) {
+     transStartTracking = true;
+     moveTracking = false;
+  } else if (mouseX > activeLayer.xOrigin + activeLayer.slideEndX - 5
+   && mouseX < activeLayer.xOrigin + activeLayer.slideEndX + 5
+   && mouseY > activeLayer.yOrigin + activeLayer.slideEndY - 5
+   && mouseY < activeLayer.yOrigin + activeLayer.slideEndY + 5) {
+     transEndTracking = true;
+     moveTracking = false;
+  }
+}
+
+
 // updateDrag()
 // moves the canvas at each frame based on how much the mouse has moved
 function updateDrag() {
@@ -246,6 +276,14 @@ function updateActiveLayer() {
   if (rotOriginTracking) {
     activeLayer.pivotXOffset += mouseX - mouseOffsetX;
     activeLayer.pivotYOffset += mouseY - mouseOffsetY;
+  }
+  if (transStartTracking) {
+    activeLayer.slideStartX += mouseX - mouseOffsetX;
+    activeLayer.slideStartY += mouseY - mouseOffsetY;
+  }
+  if (transEndTracking) {
+    activeLayer.slideEndX += mouseX - mouseOffsetX;
+    activeLayer.slideEndY += mouseY - mouseOffsetY;
   }
   mouseOffsetX = mouseX;
   mouseOffsetY = mouseY;
@@ -307,6 +345,33 @@ function drawRotationalOrigin() {
 }
 
 
+// drawTranslationPath()
+// draws the points and line that define the path of translation if it's a translation layer
+function drawTranslationPath() {
+  if(activeLayer.type == "translational") {
+    push();
+    stroke(255);
+    strokeWeight(5);
+    line(activeLayer.xOrigin + activeLayer.slideStartX, activeLayer.yOrigin + activeLayer.slideStartY, activeLayer.xOrigin + activeLayer.slideEndX, activeLayer.yOrigin + activeLayer.slideEndY);
+    noStroke();
+    fill(255);
+    ellipse(activeLayer.xOrigin + activeLayer.slideStartX, activeLayer.yOrigin + activeLayer.slideStartY, 10); //center dot
+    stroke(255);
+    strokeWeight(2);
+    noFill();
+    ellipse(activeLayer.xOrigin + activeLayer.slideStartX, activeLayer.yOrigin + activeLayer.slideStartY, 20); //ring around dot for greater visibility
+    noStroke();
+    fill(255);
+    ellipse(activeLayer.xOrigin + activeLayer.slideEndX, activeLayer.yOrigin + activeLayer.slideEndY, 10); //center dot
+    stroke(255);
+    strokeWeight(2);
+    noFill();
+    ellipse(activeLayer.xOrigin + activeLayer.slideEndX, activeLayer.yOrigin + activeLayer.slideEndY, 20);
+    pop();
+  }
+}
+
+
 // createNewLayer()
 // initializes new layers
 function createNewLayer() {
@@ -349,6 +414,7 @@ function moveLayerUp(clickedButton) {
     displayLayerList();
   }
 }
+
 
 // moveLayerDown(tab)
 // swaps the position of tab with the layer below it
@@ -398,30 +464,22 @@ function updateName(event) {
 }
 
 
-// updateType()
-// updates the active layer's type
-function updateType() {
-  activeLayer.type = $(`#layerType`).val();
-  setToolbarProperties();
-}
-
-
 // updateImage
 // updates the active layer's image when one is uploaded
 function updateImage() {
   activeLayer.img = loadImage(URL.createObjectURL(document.getElementById("layerImage").files[0])); //load the uploaded image data
   //assign appropriate initial sizes, given our canvas
   let wxhRatio = activeLayer.img.width/activeLayer.img.height;
-  if(activeLayer.type == "background") {
-    activeLayer.width = width;
-    activeLayer.height = height;
-  } else if(width > height) {
-    activeLayer.height = height/2;
-    activeLayer.width = activeLayer.height * wxhRatio;
-  } else {
-    activeLayer.width = width/2;
-    activeLayer.height = activeLayer.width * wxhRatio;
-  }
+  activeLayer.width = width;
+  activeLayer.height = height;
+  setToolbarProperties();
+}
+
+
+// updateType()
+// updates the active layer's type
+function updateType() {
+  activeLayer.type = $(`#layerType`).val();
   setToolbarProperties();
 }
 
@@ -486,6 +544,46 @@ function updateRotYOrigin(event) {
 }
 
 
+//
+//
+function updateSlideStartX(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.slideStartX + (activeLayer.xOrigin - $("#layerTransStartX").val());
+    activeLayer.slideStartX -= buffer;
+  }
+}
+
+
+//
+//
+function updateSlideStartY(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.slideStartY + (activeLayer.yOrigin - $("#layerTransStartY").val());
+    activeLayer.slideStartY -= buffer;
+  }
+}
+
+
+//
+//
+function updateSlideEndX(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.slideEndX + (activeLayer.xOrigin - $("#layerTransEndX").val());
+    activeLayer.slideEndX -= buffer;
+  }
+}
+
+
+//
+//
+function updateSlideEndY(event) {
+  if (event.key == `Enter`) {
+    let buffer = activeLayer.slideEndY + (activeLayer.yOrigin - $("#layerTransEndY").val());
+    activeLayer.slideEndY -= buffer;
+  }
+}
+
+
 // setActiveLayer(tab)
 // makes the arrangements to set tab as the active layer
 function setActiveLayer(tab) {
@@ -510,21 +608,25 @@ function setToolbarProperties() {
   <div class="toolbar-section" id="">
     <p class="toolbar-section-title">Layer Name:</p>
     <input type="text" id="layerName" name="layerName" value="" onkeydown="updateName(event)">
-  </div>
+  </div>`
 
-  <div class="toolbar-section" id="">
-    <p class="toolbar-section-title">Layer Type:</p>
-    <select class="" id="layerType" name="layerType" onchange="updateType()">
-      <option value="background">Static</option>
-      <option value="rotational">Rotational</option>
-      <option value="translational">Translational</option>
-      <option value="flap">Flap</option>
-      <option value="string">String</option>
-      <option value="annotation">Annotation</option>
-    </select>
-  </div>
+  if(activeLayer.img) {
+    document.getElementById("toolbar").innerHTML +=
+    `<div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Layer Type:</p>
+      <select class="" id="layerType" name="layerType" onchange="updateType()">
+        <option value="background">Static</option>
+        <option value="rotational">Rotational</option>
+        <option value="translational">Translational</option>
+        <option value="flap">Flap</option>
+        <option value="string">String</option>
+        <option value="annotation">Annotation</option>
+      </select>
+    </div>`
+  }
 
-  <div class="toolbar-section" id="">
+  document.getElementById("toolbar").innerHTML +=
+  `<div class="toolbar-section" id="">
     <p class="toolbar-section-title">Layer Image:</p>
     <input type="file" id="layerImage" name="layerImage" value="" accept="image/*" onchange="updateImage()">
   </div>`;
@@ -554,6 +656,20 @@ function setToolbarProperties() {
     </div>`;
   }
 
+  if(activeLayer.type == "translational") {
+    document.getElementById("toolbar").innerHTML +=
+    `<div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Translation Start:</p>
+      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerTransStartX" name="layerTransStartX" value="" style="width:50px;float:left;" onkeydown="updateSlideStartX(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerTransStartY" name="layerTransStartY" value="" style="width:50px;float:left;" onkeydown="updateSlideStartY(event)">
+    </div>
+    <div class="toolbar-section" id="">
+      <p class="toolbar-section-title">Translation End:</p>
+      <p style="margin:0px;float:left;">X:</p> <input type="text" id="layerTransEndX" name="layerTransEndX" value="" style="width:50px;float:left;" onkeydown="updateSlideEndX(event)">
+      <p style="margin:0px;margin-left:20px;float:left;">Y:</p> <input type="text" id="layerTransEndY" name="layerTransEndY" value="" style="width:50px;float:left;" onkeydown="updateSlideEndY(event)">
+    </div>`;
+  }
+
   //populate the tool values
   document.getElementById("layerName").value = activeLayer.name;
   document.getElementById("layerType").value = activeLayer.type;
@@ -571,10 +687,10 @@ function updateToolbarTransform() {
   document.getElementById("layerWidth").value = activeLayer.width;
   document.getElementById("layerHeight").value = activeLayer.height;
   if(activeLayer.type == "rotational") {
-    updateRotationalTransform()
+    updateRotationalTransform();
   }
   if(activeLayer.type == "translational") {
-
+    updateTranslationTransform();
   }
   if(activeLayer.type == "flap") {
 
@@ -587,6 +703,16 @@ function updateToolbarTransform() {
 function updateRotationalTransform() {
   document.getElementById("layerRotX").value = activeLayer.xOrigin + activeLayer.pivotXOffset;
   document.getElementById("layerRotY").value = activeLayer.yOrigin + activeLayer.pivotYOffset;
+}
+
+
+// updateTranslationTransform
+// updates the sidebar values for the points that define the path of translation
+function updateTranslationTransform() {
+  document.getElementById("layerTransStartX").value = activeLayer.xOrigin + activeLayer.slideStartX;
+  document.getElementById("layerTransStartY").value = activeLayer.yOrigin + activeLayer.slideStartY;
+  document.getElementById("layerTransEndX").value = activeLayer.xOrigin + activeLayer.slideEndX;
+  document.getElementById("layerTransEndY").value = activeLayer.yOrigin + activeLayer.slideEndY;
 }
 
 
